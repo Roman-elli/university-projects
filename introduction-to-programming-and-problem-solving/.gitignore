@@ -1,3 +1,7 @@
 # High Score data should no be in remote repo
 
 data/high_scores.txt
+
+# Cache
+
+/__pycache__

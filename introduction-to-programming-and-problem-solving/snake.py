@@ -2,13 +2,7 @@ import time
 from random import randint
 import functools
 import turtle
-
-MAX_X = 600
-MAX_Y = 640
-DEFAULT_SIZE = 20
-SNAKE_SHAPE = 'square'
-HIGH_SCORES_FILE_PATH = 'snake-game/data/high_scores.txt'
-SPEED = 0.12
+from config import MAX_X, MAX_Y, DEFAULT_SIZE, SNAKE_SHAPE, HIGH_SCORES_FILE_PATH, SPEED
 
 # Load high score from file into state
 def load_high_score(state):
@@ -231,6 +225,5 @@ def main():
     if state['new_high_score']:
         write_high_score_to_file(state)
 
-# Entry point for script
 if __name__ == "__main__":
     main()
