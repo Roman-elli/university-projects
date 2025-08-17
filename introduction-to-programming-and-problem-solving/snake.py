@@ -3,6 +3,7 @@ from random import randint
 import functools
 import turtle
 from config import MAX_X, MAX_Y, DEFAULT_SIZE, SNAKE_SHAPE, HIGH_SCORES_FILE_PATH, SPEED
+import os
 
 # Load high score from file into state
 def load_high_score(state):
@@ -213,6 +214,7 @@ def check_collisions(state):
 
 def main():
     state = init_state()
+    os.makedirs('data', exist_ok=True)
     setup(state)
     while not check_collisions(state):
         state['window'].update()
