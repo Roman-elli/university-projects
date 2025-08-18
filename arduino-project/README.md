@@ -58,16 +58,9 @@ An example gameplay video:
 
 ---
 
-## 📂 Project Deliverables  
-- `bit_math.ino` → Complete Arduino code.  
-- `circuit.jpeg` → Circuit diagram (Tinkercad).  
-- `report.pdf` → Brief project report.  
-
----
-
 ## 📚 Key Learnings  
 This project was a great opportunity to:  
 - Work with **binary logic and number systems**.  
 - Explore **button debounce handling**.  
 - Control LEDs and an RGB LED with **Arduino**.  
-- Implement **timers and real-time feedback**.  
+- Implement **timers and real-time feedback**. 
