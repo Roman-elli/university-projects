@@ -148,7 +148,7 @@ def init_state():
 
 def cria_janela():
     window=t.Screen()
-    window.title("Foosball Game")
+    window.title("FootBall Game")
     window.bgcolor("green")
     window.setup(width = LARGURA_JANELA,height = ALTURA_JANELA)
     window.tracer(0)
@@ -165,7 +165,7 @@ def cria_quadro_resultados():
     return quadro
 
 def terminar_jogo(estado_jogo):
-    if(os.path.isfile('histózrico_resultados.csv')):
+    if(os.path.isfile('histórico_resultados.csv')):
         file = open('histórico_resultados.csv', 'r+')
         lista = file.readlines()
         if(len(lista) == 0):

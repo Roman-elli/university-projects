@@ -1,4 +1,4 @@
-import foosball_alunos
+import football
 import os
 
 def le_replay(nome_ficheiro):
@@ -14,7 +14,6 @@ def le_replay(nome_ficheiro):
 
     return dici
 
-#Função que faz o split da string lida do ficheiro, para criar uma lista de tuplos 
 def lista(s):
     ponto_virgula = s.split(';')
     virgula = [item.split(',') for item in ponto_virgula]
@@ -24,7 +23,6 @@ def lista(s):
         lista.append(tuplo)
     return lista 
 
-#Função que faz o menu para escolher o replay desejado
 def main():
     print("Replays disponiveis: ")
     if(os.path.isfile('nome_menu.txt')):
@@ -35,8 +33,8 @@ def main():
             print(i+1, "->", linhas[i])
         x = int(input("Digite o replay que deseja ver: "))
 
-    estado_jogo = foosball_alunos.init_state()
-    foosball_alunos.setup(estado_jogo, False)
+    estado_jogo = football.init_state()
+    football.setup(estado_jogo, False)
    
     replay = le_replay(linhas[x-1])
     for i in range(len(replay['bola'])):
