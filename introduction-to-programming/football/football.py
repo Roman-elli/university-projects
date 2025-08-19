@@ -165,8 +165,8 @@ def cria_quadro_resultados():
     return quadro
 
 def terminar_jogo(estado_jogo):
-    if(os.path.isfile('histórico_resultados.csv')):
-        file = open('histórico_resultados.csv', 'r+')
+    if(os.path.isfile('data/game-results/game_historic.csv')):
+        file = open('data/game-results/game_historic.csv', 'r+')
         lista = file.readlines()
         if(len(lista) == 0):
             file.write("NJogo,JogadorVermelho,JogadorAzul\n")
@@ -174,7 +174,7 @@ def terminar_jogo(estado_jogo):
         else: 
             file.write(f"{len(lista)},{estado_jogo['pontuacao_jogador_vermelho']},{estado_jogo['pontuacao_jogador_azul']}\n")
     else:
-        file = open('histórico_resultados.csv', 'w')
+        file = open('data/game-results/game_historic.csv', 'w')
         file.write("NJogo,JogadorVermelho,JogadorAzul\n")
         file.write(f"1,{estado_jogo['pontuacao_jogador_vermelho']},{estado_jogo['pontuacao_jogador_azul']}\n")
     file.close()
@@ -229,21 +229,21 @@ def verifica_colisoes_ambiente(estado_jogo):
 def faz_ficheiro(estado_jogo):
     pointv = estado_jogo['pontuacao_jogador_vermelho']
     pointa = estado_jogo['pontuacao_jogador_azul']
-    nome_arquivo = f"replay_golo_jv_{pointv}ja{pointa}.txt"
-    with open(nome_arquivo, 'w') as file:
+    nome_arquivo = f"replay_goal_jv_{pointv}ja{pointa}.txt"
+    with open(f"data/game-record/{nome_arquivo}", 'w') as file:
         file.write(f"{estado_jogo['var']['bola']}\n")
         file.write(f"{estado_jogo['var']['jogador_vermelho']}\n")
         file.write(f"{estado_jogo['var']['jogador_azul']}\n")
         file.close()
     
-    if(os.path.isfile('nome_menu.txt')):
+    if(os.path.isfile('data/game-titles/titles.txt')):
         if((pointv == 0 and pointa == 1) or (pointv == 1 and pointa == 0)):
-            file = open('nome_menu.txt', 'w')
+            file = open('data/game-titles/titles.txt', 'w')
         else:
-            file = open('nome_menu.txt', 'a') 
+            file = open('data/game-titles/titles.txt', 'a') 
         file.write(f"{nome_arquivo}\n")
     else:
-        file = open('nome_menu.txt', 'w')
+        file = open('data/game-titles/titles.txt', 'w')
         file.write(f"{nome_arquivo}\n")
     file.close()
 
@@ -257,7 +257,7 @@ def posicao(estado_jogo, x_pos_inicial, y_pos_inicial):
 #Função que troca a cor do campo e da bola sempre que há um golo
 def troca(estado_jogo):
     pygame.init()
-    arquivo_palmas = 'apitodefutebol.mp3'
+    arquivo_palmas = 'data/sounds/whistle.mp3'
     som = pygame.mixer.Sound(arquivo_palmas)
 
     som.play()
@@ -353,6 +353,11 @@ def guarda_posicoes_para_var(estado_jogo):
 
 def main():
     estado_jogo = init_state()
+    
+    os.makedirs('data/game-record', exist_ok=True)
+    os.makedirs('data/game-results', exist_ok=True)
+    os.makedirs('data/game-titles', exist_ok=True)
+
     setup(estado_jogo, True)
     while True:
         guarda_posicoes_para_var(estado_jogo)
