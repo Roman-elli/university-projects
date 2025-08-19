@@ -2,7 +2,7 @@ import football
 import os
 
 def le_replay(nome_ficheiro):
-    coordenadas = open(nome_ficheiro, 'r')
+    coordenadas = open(f"data/game-record/{nome_ficheiro}", 'r')
     bola = coordenadas.readline()
     jogador_vermelho = coordenadas.readline()
     jogador_azul = coordenadas.readline()
@@ -25,8 +25,8 @@ def lista(s):
 
 def main():
     print("Replays disponiveis: ")
-    if(os.path.isfile('nome_menu.txt')):
-        file = open('nome_menu.txt', 'r')
+    if(os.path.isfile('data/game-titles/titles.txt')):
+        file = open('data/game-titles/titles.txt', 'r')
         lista = file.readlines()
         linhas = [linha.rstrip('\n') for linha in lista]
         for i in range (len(linhas)):
