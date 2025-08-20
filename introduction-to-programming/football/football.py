@@ -5,13 +5,12 @@ import os
 import random
 import pygame
 import time
-from config import *
+from src.config import *
 
 def guarda_movimento(dic):
     dic['direcao_x'] = dic['jogador'].xcor()
     dic['direcao_y'] = dic['jogador'].ycor()
 
-#Funções que movimentam o jogador na devida direção
 def jogador_cima(estado_jogo, jogador):
     meche = estado_jogo[jogador]
     if(meche['direcao_y'] < (WINDOW_HEIGHT/2) - MOVE_PIXELS):
@@ -213,7 +212,6 @@ def verifica_colisoes_ambiente(estado_jogo):
     if ball['direcao_y'] < -(WINDOW_HEIGHT/2) or ball['direcao_y'] > (WINDOW_HEIGHT/2):
         ball['bola'].setheading(-coordenada)
 
-#Função que cria/edita o ficheiro que será necessario para o var e o ficheiro necessario para o menu
 def faz_ficheiro(estado_jogo):
     pointv = estado_jogo['pontuacao_jogador_vermelho']
     pointa = estado_jogo['pontuacao_jogador_azul']
@@ -235,14 +233,12 @@ def faz_ficheiro(estado_jogo):
         file.write(f"{nome_arquivo}\n")
     file.close()
 
-#Função que após ser marcado um golo faz com que os jogadores voltem para a posição inicial
 def posicao(estado_jogo, x_pos_inicial, y_pos_inicial):
     vermelho = estado_jogo['jogador_vermelho']['jogador']
     azul = estado_jogo['jogador_azul']['jogador']
     vermelho.goto(-(x_pos_inicial), y_pos_inicial)
     azul.goto(x_pos_inicial, y_pos_inicial)
     
-#Função que troca a cor do campo e da bola sempre que há um golo
 def troca(estado_jogo):
     pygame.init()
     arquivo_palmas = GAME_SOUND_PATH
@@ -255,7 +251,7 @@ def troca(estado_jogo):
     window = estado_jogo['janela']
     bola = estado_jogo['bola']['bola']
     x = random.randint(0, 4)
-    print(x)
+
     if(x == 0):
         window.bgcolor("black")
         bola.color("white")
@@ -270,9 +266,7 @@ def troca(estado_jogo):
         bola.color("black")
     if(x == 4):
         window.bgcolor("purple")
-        bola.color("gold")
-    
-   
+        bola.color("gold") 
 
 def verifica_golo_jogador_vermelho(estado_jogo):
     ball = estado_jogo['bola']

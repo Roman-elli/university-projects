@@ -1,6 +1,10 @@
 # High Score data should no be in remote repo
 
 data
+/src/__pycache__
+/src/game/__pycache__
+/src/ui/__pycache__
+/src/utils/__pycache__
 
 # Cache
 /__pycache__

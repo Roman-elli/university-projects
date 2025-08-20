@@ -21,6 +21,6 @@ BALL_START_POS = (5, 5)
 
 # File paths
 
-GAME_HIST_PATH = 'data/game-results/game_historic.csv'
-GAME_TITLES_PATH = 'data/game-titles/titles.txt'
-GAME_SOUND_PATH = 'assets/sounds/whistle.mp3'
+GAME_HIST_PATH = '../data/game-results/game_historic.csv'
+GAME_TITLES_PATH = '../data/game-titles/titles.txt'
+GAME_SOUND_PATH = '../assets/sounds/whistle.mp3'
