@@ -36,7 +36,7 @@ D -> RIGHT
    pip install pygame
 
 2. Start the game:
-    python football.py
+    python main.py
 
 3. After playing, watch the replay and put on the input the game that you want to watch:
     python replay.py
