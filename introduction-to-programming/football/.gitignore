@@ -1,8 +1,6 @@
 # High Score data should no be in remote repo
 
-/data/game-record
-/data/game-results
+data
 
 # Cache
-
 /__pycache__

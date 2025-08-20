@@ -5,19 +5,7 @@ import os
 import random
 import pygame
 import time
-
-LARGURA_JANELA = 1024
-ALTURA_JANELA = 600
-DEFAULT_TURTLE_SIZE = 40
-DEFAULT_TURTLE_SCALE = 3
-RAIO_JOGADOR = DEFAULT_TURTLE_SIZE / DEFAULT_TURTLE_SCALE
-RAIO_BOLA = DEFAULT_TURTLE_SIZE / 2
-PIXEIS_MOVIMENTO = 90
-LADO_MAIOR_AREA = ALTURA_JANELA / 3
-LADO_MENOR_AREA = 50
-RAIO_MEIO_CAMPO = LADO_MAIOR_AREA / 2 #4
-START_POS_BALIZAS = ALTURA_JANELA / 6 #3
-BOLA_START_POS = (5,5)
+from config import *
 
 def guarda_movimento(dic):
     dic['direcao_x'] = dic['jogador'].xcor()
@@ -26,36 +14,36 @@ def guarda_movimento(dic):
 #Funções que movimentam o jogador na devida direção
 def jogador_cima(estado_jogo, jogador):
     meche = estado_jogo[jogador]
-    if(meche['direcao_y'] < (ALTURA_JANELA/2) - PIXEIS_MOVIMENTO):
+    if(meche['direcao_y'] < (WINDOW_HEIGHT/2) - MOVE_PIXELS):
         meche['jogador'].setheading(90)
-        meche['jogador'].fd(PIXEIS_MOVIMENTO)
+        meche['jogador'].fd(MOVE_PIXELS)
     guarda_movimento(meche)
 
 def jogador_baixo(estado_jogo, jogador):
     meche = estado_jogo[jogador]
-    if(meche['direcao_y'] > -(ALTURA_JANELA/2) + PIXEIS_MOVIMENTO):
+    if(meche['direcao_y'] > -(WINDOW_HEIGHT/2) + MOVE_PIXELS):
         meche['jogador'].setheading(-90)
-        meche['jogador'].fd(PIXEIS_MOVIMENTO)
+        meche['jogador'].fd(MOVE_PIXELS)
     guarda_movimento(meche)
     
 def jogador_direita(estado_jogo, jogador):
     meche = estado_jogo[jogador]
-    if(jogador == 'jogador_azul' and meche['direcao_x'] < (LARGURA_JANELA/2)):
+    if(jogador == 'jogador_azul' and meche['direcao_x'] < (WINDOW_WIDTH/2)):
         meche['jogador'].setheading(0)
-        meche['jogador'].fd(PIXEIS_MOVIMENTO)
+        meche['jogador'].fd(MOVE_PIXELS)
     if(jogador == 'jogador_vermelho' and meche['direcao_x'] < 0):
         meche['jogador'].setheading(0)
-        meche['jogador'].fd(PIXEIS_MOVIMENTO)
+        meche['jogador'].fd(MOVE_PIXELS)
     guarda_movimento(meche)
 
 def jogador_esquerda(estado_jogo, jogador):
     meche = estado_jogo[jogador]
     if(jogador == 'jogador_azul' and meche['direcao_x'] > 0):
         meche['jogador'].setheading(180)
-        meche['jogador'].fd(PIXEIS_MOVIMENTO)
-    if(jogador == 'jogador_vermelho' and meche['direcao_x'] > -(LARGURA_JANELA/2)):
+        meche['jogador'].fd(MOVE_PIXELS)
+    if(jogador == 'jogador_vermelho' and meche['direcao_x'] > -(WINDOW_WIDTH/2)):
         meche['jogador'].setheading(180)
-        meche['jogador'].fd(PIXEIS_MOVIMENTO)
+        meche['jogador'].fd(MOVE_PIXELS)
     guarda_movimento(meche)
 
 def vai_para(x,y, desenha):
@@ -66,17 +54,17 @@ def vai_para(x,y, desenha):
 def baliza(desenha):
     for i in range (3):
         if(i == 1):
-            desenha.forward(LADO_MAIOR_AREA)
+            desenha.forward(GOAL_LARGE_SIDE)
         else:
-            desenha.forward(LADO_MENOR_AREA)
+            desenha.forward(GOAL_SMALL_SIDE)
         desenha.left(90)
 
 def linhas(desenha):
-    vai_para(-(LARGURA_JANELA/2), -(ALTURA_JANELA/2), desenha)
+    vai_para(-(WINDOW_WIDTH/2), -(WINDOW_HEIGHT/2), desenha)
     for i in range (2):
-        desenha.forward(ALTURA_JANELA)
+        desenha.forward(WINDOW_HEIGHT)
         desenha.right(90)
-        desenha.forward(LARGURA_JANELA )
+        desenha.forward(WINDOW_WIDTH )
         desenha.right(90) 
 
 def desenha_linhas_campo():
@@ -85,25 +73,25 @@ def desenha_linhas_campo():
     desenha.pensize(DEFAULT_TURTLE_SCALE + 2)  
     t.hideturtle()
 
-    vai_para(0, -RAIO_MEIO_CAMPO, desenha)
-    desenha.circle(RAIO_MEIO_CAMPO)
+    vai_para(0, -CENTER_RADIUS, desenha)
+    desenha.circle(CENTER_RADIUS)
 
-    vai_para(0, -(ALTURA_JANELA/2), desenha)
+    vai_para(0, -(WINDOW_HEIGHT/2), desenha)
     desenha.setheading(90)
-    desenha.forward(ALTURA_JANELA)
+    desenha.forward(WINDOW_HEIGHT)
 
-    vai_para(-(LARGURA_JANELA/2), -START_POS_BALIZAS, desenha)
+    vai_para(-(WINDOW_WIDTH/2), -GOAL_POSITION, desenha)
     desenha.setheading(0)
     baliza(desenha)
 
-    vai_para((LARGURA_JANELA/2), START_POS_BALIZAS, desenha)
+    vai_para((WINDOW_WIDTH/2), GOAL_POSITION, desenha)
     desenha.setheading(180)
     baliza(desenha)
 
     linhas(desenha)
 
 def centra_bola(bola):
-    bola.setpos(BOLA_START_POS)
+    bola.setpos(BALL_START_POS)
     x = random.randrange(360)
     bola.setheading(x)
 
@@ -114,7 +102,7 @@ def criar_bola():
     bola.shape("circle")
     bola.color("black")
     centra_bola(bola)
-    bola.speed(PIXEIS_MOVIMENTO*1.2)
+    bola.speed(MOVE_PIXELS*1.2)
     dic_bola = {'bola': bola,'direcao_x': bola.xcor(), 'direcao_y': bola.ycor(), 'posicao_anterior': None}
 
     return dic_bola
@@ -126,7 +114,7 @@ def cria_jogador(x_pos_inicial, y_pos_inicial, cor):
     jogador.color(cor)
     jogador.penup()
     jogador.goto(x_pos_inicial, y_pos_inicial)
-    jogador.speed(PIXEIS_MOVIMENTO)
+    jogador.speed(MOVE_PIXELS)
     dic_jogador = {'jogador': jogador,'direcao_x': jogador.xcor(), 'direcao_y': jogador.ycor(), 'posicao_anterior': None}
 
     return dic_jogador
@@ -150,7 +138,7 @@ def cria_janela():
     window=t.Screen()
     window.title("FootBall Game")
     window.bgcolor("green")
-    window.setup(width = LARGURA_JANELA,height = ALTURA_JANELA)
+    window.setup(width = WINDOW_WIDTH,height = WINDOW_HEIGHT)
     window.tracer(0)
     return window
 
@@ -165,8 +153,8 @@ def cria_quadro_resultados():
     return quadro
 
 def terminar_jogo(estado_jogo):
-    if(os.path.isfile('data/game-results/game_historic.csv')):
-        file = open('data/game-results/game_historic.csv', 'r+')
+    if(os.path.isfile(GAME_HIST_PATH)):
+        file = open(GAME_HIST_PATH, 'r+')
         lista = file.readlines()
         if(len(lista) == 0):
             file.write("NJogo,JogadorVermelho,JogadorAzul\n")
@@ -174,7 +162,7 @@ def terminar_jogo(estado_jogo):
         else: 
             file.write(f"{len(lista)},{estado_jogo['pontuacao_jogador_vermelho']},{estado_jogo['pontuacao_jogador_azul']}\n")
     else:
-        file = open('data/game-results/game_historic.csv', 'w')
+        file = open(GAME_HIST_PATH, 'w')
         file.write("NJogo,JogadorVermelho,JogadorAzul\n")
         file.write(f"1,{estado_jogo['pontuacao_jogador_vermelho']},{estado_jogo['pontuacao_jogador_azul']}\n")
     file.close()
@@ -199,8 +187,8 @@ def setup(estado_jogo, jogar):
         estado_jogo['quadro'] = quadro
     desenha_linhas_campo()
     bola = criar_bola()
-    jogador_vermelho = cria_jogador(-((ALTURA_JANELA / 2) + LADO_MENOR_AREA), 0, "red")
-    jogador_azul = cria_jogador(((ALTURA_JANELA / 2) + LADO_MENOR_AREA), 0, "blue")
+    jogador_vermelho = cria_jogador(-((WINDOW_HEIGHT / 2) + GOAL_SMALL_SIDE), 0, "red")
+    jogador_azul = cria_jogador(((WINDOW_HEIGHT / 2) + GOAL_SMALL_SIDE), 0, "blue")
     estado_jogo['janela'] = janela
     estado_jogo['bola'] = bola
     estado_jogo['jogador_vermelho'] = jogador_vermelho
@@ -219,10 +207,10 @@ def movimenta_bola(estado_jogo):
 def verifica_colisoes_ambiente(estado_jogo):
     ball = estado_jogo['bola']
     coordenada = ball['bola'].heading()
-    if ball['direcao_x'] < -(LARGURA_JANELA/2) or ball['direcao_x'] > (LARGURA_JANELA/2):
+    if ball['direcao_x'] < -(WINDOW_WIDTH/2) or ball['direcao_x'] > (WINDOW_WIDTH/2):
         ball['bola'].setheading(180-coordenada)
 
-    if ball['direcao_y'] < -(ALTURA_JANELA/2) or ball['direcao_y'] > (ALTURA_JANELA/2):
+    if ball['direcao_y'] < -(WINDOW_HEIGHT/2) or ball['direcao_y'] > (WINDOW_HEIGHT/2):
         ball['bola'].setheading(-coordenada)
 
 #Função que cria/edita o ficheiro que será necessario para o var e o ficheiro necessario para o menu
@@ -236,14 +224,14 @@ def faz_ficheiro(estado_jogo):
         file.write(f"{estado_jogo['var']['jogador_azul']}\n")
         file.close()
     
-    if(os.path.isfile('data/game-titles/titles.txt')):
+    if(os.path.isfile(GAME_TITLES_PATH)):
         if((pointv == 0 and pointa == 1) or (pointv == 1 and pointa == 0)):
-            file = open('data/game-titles/titles.txt', 'w')
+            file = open(GAME_TITLES_PATH, 'w')
         else:
-            file = open('data/game-titles/titles.txt', 'a') 
+            file = open(GAME_TITLES_PATH, 'a') 
         file.write(f"{nome_arquivo}\n")
     else:
-        file = open('data/game-titles/titles.txt', 'w')
+        file = open(GAME_TITLES_PATH, 'w')
         file.write(f"{nome_arquivo}\n")
     file.close()
 
@@ -257,7 +245,7 @@ def posicao(estado_jogo, x_pos_inicial, y_pos_inicial):
 #Função que troca a cor do campo e da bola sempre que há um golo
 def troca(estado_jogo):
     pygame.init()
-    arquivo_palmas = 'data/sounds/whistle.mp3'
+    arquivo_palmas = GAME_SOUND_PATH
     som = pygame.mixer.Sound(arquivo_palmas)
 
     som.play()
@@ -289,13 +277,13 @@ def troca(estado_jogo):
 def verifica_golo_jogador_vermelho(estado_jogo):
     ball = estado_jogo['bola']
     
-    if (ball['direcao_x'] >= LARGURA_JANELA/2 and (ball['direcao_y'] >= -START_POS_BALIZAS and ball['direcao_y'] <= START_POS_BALIZAS)):
+    if (ball['direcao_x'] >= WINDOW_WIDTH/2 and (ball['direcao_y'] >= -GOAL_POSITION and ball['direcao_y'] <= GOAL_POSITION)):
         estado_jogo['pontuacao_jogador_vermelho'] += 1
         update_board(estado_jogo)
         centra_bola(ball['bola'])
         faz_ficheiro(estado_jogo)
         troca(estado_jogo)
-        posicao(estado_jogo, ((ALTURA_JANELA / 2) + LADO_MENOR_AREA), 0)
+        posicao(estado_jogo, ((WINDOW_HEIGHT / 2) + GOAL_SMALL_SIDE), 0)
         estado_jogo['var'] = {
         'bola' : "",
         'jogador_vermelho' : "",
@@ -305,13 +293,13 @@ def verifica_golo_jogador_vermelho(estado_jogo):
 def verifica_golo_jogador_azul(estado_jogo):
     ball = estado_jogo['bola']
     
-    if (ball['direcao_x'] <= -LARGURA_JANELA/2 and (ball['direcao_y'] >= -START_POS_BALIZAS and ball['direcao_y'] <= START_POS_BALIZAS)):
+    if (ball['direcao_x'] <= -WINDOW_WIDTH/2 and (ball['direcao_y'] >= -GOAL_POSITION and ball['direcao_y'] <= GOAL_POSITION)):
         estado_jogo['pontuacao_jogador_azul'] += 1
         update_board(estado_jogo)
         centra_bola(ball['bola'])
         faz_ficheiro(estado_jogo)
         troca(estado_jogo)
-        posicao(estado_jogo, ((ALTURA_JANELA / 2) + LADO_MENOR_AREA), 0)
+        posicao(estado_jogo, ((WINDOW_HEIGHT / 2) + GOAL_SMALL_SIDE), 0)
         estado_jogo['var'] = {
         'bola' : "",
         'jogador_vermelho' : "",
@@ -326,7 +314,7 @@ def verifica_toque_jogador_azul(estado_jogo):
     ball = estado_jogo['bola']['bola']
     jogador_azul = estado_jogo['jogador_azul']['jogador']
     
-    if ball.distance(jogador_azul) < RAIO_BOLA + RAIO_JOGADOR:
+    if ball.distance(jogador_azul) < BALL_RADIUS + PLAYER_RADIUS:
         novo_cabeceamento = 180 + ball.towards(jogador_azul)
         ball.setheading(novo_cabeceamento)
 
@@ -334,7 +322,7 @@ def verifica_toque_jogador_vermelho(estado_jogo):
     ball = estado_jogo['bola']['bola']
     jogador_vermelho = estado_jogo['jogador_vermelho']['jogador']
     
-    if ball.distance(jogador_vermelho) < RAIO_BOLA + RAIO_JOGADOR:
+    if ball.distance(jogador_vermelho) < BALL_RADIUS + PLAYER_RADIUS:
         novo_cabeceamento = 180 + ball.towards(jogador_vermelho)
         ball.setheading(novo_cabeceamento)
 

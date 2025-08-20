@@ -13,7 +13,14 @@ MOVE_PIXELS = 90
 
 GOAL_LARGE_SIDE = WINDOW_HEIGHT / 3
 GOAL_SMALL_SIDE = 50
+
 CENTER_RADIUS = GOAL_LARGE_SIDE / 2
 GOAL_POSITION = WINDOW_HEIGHT / 6
 
 BALL_START_POS = (5, 5)
+
+# File paths
+
+GAME_HIST_PATH = 'data/game-results/game_historic.csv'
+GAME_TITLES_PATH = 'data/game-titles/titles.txt'
+GAME_SOUND_PATH = 'assets/sounds/whistle.mp3'
