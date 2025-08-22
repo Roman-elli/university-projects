@@ -14,4 +14,4 @@ I made this project in my first year of the university and is a simple version o
 Make sure you have Python 3 installed.
 
 1. Clone this repository.
-2. Run the script with Python: python snake.py
+2. Run the script with Python: python main.py

@@ -6,4 +6,4 @@ SNAKE_SHAPE = 'square'
 SPEED = 0.12
 
 # File path config
-HIGH_SCORES_FILE_PATH = 'data/high_scores.txt'
+HIGH_SCORES_FILE_PATH = '../data/high_scores.txt'
