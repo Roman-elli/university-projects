@@ -5,14 +5,14 @@ from game.game_setup import *
 
 def le_replay(nome_ficheiro):
     coordenadas = open(f"../data/game-record/{nome_ficheiro}", 'r')
-    bola = coordenadas.readline()
-    jogador_vermelho = coordenadas.readline()
-    jogador_azul = coordenadas.readline()
+    ball = coordenadas.readline()
+    red_player = coordenadas.readline()
+    blue_player = coordenadas.readline()
     
     dici ={}
-    dici["bola"] = lista(bola)
-    dici["jogador_vermelho"] = lista(jogador_vermelho)
-    dici["jogador_azul"] = lista(jogador_azul)
+    dici["ball"] = lista(ball)
+    dici["red_player"] = lista(red_player)
+    dici["blue_player"] = lista(blue_player)
 
     return dici
 
@@ -35,16 +35,16 @@ def main():
             print(i+1, "->", linhas[i])
         x = int(input("Digite o replay que deseja ver: "))
 
-    estado_jogo = init_state()
-    setup(estado_jogo, False)
+    match_state = init_state()
+    setup(match_state, False)
    
     replay = le_replay(linhas[x-1])
-    for i in range(len(replay['bola'])):
-        estado_jogo['janela'].update()
-        estado_jogo['jogador_vermelho']['jogador'].setpos(replay['jogador_vermelho'][i])
-        estado_jogo['jogador_azul']['jogador'].setpos(replay['jogador_azul'][i])
-        estado_jogo['bola']['bola'].setpos(replay['bola'][i])
-    estado_jogo['janela'].exitonclick()
+    for i in range(len(replay['ball'])):
+        match_state['window'].update()
+        match_state['red_player']['jogador'].setpos(replay['red_player'][i])
+        match_state['blue_player']['jogador'].setpos(replay['blue_player'][i])
+        match_state['ball']['ball'].setpos(replay['ball'][i])
+    match_state['window'].exitonclick()
 
 if __name__ == '__main__':
     main()

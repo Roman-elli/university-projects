@@ -1,11 +1,11 @@
 import turtle as t
 
-def cria_quadro_resultados():
-    quadro=t.Turtle()
-    quadro.speed(0)
-    quadro.color("Blue")
-    quadro.penup()
-    quadro.hideturtle()
-    quadro.goto(0,260)
-    quadro.write("Player A: 0\t\tPlayer B: 0 ", align="center", font=('Monaco',24,"normal"))
-    return quadro
+def create_score():
+    score_board=t.Turtle()
+    score_board.speed(0)
+    score_board.color("Blue")
+    score_board.penup()
+    score_board.hideturtle()
+    score_board.goto(0,260)
+    score_board.write("Player A: 0\t\tPlayer B: 0 ", align="center", font=('Monaco',24,"normal"))
+    return score_board

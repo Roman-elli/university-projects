@@ -6,7 +6,7 @@ import random
 from config import *
 from utils.turtle_functions import *
 
-def cria_janela():
+def draw_window():
     window=t.Screen()
     window.title("FootBall Game")
     window.bgcolor("green")
@@ -30,7 +30,7 @@ def linhas(desenha):
         desenha.forward(WINDOW_WIDTH )
         desenha.right(90) 
 
-def desenha_linhas_campo():
+def draw_board_lines():
     desenha = t.Turtle()
     desenha.color("White")
     desenha.pensize(DEFAULT_TURTLE_SCALE + 2)  
@@ -53,11 +53,11 @@ def desenha_linhas_campo():
 
     linhas(desenha)
 
-def update_board(estado_jogo):
-    estado_jogo['quadro'].clear()
-    estado_jogo['quadro'].write("Player A: {}\t\tPlayer B: {} ".format(estado_jogo['pontuacao_jogador_vermelho'], estado_jogo['pontuacao_jogador_azul']),align="center",font=('Monaco',24,"normal"))
+def update_board(match_state):
+    match_state['score_board'].clear()
+    match_state['score_board'].write("Player A: {}\t\tPlayer B: {} ".format(match_state['red_player_points'], match_state['blue_player_points']),align="center",font=('Monaco',24,"normal"))
 
-def troca(estado_jogo):
+def troca(match_state):
     pygame.init()
     som = pygame.mixer.Sound(GAME_SOUND_PATH)
 
@@ -65,23 +65,23 @@ def troca(estado_jogo):
     time.sleep(som.get_length())
     pygame.quit()
 
-    window = estado_jogo['janela']
-    bola = estado_jogo['bola']['bola']
+    window = match_state['window']
+    ball = match_state['ball']['ball']
     x = random.randint(0, 4)
 
     if(x == 0):
         window.bgcolor("black")
-        bola.color("white")
+        ball.color("white")
     if(x == 1):
         window.bgcolor("gold")
-        bola.color("black")
+        ball.color("black")
     if(x == 2):
         window.bgcolor("gray")
-        bola.color("green")
+        ball.color("green")
     if(x == 3):
         window.bgcolor("green")
-        bola.color("black")
+        ball.color("black")
     if(x == 4):
         window.bgcolor("purple")
-        bola.color("gold")
+        ball.color("gold")
 

@@ -1,7 +1,7 @@
 import turtle as t
 
-def movimenta_bola(estado_jogo):
-    ball = estado_jogo['bola']
-    ball['bola'].forward(1)
-    ball['direcao_x'] = ball['bola'].xcor()
-    ball['direcao_y'] = ball['bola'].ycor()
+def ball_move(match_state):
+    ball = match_state['ball']
+    ball['ball'].forward(1)
+    ball['direcao_x'] = ball['ball'].xcor()
+    ball['direcao_y'] = ball['ball'].ycor()

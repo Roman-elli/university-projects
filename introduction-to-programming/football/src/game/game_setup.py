@@ -9,41 +9,40 @@ from game.player_moves import *
 from utils.file import *
 
 def init_state():
-    estado_jogo = {}
-    estado_jogo['bola'] = None
-    estado_jogo['jogador_vermelho'] = None
-    estado_jogo['jogador_azul'] = None
-    estado_jogo['var'] = {
-        'bola' : "",
-        'jogador_vermelho' : "",
-        'jogador_azul' : "",
+    match_state = {}
+    match_state['ball'] = None
+    match_state['red_player'] = None
+    match_state['blue_player'] = None
+    match_state['var'] = {
+        'ball' : "",
+        'red_player' : "",
+        'blue_player' : "",
     }
-    estado_jogo['pontuacao_jogador_vermelho'] = 0
-    estado_jogo['pontuacao_jogador_azul'] = 0
-    estado_jogo['lista_jogos'] = {}
-    return estado_jogo
+    match_state['red_player_points'] = 0
+    match_state['blue_player_points'] = 0
+    match_state['game_list'] = {}
+    return match_state
 
 
-def setup(estado_jogo, jogar):
-    janela = cria_janela()
-    janela.listen()
-    if jogar:
-        janela.onkeypress(functools.partial(jogador_cima, estado_jogo, 'jogador_vermelho') ,'w')
-        janela.onkeypress(functools.partial(jogador_baixo, estado_jogo, 'jogador_vermelho') ,'s')
-        janela.onkeypress(functools.partial(jogador_esquerda, estado_jogo, 'jogador_vermelho') ,'a')
-        janela.onkeypress(functools.partial(jogador_direita, estado_jogo, 'jogador_vermelho') ,'d')
-        janela.onkeypress(functools.partial(jogador_cima, estado_jogo, 'jogador_azul') ,'Up')
-        janela.onkeypress(functools.partial(jogador_baixo, estado_jogo, 'jogador_azul') ,'Down')
-        janela.onkeypress(functools.partial(jogador_esquerda, estado_jogo, 'jogador_azul') ,'Left')
-        janela.onkeypress(functools.partial(jogador_direita, estado_jogo, 'jogador_azul') ,'Right')
-        janela.onkeypress(functools.partial(terminar_jogo, estado_jogo) ,'Escape')
-        quadro = cria_quadro_resultados()
-        estado_jogo['quadro'] = quadro
-    desenha_linhas_campo()
-    bola = criar_bola()
-    jogador_vermelho = cria_jogador(-((WINDOW_HEIGHT / 2) + GOAL_SMALL_SIDE), 0, "red")
-    jogador_azul = cria_jogador(((WINDOW_HEIGHT / 2) + GOAL_SMALL_SIDE), 0, "blue")
-    estado_jogo['janela'] = janela
-    estado_jogo['bola'] = bola
-    estado_jogo['jogador_vermelho'] = jogador_vermelho
-    estado_jogo['jogador_azul'] = jogador_azul
+def setup(match_state, playable):
+    window = draw_window()
+    window.listen()
+    if playable:
+        window.onkeypress(functools.partial(move_up, match_state, 'red_player') ,'w')
+        window.onkeypress(functools.partial(move_down, match_state, 'red_player') ,'s')
+        window.onkeypress(functools.partial(move_left, match_state, 'red_player') ,'a')
+        window.onkeypress(functools.partial(move_right, match_state, 'red_player') ,'d')
+        window.onkeypress(functools.partial(move_up, match_state, 'blue_player') ,'Up')
+        window.onkeypress(functools.partial(move_down, match_state, 'blue_player') ,'Down')
+        window.onkeypress(functools.partial(move_left, match_state, 'blue_player') ,'Left')
+        window.onkeypress(functools.partial(move_right, match_state, 'blue_player') ,'Right')
+        window.onkeypress(functools.partial(finish_game, match_state) ,'Escape')
+        match_state['score_board'] = create_score()
+    draw_board_lines()
+    ball = draw_ball()
+    red_player = draw_player(-((WINDOW_HEIGHT / 2) + GOAL_SMALL_SIDE), 0, "red")
+    blue_player = draw_player(((WINDOW_HEIGHT / 2) + GOAL_SMALL_SIDE), 0, "blue")
+    match_state['window'] = window
+    match_state['ball'] = ball
+    match_state['red_player'] = red_player
+    match_state['blue_player'] = blue_player
