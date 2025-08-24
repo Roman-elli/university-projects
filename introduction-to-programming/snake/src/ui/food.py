@@ -2,6 +2,7 @@ import turtle as turtle
 from config import *
 from random import randint
 
+# Create food at random position
 def create_food(state):
     food = turtle.Turtle()
     food.turtlesize(DEFAULT_SIZE / 25)

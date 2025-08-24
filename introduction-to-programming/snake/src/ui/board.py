@@ -62,7 +62,3 @@ def background(state):
             bubble.shape('circle')
             bubble.turtlesize(DEFAULT_SIZE // 15)
             bubble.fillcolor('cyan')
-
-
-# Create food at random position
-
