@@ -14,55 +14,55 @@ def draw_window():
     window.tracer(0)
     return window
 
-def baliza(desenha):
+def draw_goalpost(draw):
     for i in range (3):
         if(i == 1):
-            desenha.forward(GOAL_LARGE_SIDE)
+            draw.forward(GOAL_LARGE_SIDE)
         else:
-            desenha.forward(GOAL_SMALL_SIDE)
-        desenha.left(90)
+            draw.forward(GOAL_SMALL_SIDE)
+        draw.left(90)
 
-def linhas(desenha):
-    vai_para(-(WINDOW_WIDTH/2), -(WINDOW_HEIGHT/2), desenha)
+def board_lines(draw):
+    turtle_go_to(-(WINDOW_WIDTH/2), -(WINDOW_HEIGHT/2), draw)
     for i in range (2):
-        desenha.forward(WINDOW_HEIGHT)
-        desenha.right(90)
-        desenha.forward(WINDOW_WIDTH )
-        desenha.right(90) 
+        draw.forward(WINDOW_HEIGHT)
+        draw.right(90)
+        draw.forward(WINDOW_WIDTH )
+        draw.right(90) 
 
 def draw_board_lines():
-    desenha = t.Turtle()
-    desenha.color("White")
-    desenha.pensize(DEFAULT_TURTLE_SCALE + 2)  
+    draw = t.Turtle()
+    draw.color("White")
+    draw.pensize(DEFAULT_TURTLE_SCALE + 2)  
     t.hideturtle()
 
-    vai_para(0, -CENTER_RADIUS, desenha)
-    desenha.circle(CENTER_RADIUS)
+    turtle_go_to(0, -CENTER_RADIUS, draw)
+    draw.circle(CENTER_RADIUS)
 
-    vai_para(0, -(WINDOW_HEIGHT/2), desenha)
-    desenha.setheading(90)
-    desenha.forward(WINDOW_HEIGHT)
+    turtle_go_to(0, -(WINDOW_HEIGHT/2), draw)
+    draw.setheading(90)
+    draw.forward(WINDOW_HEIGHT)
 
-    vai_para(-(WINDOW_WIDTH/2), -GOAL_POSITION, desenha)
-    desenha.setheading(0)
-    baliza(desenha)
+    turtle_go_to(-(WINDOW_WIDTH/2), -GOAL_POSITION, draw)
+    draw.setheading(0)
+    draw_goalpost(draw)
 
-    vai_para((WINDOW_WIDTH/2), GOAL_POSITION, desenha)
-    desenha.setheading(180)
-    baliza(desenha)
+    turtle_go_to((WINDOW_WIDTH/2), GOAL_POSITION, draw)
+    draw.setheading(180)
+    draw_goalpost(draw)
 
-    linhas(desenha)
+    board_lines(draw)
 
 def update_board(match_state):
     match_state['score_board'].clear()
     match_state['score_board'].write("Player A: {}\t\tPlayer B: {} ".format(match_state['red_player_points'], match_state['blue_player_points']),align="center",font=('Monaco',24,"normal"))
 
-def troca(match_state):
+def pick_aleatory_board(match_state):
     pygame.init()
-    som = pygame.mixer.Sound(GAME_SOUND_PATH)
+    sound_file = pygame.mixer.Sound(GAME_SOUND_PATH)
 
-    som.play()
-    time.sleep(som.get_length())
+    sound_file.play()
+    time.sleep(sound_file.get_length())
     pygame.quit()
 
     window = match_state['window']

@@ -1,11 +1,11 @@
 import turtle as t
 from config import *
 
-def guarda_movimento(dic):
-    dic['direcao_x'] = dic['jogador'].xcor()
-    dic['direcao_y'] = dic['jogador'].ycor()
+def save_movement(dic):
+    dic['x_coordinate'] = dic['player'].xcor()
+    dic['y_coordinate'] = dic['player'].ycor()
 
-def vai_para(x,y, desenha):
-    desenha.penup()
-    desenha.goto(x,y)
-    desenha.pendown()
+def turtle_go_to(x,y, draw):
+    draw.penup()
+    draw.goto(x,y)
+    draw.pendown()

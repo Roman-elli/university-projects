@@ -19,9 +19,9 @@ def main():
         check_board_collisions(match_state)
         check_goal(match_state)
         if match_state['red_player'] is not None:
-            verifica_toque_jogador_azul(match_state)
+            check_blue_collisions(match_state)
         if match_state['blue_player'] is not None:
-            verifica_toque_jogador_vermelho(match_state)
+            check_red_collisions(match_state)
 
 if __name__ == '__main__':
     main()
