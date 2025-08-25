@@ -20,3 +20,8 @@ Each folder has its own README with more detailed documentation.
 - 🐍 [**Snake Game**](introduction-to-programming/snake)  
   Language: **Python**  
   → A dynamic version of the classic **Snake Game**, built with Python’s `turtle`, featuring scoring and high score saving.  
+
+## Procedural Programming
+- 🚗 [**CarWash Manager**] (procedural-programming)
+  Language: **C**  
+  → IN DEVELOPMENT

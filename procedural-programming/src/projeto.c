@@ -500,7 +500,6 @@ void atualizafila(Sistema *lista, Pessoa atual){
         }
 }
 
-
 void executa(Sistema *listaR, Sistema *listaP){
         Sistema *aux = listaR->prox;
         if(!vazia(listaR)){
