@@ -2,8 +2,51 @@
 #include <stdio.h>
 #include "../include/projeto.h"
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
-void menu(){
+void menu(Sistema *filaR, Sistema *filaP){
+        /* Abertura */
+    printf("      ____      --------------------------------------------------------------------------------       ____     \n");
+    printf("   __/  | \\__   | Bem vindo ao Manutenlava!! Reserve lavagens e manunteções de forma prática!! |    __/ |  \\__   \n");
+    printf("  '--0----0--'  --------------------------------------------------------------------------------   '--0----0--'  \n\n");
+    
+    /* Definir tempo de estudo. */
+    int x = 1;
+    Time atual;
+    while(x){
+        printf("Digite a data em que deseja iniciar a aplicação:\n\nAno >>> ");
+        atual.ano = checkint();
+        if(atual.ano >= 0 && bissexto(atual.ano)){
+            printf("Mês >>> ");
+            atual.mes = checkint();
+            if (atual.mes >=1 && atual.mes <= 12){
+            printf("Dia >>> ");
+            atual.dia = checkint();
+            if(verificadia(atual.dia,atual.mes,1)) x = 0;
+            else printf("\n*** Dia inválido ***\n");
+            }
+            else printf("\n*** Mês inválido ***\n");
+        }
+        else if(atual.ano >= 0 && !bissexto(atual.ano)){
+            printf("Mês >>> ");
+            atual.mes = checkint();
+            if (atual.mes >=1 && atual.mes <= 12){
+            printf("Dia >>> ");
+            atual.dia = checkint();
+            if(verificadia(atual.dia,atual.mes,0)) x = 0;
+            else printf("\n*** Dia inválido ***\n");
+            }
+            else printf("\n*** Mês inválido ***\n");
+        }
+        else printf("\n*** Ano inválido ***\n");
+    }
+    
+    /* Seleção das funcionalidades */
+    x = 1;
+    int option;
+
+    while(x){
         printf("\nOpções disponíveis:\n");
         printf("1: Reservar lavagem ou manutenção.\n");
         printf("2: Cancelar uma reserva/Pré-reserva.\n");
@@ -14,7 +57,108 @@ void menu(){
         printf("7: Carregar listas.\n");
         printf("8: Salvar listas.\n");
         printf("9: Sair do programa.\n");
-        printf("\nDigite a opção que deseja: ");        
+        printf("\nDigite a opção que deseja: ");     
+        option = checkint();
+
+        switch(option){
+            case 1:
+                registra(filaR,filaP,atual);
+                break;
+            case 2:
+                retira(filaR,filaP, atual);
+                break;
+            case 3:
+                printf("\nLista de reservas em ordem crescente: \n\n");
+                imprime(filaR);
+                printf("\nLista de pré-reservas em ordem crescente: \n\n");
+                imprime(filaP);
+                break;
+            case 4:
+                char nome[MAX];
+                printf("\nDigite o nome pessoa que pretende aceder as reservas e pré-reservas:\n>>> ");
+                fgets(nome,MAX,stdin);
+                nome[strcspn(nome, "\n")] = '\0';
+                ordena(filaR,nome);
+                ordena(filaP,nome);
+                break;
+            case 5:
+                printf("\nOpções disponíveis:\n\n");
+                int choice = 0;
+                while(choice != 3){
+                    printf("1: Executar tarefa mais recente.\n");
+                    printf("2: Alterar tempo atual.\n");
+                    printf("3: Retornar ao menu.\n\n>>> ");
+                    choice = checkint();
+                    if(choice == 1){
+                        if(!vazia(filaR)){
+                        executa(filaR,filaP);
+                        printf("\nReserva mais recentes executada.\n");
+                        }else printf("\n*** Não há nenhuma reserva a ser executada no momento. ***\n");
+                        choice = 3;
+                    }
+                    if(choice == 2){
+                        int y = 1;
+                        while(y){
+                            printf("\nPor favor, preencha os dados da nova data em interesse para que atualizemos as listas.\n");
+                            printf("Ano >>> ");
+                            atual.ano = checkint();;
+                            if(atual.ano >= 0 && bissexto(atual.ano)){
+                                printf("Mês >>> ");
+                                atual.mes = checkint();
+                                if (atual.mes >=1 && atual.mes <= 12){
+                                    printf("Dia >>> ");
+                                    atual.dia = checkint();
+                                if(verificadia(atual.dia,atual.mes,1)) y = 0;
+                                else printf("Dia inválido.\n");
+                                }
+                                else printf("Mês inválido.\n");
+                            }
+                            else if(atual.ano >= 0 && !bissexto(atual.ano)){
+                                printf("Mês >>> ");
+                                atual.mes = checkint();
+                                if (atual.mes >=1 && atual.mes <= 12){
+                                    printf("Dia >>> ");
+                                    atual.dia = checkint();
+                                if(verificadia(atual.dia,atual.mes,0)) y = 0;
+                                else printf("Dia inválido.\n");
+                                }
+                                else printf("Mês inválido.\n");
+                            }
+                            else printf("Ano inválido.\n");
+                        }
+                        atualizatempo(filaP, atual);
+                        atualizatempo(filaR,atual);
+                        printf("\nTempo atualizado com sucesso!!\n");
+                        choice = 3;
+                    }
+                }
+                break;
+            case 6:
+                verificafila(filaP,filaR);
+                printf("\n*** Fila de espera atualizada. ***\n");
+                break;
+            case 7:
+                carrega(filaR, "ListaR.txt");
+                if(vazia(filaP)) carrega(filaP, "ListaP.txt");
+                atualizatempo(filaP, atual);
+                atualizatempo(filaR,atual);
+                printf("\nListas carregadas com sucesso!! Marcações registradas em tempo anterior ao atual e que não possuem horários disponíveis não foram inseridas.\n");
+                break;
+            case 8:
+                save(filaR,"ListaR.txt");
+                save(filaP,"ListaP.txt");
+                printf("\nListas salvas corretamente!!\n");
+                break;
+            case 9: 
+                x = 0;
+                break;
+            default: printf("\nOpção inexistente. Digite novamente a opção que deseja.\n\n");
+        }
+    }
+
+    printf("\n      ____     ---------------------------------------------------------       ____     \n");
+    printf("   __/  | \\__  | Obrigado por utilizar o Manutenlava!!! Volte sempre!! |    __/ |  \\__   \n");
+    printf("  '--0----0--' ---------------------------------------------------------   '--0----0--'  \n\n");   
 }
 
 int bissexto(int x){
@@ -512,10 +656,15 @@ void executa(Sistema *listaR, Sistema *listaP){
 }
 
 void carrega(Sistema *lista, const char *ficheiro){
-        /* Abre o arquivo para leitura */
-        FILE *arquivo = fopen(ficheiro, "r");
+
+        char caminho[128];
+        snprintf(caminho, sizeof(caminho), "data/%s", ficheiro);
+        FILE *arquivo = fopen(caminho, "r");
+        
         if (arquivo == NULL) {
-                printf("Erro ao abrir o arquivo de reservas.\n");
+                if(strcmp(ficheiro, "ListaR.txt") == 0) printf("** No reservations on database. **\n");
+                else if(strcmp(ficheiro, "ListaP.txt") == 0) printf("** No pre-reservations on database. **\n");
+                else printf("** Error opening save files. **\n");
                 return;
         }
 
@@ -531,22 +680,26 @@ void carrega(Sistema *lista, const char *ficheiro){
 }
 
 void save(Sistema *lista, const char *ficheiro){
-    /* Abre o arquivo para escrita */
-    FILE *arquivo = fopen(ficheiro, "w");
+        /* Abre o arquivo para escrita */
+        mkdir("data", 0777);  // garante que a pasta exista
+        char caminho[128];
+        snprintf(caminho, sizeof(caminho), "data/%s", ficheiro);
 
-    if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo %s\n", ficheiro);
-        return;
-    }
-   
-    /* Percorre a lista e escreve dados no arquivo */
-    Sistema *atual = lista->prox;
-    while (atual != NULL) {
-        fprintf(arquivo, "%d %d %d %d %d %d %d", atual->usuario.work, atual->usuario.func, atual->usuario.ano, atual->usuario.mes, atual->usuario.dia, atual->usuario.hora, atual->usuario.min);
-        fprintf(arquivo, "%s\n", atual->usuario.nome);
-        atual = atual->prox;
-    }
-    fclose(arquivo);
+        FILE *arquivo = fopen(caminho, "w");
+
+        if (arquivo == NULL) {
+                printf("Erro ao abrir o arquivo %s\n", caminho);
+                return;
+        }
+        
+        /* Percorre a lista e escreve dados no arquivo */
+        Sistema *atual = lista->prox;
+        while (atual != NULL) {
+                fprintf(arquivo, "%d %d %d %d %d %d %d", atual->usuario.work, atual->usuario.func, atual->usuario.ano, atual->usuario.mes, atual->usuario.dia, atual->usuario.hora, atual->usuario.min);
+                fprintf(arquivo, "%s\n", atual->usuario.nome);
+                atual = atual->prox;
+        }
+        fclose(arquivo);
 }
 
 void destroi(Sistema *fila){

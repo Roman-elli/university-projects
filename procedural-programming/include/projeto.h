@@ -22,7 +22,7 @@ typedef struct noFila{
     struct noFila *prox;    
 }Sistema;   
 
-void menu();                                        /* impressão do menu */
+void menu(Sistema *filaR, Sistema *filaP);                                        /* impressão do menu */
 int bissexto(int x);                                /* Verificação de ano bissexto */
 int verificadia(int dia, int mes, int ano);         /* Verifica se o dia inserido é válido */
 Sistema *cria();                                    /* Inicializa as listas */
