@@ -19,9 +19,11 @@ Each folder has its own README with more detailed documentation.
 
 - 🐍 [**Snake Game**](introduction-to-programming/snake)  
   Language: **Python**  
-  → A dynamic version of the classic **Snake Game**, built with Python’s `turtle`, featuring scoring and high score saving.  
+  → A dynamic version of the classic **Snake Game**, built with Python’s `turtle`, featuring scoring and high score saving. 
+   
+---
 
 ## Procedural Programming
-- 🚗 [**CarWash Manager**] (procedural-programming)
+- 🚗 [**CarWash Manager**](procedural-programming/carwash)  
   Language: **C**  
-  → IN DEVELOPMENT
+  → A **car wash and maintenance reservation system** that allows you to **create, list, cancel, execute, save, and load reservations**, including a waiting list and time validation.  
