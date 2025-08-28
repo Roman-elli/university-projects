@@ -4,13 +4,13 @@
 
 int main(){   
 
-    Sistema *filaR = cria();
-    Sistema *filaP = cria();
+    System *reservation_queue = create_queue();
+    System *pre_reservation_queue = create_queue();
     
-    menu(filaR, filaP);
+    print_menu(reservation_queue, pre_reservation_queue);
 
-    destroi(filaR);
-    destroi(filaP);
+    destroi(reservation_queue);
+    destroi(pre_reservation_queue);
 
     return 0;
 }

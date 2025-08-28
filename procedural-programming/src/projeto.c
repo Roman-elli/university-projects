@@ -6,163 +6,164 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-void menu(Sistema *filaR, Sistema *filaP){
-        /* Abertura */
-    printf("      ____      --------------------------------------------------------------------------------       ____     \n");
-    printf("   __/  | \\__   | Bem vindo ao Manutenlava!! Reserve lavagens e manunteções de forma prática!! |    __/ |  \\__   \n");
-    printf("  '--0----0--'  --------------------------------------------------------------------------------   '--0----0--'  \n\n");
-    
-    /* Definir tempo de estudo. */
+void print_menu(System *reservation_queue, System *pre_reservation_queue){
+        /* opening */
+    printf("      ____      -------------------------------------------------------------------------------      ____     \n");
+    printf("   __/  | \\__   | Welcome to ManuWash! Book car washes and maintenance services conveniently! |   __/ |  \\__   \n");
+    printf("  '--0----0--'  -------------------------------------------------------------------------------  '--0----0--'  \n\n");
+
+    /* define the real time moment */
     int x = 1;
-    Time atual;
+    Time app_present_time;
     while(x){
-        printf("Digite a data em que deseja iniciar a aplicação:\n\nAno >>> ");
-        atual.ano = checkint();
-        if(atual.ano >= 0 && bissexto(atual.ano)){
-            printf("Mês >>> ");
-            atual.mes = checkint();
-            if (atual.mes >=1 && atual.mes <= 12){
-            printf("Dia >>> ");
-            atual.dia = checkint();
-            if(verificadia(atual.dia,atual.mes,1)) x = 0;
-            else printf("\n*** Dia inválido ***\n");
+        printf("Which date do your want to run ManuWash:\n\nYear >>> ");
+        app_present_time.year = checkint();
+        if(app_present_time.year >= 0 && leap_year(app_present_time.year)){
+            printf("Month >>> ");
+            app_present_time.month = checkint();
+            if (app_present_time.month >=1 && app_present_time.month <= 12){
+            printf("Day >>> ");
+            app_present_time.day = checkint();
+            if(check_day(app_present_time.day,app_present_time.month,1)) x = 0;
+            else printf("\n*** Invalid Day ***\n");
             }
-            else printf("\n*** Mês inválido ***\n");
+            else printf("\n*** Invalid Month ***\n");
         }
-        else if(atual.ano >= 0 && !bissexto(atual.ano)){
-            printf("Mês >>> ");
-            atual.mes = checkint();
-            if (atual.mes >=1 && atual.mes <= 12){
-            printf("Dia >>> ");
-            atual.dia = checkint();
-            if(verificadia(atual.dia,atual.mes,0)) x = 0;
-            else printf("\n*** Dia inválido ***\n");
+        else if(app_present_time.year >= 0 && !leap_year(app_present_time.year)){
+            printf("Month >>> ");
+            app_present_time.month = checkint();
+            if (app_present_time.month >=1 && app_present_time.month <= 12){
+            printf("Day >>> ");
+            app_present_time.day = checkint();
+            if(check_day(app_present_time.day,app_present_time.month,0)) x = 0;
+            else printf("\n*** Invalid Day ***\n");
             }
-            else printf("\n*** Mês inválido ***\n");
+            else printf("\n*** Invalid Month ***\n");
         }
-        else printf("\n*** Ano inválido ***\n");
+        else printf("\n*** Invalid Year ***\n");
     }
     
-    /* Seleção das funcionalidades */
+    /* User interaction */
     x = 1;
     int option;
 
     while(x){
-        printf("\nOpções disponíveis:\n");
-        printf("1: Reservar lavagem ou manutenção.\n");
-        printf("2: Cancelar uma reserva/Pré-reserva.\n");
-        printf("3: Listar as reservas e as pré-reservas de lavagens e de manutenções ordenadas por data de forma crescente.\n");
-        printf("4: Listar as reservas e as pré-reservas de um cliente ordenadas por data de forma decrescente.\n");
-        printf("5: Opções para execução de tarefas.\n");
-        printf("6: Atualizar fila de espera.\n");
-        printf("7: Carregar listas.\n");
-        printf("8: Salvar listas.\n");
-        printf("9: Sair do programa.\n");
-        printf("\nDigite a opção que deseja: ");     
+        printf("\nAvailable options:\n");
+        printf("1: Book a wash or maintenance.\n");
+        printf("2: Cancel a booking/Pre-booking.\n");
+        printf("3: List bookings and pre-bookings for washes and maintenance sorted by date in ascending order.\n");
+        printf("4: List bookings and pre-bookings of a client sorted by date in descending order.\n");
+        printf("5: Options for task execution.\n");
+        printf("6: Update waiting list.\n");
+        printf("7: Load lists.\n");
+        printf("8: Save lists.\n");
+        printf("9: Exit program.\n");
+        printf("\nEnter the option you want: ");
+
         option = checkint();
 
         switch(option){
             case 1:
-                registra(filaR,filaP,atual);
+                book_service(reservation_queue,pre_reservation_queue,app_present_time);
                 break;
             case 2:
-                retira(filaR,filaP, atual);
+                cancel_service(reservation_queue,pre_reservation_queue, app_present_time);
                 break;
             case 3:
-                printf("\nLista de reservas em ordem crescente: \n\n");
-                imprime(filaR);
-                printf("\nLista de pré-reservas em ordem crescente: \n\n");
-                imprime(filaP);
+                printf("\nList of reservations in ascending order: \n\n");
+                print_queue(reservation_queue);
+                printf("\nList of pre-reservations in ascending order: \n\n");
+                print_queue(pre_reservation_queue);
                 break;
             case 4:
-                char nome[MAX];
-                printf("\nDigite o nome pessoa que pretende aceder as reservas e pré-reservas:\n>>> ");
-                fgets(nome,MAX,stdin);
-                nome[strcspn(nome, "\n")] = '\0';
-                ordena(filaR,nome);
-                ordena(filaP,nome);
+                char name[MAX];
+                printf("\nEnter the name of the person who wishes to access reservations and pre-reservations:\n>>> ");
+                fgets(name,MAX,stdin);
+                name[strcspn(name, "\n")] = '\0';
+                check_specific_user(reservation_queue,name);
+                check_specific_user(pre_reservation_queue,name);
                 break;
             case 5:
-                printf("\nOpções disponíveis:\n\n");
+                printf("\nAvailable options:\n\n");
                 int choice = 0;
                 while(choice != 3){
-                    printf("1: Executar tarefa mais recente.\n");
-                    printf("2: Alterar tempo atual.\n");
-                    printf("3: Retornar ao menu.\n\n>>> ");
+                    printf("1: Execute most recent task.\n");
+                    printf("2: Change app real time.\n");
+                    printf("3: Return to print_menu.\n\n>>> ");
                     choice = checkint();
                     if(choice == 1){
-                        if(!vazia(filaR)){
-                        executa(filaR,filaP);
-                        printf("\nReserva mais recentes executada.\n");
-                        }else printf("\n*** Não há nenhuma reserva a ser executada no momento. ***\n");
+                        if(!isEmpty(reservation_queue)){
+                        execute_service(reservation_queue,pre_reservation_queue);
+                        printf("\nMost recent reservation executed.\n");
+                        }else printf("\n*** There are no reservations to be executed at this time. ***\n");
                         choice = 3;
                     }
                     if(choice == 2){
                         int y = 1;
                         while(y){
-                            printf("\nPor favor, preencha os dados da nova data em interesse para que atualizemos as listas.\n");
-                            printf("Ano >>> ");
-                            atual.ano = checkint();;
-                            if(atual.ano >= 0 && bissexto(atual.ano)){
-                                printf("Mês >>> ");
-                                atual.mes = checkint();
-                                if (atual.mes >=1 && atual.mes <= 12){
-                                    printf("Dia >>> ");
-                                    atual.dia = checkint();
-                                if(verificadia(atual.dia,atual.mes,1)) y = 0;
-                                else printf("Dia inválido.\n");
+                            printf("\nPlease fill in the details of the new date you are interested in so that we can update the lists.\n");
+                            printf("Year >>> ");
+                            app_present_time.year = checkint();;
+                            if(app_present_time.year >= 0 && leap_year(app_present_time.year)){
+                                printf("Month >>> ");
+                                app_present_time.month = checkint();
+                                if (app_present_time.month >=1 && app_present_time.month <= 12){
+                                    printf("Day >>> ");
+                                    app_present_time.day = checkint();
+                                if(check_day(app_present_time.day,app_present_time.month,1)) y = 0;
+                                else printf("Invalid Day.\n");
                                 }
-                                else printf("Mês inválido.\n");
+                                else printf("Invalid Month.\n");
                             }
-                            else if(atual.ano >= 0 && !bissexto(atual.ano)){
-                                printf("Mês >>> ");
-                                atual.mes = checkint();
-                                if (atual.mes >=1 && atual.mes <= 12){
-                                    printf("Dia >>> ");
-                                    atual.dia = checkint();
-                                if(verificadia(atual.dia,atual.mes,0)) y = 0;
-                                else printf("Dia inválido.\n");
+                            else if(app_present_time.year >= 0 && !leap_year(app_present_time.year)){
+                                printf("Month >>> ");
+                                app_present_time.month = checkint();
+                                if (app_present_time.month >=1 && app_present_time.month <= 12){
+                                    printf("Day >>> ");
+                                    app_present_time.day = checkint();
+                                if(check_day(app_present_time.day,app_present_time.month,0)) y = 0;
+                                else printf("Invalid Day.\n");
                                 }
-                                else printf("Mês inválido.\n");
+                                else printf("Invalid Month.\n");
                             }
-                            else printf("Ano inválido.\n");
+                            else printf("Invalid Year.\n");
                         }
-                        atualizatempo(filaP, atual);
-                        atualizatempo(filaR,atual);
-                        printf("\nTempo atualizado com sucesso!!\n");
+                        update_time(pre_reservation_queue, app_present_time);
+                        update_time(reservation_queue,app_present_time);
+                        printf("\nTime successfully updated!!\n");
                         choice = 3;
                     }
                 }
                 break;
             case 6:
-                verificafila(filaP,filaR);
-                printf("\n*** Fila de espera atualizada. ***\n");
+                update_queues(pre_reservation_queue,reservation_queue);
+                printf("\n*** Updated queue. ***\n");
                 break;
             case 7:
-                carrega(filaR, "ListaR.txt");
-                if(vazia(filaP)) carrega(filaP, "ListaP.txt");
-                atualizatempo(filaP, atual);
-                atualizatempo(filaR,atual);
-                printf("\nListas carregadas com sucesso!! Marcações registradas em tempo anterior ao atual e que não possuem horários disponíveis não foram inseridas.\n");
+                load_queue(reservation_queue, "reservation_list.txt");
+                if(isEmpty(pre_reservation_queue)) load_queue(pre_reservation_queue, "pre_reservation_list.txt");
+                update_time(pre_reservation_queue, app_present_time);
+                update_time(reservation_queue,app_present_time);
+                printf("\nLists successfully loaded! Appointments scheduled before the current time and with no available slots were not included.\n");
                 break;
             case 8:
-                save(filaR,"ListaR.txt");
-                save(filaP,"ListaP.txt");
-                printf("\nListas salvas corretamente!!\n");
+                save(reservation_queue,"reservation_list.txt");
+                save(pre_reservation_queue,"pre_reservation_list.txt");
+                printf("\nLists saved successfully!!\n");
                 break;
             case 9: 
                 x = 0;
                 break;
-            default: printf("\nOpção inexistente. Digite novamente a opção que deseja.\n\n");
+            default: printf("\nOption does not exist. Please re-enter the option you want.\n\n");
         }
     }
 
-    printf("\n      ____     ---------------------------------------------------------       ____     \n");
-    printf("   __/  | \\__  | Obrigado por utilizar o Manutenlava!!! Volte sempre!! |    __/ |  \\__   \n");
-    printf("  '--0----0--' ---------------------------------------------------------   '--0----0--'  \n\n");   
+    printf("\n      ____     ----------------------------------------------------       ____     \n");
+    printf("   __/  | \\__  | Thank you for using ManuWash!!! Come back soon!! |    __/ |  \\__   \n");
+    printf("  '--0----0--' ----------------------------------------------------   '--0----0--' \n\n");   
 }
 
-int bissexto(int x){
+int leap_year(int x){
         if(x % 400 == 0) return 1;
         else{
                 if((x % 4 == 0) && (x % 100 != 0)) return 1;
@@ -170,45 +171,45 @@ int bissexto(int x){
         }
 }
 
-int verificadia(int dia, int mes, int ano){ 
-        /* ano == 1 (bissexto) <<>> ano == 0 (Não é bissexto) */
-        switch(mes){
+int check_day(int day, int month, int year){ 
+        /* year == 1 (leap_year) <<>> year == 0 (not leap_year) */
+        switch(month){
                 case 1:
-                        if(dia >= 1 && dia <= 31) return 1;
+                        if(day >= 1 && day <= 31) return 1;
                         break;
                 case 2:
-                        if(dia >= 1 && dia <= 29 && ano == 1) return 1;
-                        if(dia >= 1 && dia <= 28 && ano == 0) return 1;
+                        if(day >= 1 && day <= 29 && year == 1) return 1;
+                        if(day >= 1 && day <= 28 && year == 0) return 1;
                         break;
                 case 3:
-                        if(dia >= 1 && dia <= 31) return 1;
+                        if(day >= 1 && day <= 31) return 1;
                         break;
                 case 4:
-                        if(dia >= 1 && dia <= 30) return 1;
+                        if(day >= 1 && day <= 30) return 1;
                         break;
                 case 5:
-                        if(dia >= 1 && dia <= 31) return 1;
+                        if(day >= 1 && day <= 31) return 1;
                         break;
                 case 6:
-                        if(dia >= 1 && dia <= 30) return 1;
+                        if(day >= 1 && day <= 30) return 1;
                         break;
                 case 7:
-                        if(dia >= 1 && dia <= 31) return 1;
+                        if(day >= 1 && day <= 31) return 1;
                         break;
                 case 8:
-                        if(dia >= 1 && dia <= 31) return 1;
+                        if(day >= 1 && day <= 31) return 1;
                         break;
                 case 9:
-                        if(dia >= 1 && dia <= 30) return 1;
+                        if(day >= 1 && day <= 30) return 1;
                         break;
                 case 10:
-                        if(dia >= 1 && dia <= 31) return 1;
+                        if(day >= 1 && day <= 31) return 1;
                         break;
                 case 11:
-                        if(dia >= 1 && dia <= 30) return 1;
+                        if(day >= 1 && day <= 30) return 1;
                         break;
                 case 12:
-                        if(dia >= 1 && dia <= 31) return 1;
+                        if(day >= 1 && day <= 31) return 1;
                         break;
                 default:
                 break;
@@ -216,382 +217,382 @@ int verificadia(int dia, int mes, int ano){
         return 0;
 }
 
-Sistema *cria(){
-        Sistema *aux = (Sistema *) malloc(sizeof(Sistema));
+System *create_queue(){
+        System *aux = (System *) malloc(sizeof(System));
         if(aux != NULL){
-                aux->prox = NULL;
+                aux->next = NULL;
                 return aux;
         }
         else {
-                perror("\n*** Erro de alocação de memória ***\n");
+                perror("\n*** Memory allocation error ***\n");
                 return NULL;
         }             
 }
 
-void registra(Sistema *filaR, Sistema *filaP, Time atual){
-        Pessoa insert;
-        printf("\n [1] Reserva ---- [2] Pré-reserva\n\n>>> ");
+void book_service(System *reservation_queue, System *pre_reservation_queue, Time app_present_time){
+        Person insert;
+        printf("\n [1] Booking ---- [2] Pre-booking\n\n>>> ");
                 insert.work = checkint();
                 if(insert.work == 1 || insert.work == 2){
-                        printf("\n [1] Lavagem (30 MINUTOS) ---- [2] Manutenção (1 HORA)\n\n>>> ");
+                        printf("\n [1] Wash (30 MINUTES) ---- [2] Maintenance (1 HOURs)\n\n>>> ");
                         insert.func = checkint();;
                         if((insert.work == 1 || insert.work == 2) && (insert.func == 1 || insert.func == 2)){
-                        printf("\nDigite seu nome: ");
-                        fgets(insert.nome, MAX, stdin);
-                        insert.nome[strcspn(insert.nome, "\n")] = '\0';
-                        printf("\nData atual: %02d / %02d / %d *\n\nInsira os dados de sua reserva.\n\nAno: ", atual.dia,atual.mes,atual.ano);
-                        insert.ano = checkint();
+                        printf("\nWrite your name: ");
+                        fgets(insert.name, MAX, stdin);
+                        insert.name[strcspn(insert.name, "\n")] = '\0';
+                        printf("\nActual date: %02d / %02d / %d *\n\nInsert your booking time info.\n\nYear: ", app_present_time.day,app_present_time.month,app_present_time.year);
+                        insert.year = checkint();
 
-                        /* Caso o ano seja bissexto */
-                                if(bissexto(insert.ano) && insert.ano >= atual.ano){
-                                printf("Mês: ");
-                                insert.mes = checkint();
+                        /* Caso o year seja leap_year */
+                                if(leap_year(insert.year) && insert.year >= app_present_time.year){
+                                printf("Month: ");
+                                insert.month = checkint();
 
-                                /* Caso mes seja valido */
-                                if(insert.mes >=1 && insert.mes <= 12 && (insert.ano > atual.ano || (insert.ano == atual.ano && insert.mes >= atual.mes))){
-                                        printf("Dia: ");
-                                        insert.dia = checkint();
+                                /* Caso month seja valido */
+                                if(insert.month >=1 && insert.month <= 12 && (insert.year > app_present_time.year || (insert.year == app_present_time.year && insert.month >= app_present_time.month))){
+                                        printf("Day: ");
+                                        insert.day = checkint();
 
-                                        /* Caso o dia seja válido */
-                                        if(verificadia(insert.dia,insert.mes,1) && (insert.ano > atual.ano || (insert.ano == atual.ano && insert.mes > atual.mes) || (insert.ano == atual.ano && insert.mes == atual.mes && insert.dia >= atual.dia))){
+                                        /* Caso o day seja válido */
+                                        if(check_day(insert.day,insert.month,1) && (insert.year > app_present_time.year || (insert.year == app_present_time.year && insert.month > app_present_time.month) || (insert.year == app_present_time.year && insert.month == app_present_time.month && insert.day >= app_present_time.day))){
                                         
-                                        /* Imprime as reservas e pré-reservas específicas do dia */
-                                        if(insert.work == 1) imprimedata(filaR, insert);
-                                        else imprimedata(filaP, insert);
+                                        /* print_queue as reservas e pré-reservas específicas do day */
+                                        if(insert.work == 1) print_specific_bookings(reservation_queue, insert);
+                                        else print_specific_bookings(pre_reservation_queue, insert);
                                         
-                                        printf("\nHorario de funcionamento das 8:00 as 18:00. (Manutenções podem ser reservadas até as 17:00)\n");
-                                        printf("\nHora: ");
-                                        insert.hora = checkint();
-                                        if(insert.hora >= 8 && insert.hora < 18){
-                                                printf("\nA marcação dos minutos são feitas apenas em 0 e 30 minutos.\n\nMinutos: ");
+                                        printf("\nHours of operation from 8:00 a.m. to 6:00 p.m. (Maintenance can be booked until 5:00 p.m.)\n");
+                                        printf("\nHour: ");
+                                        insert.hour = checkint();
+                                        if(insert.hour >= 8 && insert.hour < 18){
+                                                printf("\nMinutes are marked only at 0 and 30 minutes.\n\nMinutes: ");
                                                 insert.min = checkint();
-                                                if(insert.min != 0 && insert.min != 30) printf("*** Os minutos inseridos são invalidos. ***\n");
-                                                else if (insert.func == 2 && insert.hora == 17 && insert.min == 30) printf("*** Não é possível marcar uma manutenção neste horário. ***\n"); 
-                                                else if(insert.work == 1) insere(filaR, filaP,insert,1);
-                                                else insere(filaP, NULL,insert,1);
+                                                if(insert.min != 0 && insert.min != 30) printf("*** This minutes are invalid ***\n");
+                                                else if (insert.func == 2 && insert.hour == 17 && insert.min == 30) printf("*** Is not possible to schedule a booking for this date. ***\n"); 
+                                                else if(insert.work == 1) create_service(reservation_queue, pre_reservation_queue,insert,1);
+                                                else create_service(pre_reservation_queue, NULL,insert,1);
                                         }
-                                        else printf("\n*** A hora inserida é inválida. ***\n");
+                                        else printf("\n*** Invalid hour. ***\n");
                                         }
-                                        else printf("\n*** O dia inserido é inválido. ***\n");
+                                        else printf("\n*** Invalid day. ***\n");
                                 }
-                                else printf("\n*** O mes inserido é invalido. ***\n");  
+                                else printf("\n*** Invalid month. ***\n");  
                                 }
 
-                                /* Caso o ano não seja bissexto */
-                                else if(insert.ano >= atual.ano){
-                                printf("Mês: ");
-                                insert.mes = checkint();
+                                /* Caso o year não seja leap_year */
+                                else if(insert.year >= app_present_time.year){
+                                printf("Month: ");
+                                insert.month = checkint();
 
-                                /* Caso mes seja valido */
-                                if(insert.mes >= 1 && insert.mes <= 12 && (insert.ano > atual.ano || (insert.ano == atual.ano && insert.mes >= atual.mes))){
-                                        printf("Dia: ");
-                                        insert.dia = checkint();
+                                /* Caso month seja valido */
+                                if(insert.month >= 1 && insert.month <= 12 && (insert.year > app_present_time.year || (insert.year == app_present_time.year && insert.month >= app_present_time.month))){
+                                        printf("Day: ");
+                                        insert.day = checkint();
 
-                                        /* Caso o dia seja válido */
-                                        if(verificadia(insert.dia, insert.mes,0) && (insert.ano > atual.ano || (insert.ano == atual.ano && insert.mes > atual.mes) || (insert.ano == atual.ano && insert.mes == atual.mes && insert.dia >= atual.dia))){
+                                        /* Caso o day seja válido */
+                                        if(check_day(insert.day, insert.month,0) && (insert.year > app_present_time.year || (insert.year == app_present_time.year && insert.month > app_present_time.month) || (insert.year == app_present_time.year && insert.month == app_present_time.month && insert.day >= app_present_time.day))){
                                         
-                                        /* Imprime as reservas e pré-reservas específicas do dia */
-                                        if(insert.work == 1) imprimedata(filaR, insert);
-                                        else imprimedata(filaP, insert);
+                                        /* print_queue as reservas e pré-reservas específicas do day */
+                                        if(insert.work == 1) print_specific_bookings(reservation_queue, insert);
+                                        else print_specific_bookings(pre_reservation_queue, insert);
                                         
-                                        printf("\nHorario de funcionamento das 8:00 as 18:00.  (Manutenções podem ser reservadas até as 17:00)\n");
+                                        printf("\nHours of operation from 8:00 a.m. to 6:00 p.m. (Maintenance can be booked until 5:00 p.m.)\n");
                                         printf("\nHora: ");
-                                        insert.hora = checkint();
+                                        insert.hour = checkint();
                                         
-                                        if(insert.hora >= 8 && insert.hora < 18){
-                                                printf("\nA marcação dos minutos são feitas apenas em 0 e 30 minutos.\n\nMinutos: ");
+                                        if(insert.hour >= 8 && insert.hour < 18){
+                                                printf("\nMinutes are marked only at 0 and 30 minutes.\n\nMinutes: ");
                                                 insert.min = checkint();
                                                 
-                                                if(insert.min != 0 && insert.min != 30) printf("*** Os minutos inseridos são invalidos. ***\n");
-                                                else if (insert.func == 2 && insert.hora == 17 && insert.min == 30) printf("Não é possível marcar uma manutenção neste horário.\n"); 
-                                                else if(insert.work == 1) insere(filaR, filaP,insert,1);
-                                                else insere(filaP, NULL,insert,1);  
+                                                if(insert.min != 0 && insert.min != 30) printf("*** Invalid minutes ***\n");
+                                                else if (insert.func == 2 && insert.hour == 17 && insert.min == 30) printf("Is not possible to schedule a booking for this date.\n"); 
+                                                else if(insert.work == 1) create_service(reservation_queue, pre_reservation_queue,insert,1);
+                                                else create_service(pre_reservation_queue, NULL,insert,1);  
                                         }
-                                        else printf("\n*** A hora inserida é inválida. ***\n");
+                                        else printf("\n*** Invalid hour ***\n");
                                         }
-                                        else printf("\n*** O dia inserido é inválido. ***\n");
+                                        else printf("\n*** Invalid day ***\n");
                                 }
-                                else printf("\n*** O mes inserido é invalido. ***\n");              
+                                else printf("\n*** Invalid month ***\n");              
                                 }
-                                else printf("\n*** O ano inserido é invalido. ***\n"); 
+                                else printf("\n*** Invalid year ***\n"); 
                         }              
-                        else printf("\n*** Não existe esta função. Digite novamente a opção que deseja. ***\n");
-                }else printf("\n***Não existe esta função. Digite novamente a opção que deseja. ***\n");
+                        else printf("\n*** This function does not exist. Please re-enter the option you want ***\n");
+                }else printf("\n***This function does not exist. Please re-enter the option you want. ***\n");
 }
 
-void imprime(Sistema *fila){
-        if(!vazia(fila)){
-                printf("%8s%15s%12s%16s\n", "Data", "Horário", "Função", "Usuario");
-                for(Sistema *aux = fila->prox; aux != NULL; aux = aux->prox){
-                        if(aux->usuario.func == 1){ 
-                                printf("(%02d/%02d/%d)   [%02d:%02d]    %-11s%10s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Lavagem",aux->usuario.nome);
+void print_queue(System *queue){
+        if(!isEmpty(queue)){
+                printf("%8s%15s%12s%16s\n", "Data", "Horário", "Função", "user");
+                for(System *aux = queue->next; aux != NULL; aux = aux->next){
+                        if(aux->user.func == 1){ 
+                                printf("(%02d/%02d/%d)   [%02d:%02d]    %-11s%10s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Lavagem",aux->user.name);
                         }
-                        if(aux->usuario.func == 2){ 
-                                printf("(%02d/%02d/%d)   [%02d:%02d]    %-11s %10s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Manutenção",aux->usuario.nome);
+                        if(aux->user.func == 2){ 
+                                printf("(%02d/%02d/%d)   [%02d:%02d]    %-11s %10s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Manutenção",aux->user.name);
                      }
                 }
         }
-        else printf("*** Ainda não há nenhuma marcação nesta lista ***\n");
+        else printf("*** Ainda não há nenhuma marcação nesta list ***\n");
 }
 
-int vazia(Sistema *fila){
-        if (fila->prox == NULL) return 1;
+int isEmpty(System *queue){
+        if (queue->next == NULL) return 1;
         else return 0;
 }
 
-void procura(Sistema *fila, Pessoa chave, Sistema **ant, Sistema **atual){
-        *ant = fila; 
-        *atual = fila->prox;
-        while ((*atual) != NULL && 
-                ((*atual)->usuario.ano < chave.ano ||
-                ((*atual)->usuario.ano == chave.ano && (*atual)->usuario.mes < chave.mes) ||
-                ((*atual)->usuario.ano == chave.ano && (*atual)->usuario.mes == chave.mes && (*atual)->usuario.dia < chave.dia) ||
-                ((*atual)->usuario.ano == chave.ano && (*atual)->usuario.mes == chave.mes && (*atual)->usuario.dia == chave.dia && (*atual)->usuario.hora < chave.hora) ||
-                ((*atual)->usuario.ano == chave.ano && (*atual)->usuario.mes == chave.mes && (*atual)->usuario.dia == chave.dia && (*atual)->usuario.hora == chave.hora && (*atual)->usuario.min < chave.min) ||
-                ((*atual)->usuario.ano == chave.ano && (*atual)->usuario.mes == chave.mes && (*atual)->usuario.dia == chave.dia && (*atual)->usuario.hora == chave.hora && (*atual)->usuario.min == chave.min && (*atual)->usuario.work == 2))) {
-        *ant = *atual;
-        *atual = (*atual)->prox;
+void search(System *queue, Person key, System **ant, System **app_present_time){
+        *ant = queue; 
+        *app_present_time = queue->next;
+        while ((*app_present_time) != NULL && 
+                ((*app_present_time)->user.year < key.year ||
+                ((*app_present_time)->user.year == key.year && (*app_present_time)->user.month < key.month) ||
+                ((*app_present_time)->user.year == key.year && (*app_present_time)->user.month == key.month && (*app_present_time)->user.day < key.day) ||
+                ((*app_present_time)->user.year == key.year && (*app_present_time)->user.month == key.month && (*app_present_time)->user.day == key.day && (*app_present_time)->user.hour < key.hour) ||
+                ((*app_present_time)->user.year == key.year && (*app_present_time)->user.month == key.month && (*app_present_time)->user.day == key.day && (*app_present_time)->user.hour == key.hour && (*app_present_time)->user.min < key.min) ||
+                ((*app_present_time)->user.year == key.year && (*app_present_time)->user.month == key.month && (*app_present_time)->user.day == key.day && (*app_present_time)->user.hour == key.hour && (*app_present_time)->user.min == key.min && (*app_present_time)->user.work == 2))) {
+        *ant = *app_present_time;
+        *app_present_time = (*app_present_time)->next;
     }
-        if ((*atual) != NULL && ((*atual)->usuario.dia != chave.dia || (*atual)->usuario.mes != chave.mes || (*atual)->usuario.ano != chave.ano || (*atual)->usuario.hora != chave.hora || (*atual)->usuario.min != chave.min)) {
-                *atual = NULL; /* elemento não encontrado */
+        if ((*app_present_time) != NULL && ((*app_present_time)->user.day != key.day || (*app_present_time)->user.month != key.month || (*app_present_time)->user.year != key.year || (*app_present_time)->user.hour != key.hour || (*app_present_time)->user.min != key.min)) {
+                *app_present_time = NULL; /* elemento não encontrado */
     }
 }
 
-int verificavaga(Sistema *fila, Pessoa p1){
-        if(vazia(fila)) return 1;
+int check_time_spot(System *queue, Person p1){
+        if(isEmpty(queue)) return 1;
         else{
-                Sistema *aux = fila->prox;
+                System *aux = queue->next;
                 while(aux != NULL){
                         /* Mesma data e horario */
-                        if(aux->usuario.ano == p1.ano && aux->usuario.mes == p1.mes && aux->usuario.dia == p1.dia && aux->usuario.hora == p1.hora && aux->usuario.min == p1.min && p1.work == 1) return 0;
+                        if(aux->user.year == p1.year && aux->user.month == p1.month && aux->user.day == p1.day && aux->user.hour == p1.hour && aux->user.min == p1.min && p1.work == 1) return 0;
                         /* Mesma data */
-                        if(aux->usuario.ano == p1.ano && aux->usuario.mes == p1.mes && aux->usuario.dia == p1.dia && p1.work == 1){
-                                /* Caso a hora seja x:00 */
-                                if(p1.min == 0 && aux->usuario.hora == p1.hora-1 && aux->usuario.min == 30){
-                                        if(aux->usuario.func == 2) return 0;
+                        if(aux->user.year == p1.year && aux->user.month == p1.month && aux->user.day == p1.day && p1.work == 1){
+                                /* Caso a hour seja x:00 */
+                                if(p1.min == 0 && aux->user.hour == p1.hour-1 && aux->user.min == 30){
+                                        if(aux->user.func == 2) return 0;
                                         /* Caso a anterior seja lavagem, a proxima esteja reservada e a marcação seja uma manutenção */
-                                        else if(p1.func == 2 && aux->prox != NULL && aux->prox->usuario.hora == p1.hora && aux->prox->usuario.min == 30) return 0;
+                                        else if(p1.func == 2 && aux->next != NULL && aux->next->user.hour == p1.hour && aux->next->user.min == 30) return 0;
                                 }
-                                /* Caso a hora seja x:30 */
-                                if(p1.min == 30 && aux->usuario.hora == p1.hora && aux->usuario.min == 0){
-                                        if(aux->usuario.func == 2) return 0;
+                                /* Caso a hour seja x:30 */
+                                if(p1.min == 30 && aux->user.hour == p1.hour && aux->user.min == 0){
+                                        if(aux->user.func == 2) return 0;
                                         /* Caso a anterior seja lavagem, a proxima esteja reservada e a marcação seja uma manutenção  */
-                                        else if(p1.func == 2 && aux->prox != NULL && aux->prox->usuario.hora == p1.hora+1 && aux->prox->usuario.min == 0) return 0;
+                                        else if(p1.func == 2 && aux->next != NULL && aux->next->user.hour == p1.hour+1 && aux->next->user.min == 0) return 0;
                                 }
                                 /* Caso seja manutenção o anterior esteja livre e o proximo esteja reservado*/
-                                if((p1.min == 30 && p1.func == 2 && aux->usuario.hora == p1.hora+1 && aux->usuario.min == 0) || (p1.min == 0 && p1.func == 2 && aux->usuario.hora == p1.hora && aux->usuario.min == 30)) return 0;
+                                if((p1.min == 30 && p1.func == 2 && aux->user.hour == p1.hour+1 && aux->user.min == 0) || (p1.min == 0 && p1.func == 2 && aux->user.hour == p1.hour && aux->user.min == 30)) return 0;
                         }
-                        aux = aux->prox;
+                        aux = aux->next;
                 }
         }
         return 1;
 }
 
-void insere (Sistema *lista, Sistema *listaP, Pessoa p1, int x){ 
-        if(verificavaga(lista,p1)){
-                Sistema *no, *ant, *inutil;
-                no = (Sistema *) malloc (sizeof (Sistema));
+void create_service (System *list, System *pre_reservation_list, Person p1, int x){ 
+        if(check_time_spot(list,p1)){
+                System *no, *ant, *temp_pointer;
+                no = (System *) malloc (sizeof (System));
                 if (no != NULL) {
-                        no->usuario = p1;
-                        procura (lista, p1, &ant, &inutil);
-                        no->prox = ant->prox;
-                        ant->prox = no; 
-                        if(p1.work == 1 && x == 1)printf("\nReserva efetuada com sucesso!!\n");
-                        else if(x == 1) printf("\nPré-reserva efetuada com sucesso.\n");
+                        no->user = p1;
+                        search (list, p1, &ant, &temp_pointer);
+                        no->next = ant->next;
+                        ant->next = no; 
+                        if(p1.work == 1 && x == 1)printf("\nReservation successfully completed!!\n");
+                        else if(x == 1) printf("\nPre-reservation successfully completed\n");
                 }
         }
         else{
                 int option = 0;
-                printf("Este horário ja esta reservado. Deseja entrar em uma lista de espera para este horario?\n");
+                printf("This time slot is already booked. Would you like to join a waiting list for this time slot?\n");
                 while(!option){
-                        printf("[1] Sim ---- [2] Não\n>>> ");
+                        printf("[1] Yes ---- [2] No\n>>> ");
                         option = checkint();
                         if(option == 1){
                                 p1.work = 2;
-                                insere(listaP, NULL,p1,0);
-                                printf("A sua pré-reserva foi feita com sucesso.\n");
+                                create_service(pre_reservation_list, NULL,p1,0);
+                                printf("Your pre-booking has been successfully completed\n");
                         }
-                        else if(option == 2) printf("Peço desculpas o inconveniente. Caso ainda deseje reservar um serviço cheque a terceira função da aplicação e confira os horários disponíveis!\n");              
+                        else if(option == 2) printf("I apologize for the inconvenience. If you still wish to book a service, check the third function of the application and check the available times!\n");              
                         else{
-                                printf("Opção inválida. Digite novamente a opção desejada.\n");
+                                printf("Invalid option. Please re-enter the desired option.\n");
                                 option = 0;
                         }
                 }
         }
 }
 
-void imprimenome(Sistema *fila, Sistema *filaP, char *nome){
-        int encontrou = 0;
-        printf("As reservas de %s são:\n", nome);
-        printf("\n%8s%15s%12s\n", "Data", "Horário", "Função");
-        for(Sistema *aux = fila->prox; aux != NULL; aux = aux->prox){
-                if(strcmp(aux->usuario.nome, nome) == 0){
-                        encontrou++;
-                        if(aux->usuario.func == 1) printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Lavagem");
-                        else printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Manutenção");     
+void print_user_reservations(System *queue, System *pre_reservation_queue, char *name){
+        int exists = 0;
+        printf("Bookings of %s:\n", name);
+        printf("\n%8s%15s%12s\n", "Date", "Time", "Service");
+        for(System *aux = queue->next; aux != NULL; aux = aux->next){
+                if(strcmp(aux->user.name, name) == 0){
+                        exists++;
+                        if(aux->user.func == 1) printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Wash");
+                        else printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Maintenance");     
                 }
         }
-        if(encontrou == 0) printf("%8s%14s%10s\n", "----", "-------", "------");       
-        encontrou = 0;
-        printf("\nAs pré-reservas de %s são:\n\n", nome);
-        printf("%8s%15s%12s\n", "Data", "Horário", "Função");
-        for(Sistema *aux = filaP->prox; aux != NULL; aux = aux->prox){
-                if(strcmp(aux->usuario.nome, nome) == 0){
-                        encontrou++;
-                        if(aux->usuario.func == 1) printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Lavagem");
+        if(exists == 0) printf("%8s%14s%10s\n", "----", "-------", "------");       
+        exists = 0;
+        printf("\nPre-bookings of %s:\n\n", name);
+        printf("%8s%15s%12s\n", "Date", "Time", "Service");
+        for(System *aux = pre_reservation_queue->next; aux != NULL; aux = aux->next){
+                if(strcmp(aux->user.name, name) == 0){
+                        exists++;
+                        if(aux->user.func == 1) printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Lavagem");
                            
-                        else printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Manutenção");
+                        else printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Manutenção");
              }
         
         }
-        if(encontrou == 0) printf("%8s%14s%10s\n", "----", "-------", "------");       
+        if(exists == 0) printf("%8s%14s%10s\n", "----", "-------", "------");       
 }
 
-void imprimedata(Sistema *lista, Pessoa p1){
-        printf("Reservas do dia %02d / %02d / %d:\n", p1.dia,p1.mes,p1.ano);
-        Sistema *aux = lista->prox;
-        int encontrou = 0;
-        printf("%8s%15s%12s%12s%16s\n", "Data", "Horário", "Função", "Tipo", "Usuario");
+void print_specific_bookings(System *list, Person p1){
+        printf("Reservations made at %02d / %02d / %d:\n", p1.day,p1.month,p1.year);
+        System *aux = list->next;
+        int exists = 0;
+        printf("%8s%15s%12s%12s%16s\n", "Date", "Time", "Service", "Type", "User");
         while((aux) != NULL){
-                if(aux->usuario.dia == p1.dia && aux->usuario.mes == p1.mes && aux->usuario.ano == p1.ano){
-                        if(aux->usuario.func == 1){
-                                if(aux->usuario.work == 1) printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s    %-9s   %7s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Lavagem", "Reserva", aux->usuario.nome);
+                if(aux->user.day == p1.day && aux->user.month == p1.month && aux->user.year == p1.year){
+                        if(aux->user.func == 1){
+                                if(aux->user.work == 1) printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s    %-9s   %7s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Lavagem", "Reserva", aux->user.name);
                                                                
-                                else printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s    %-9s   %7s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Lavagem", "Pré-reserva", aux->usuario.nome);
+                                else printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s    %-9s   %7s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Lavagem", "Pré-reserva", aux->user.name);
                         }
-                        if(aux->usuario.func == 2){
-                                if(aux->usuario.work == 1) printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s    %-9s   %7s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Manutenção", "Reserva", aux->usuario.nome);
+                        if(aux->user.func == 2){
+                                if(aux->user.work == 1) printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s    %-9s   %7s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Manutenção", "Reserva", aux->user.name);
                                                                       
-                                else printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s    %-9s   %7s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Manutenção", "Pré-reserva", aux->usuario.nome);
+                                else printf("(%02d/%02d/%d)   [%02d:%02d]    %-10s    %-9s   %7s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Manutenção", "Pré-reserva", aux->user.name);
                         }
-                        encontrou++;
+                        exists++;
                         }
-                aux = aux->prox;
+                aux = aux->next;
                 }
-        if(encontrou == 0) printf("%8s%14s%10s%12s%16s\n", "----", "-------", "------", "----", "-------");       
+        if(exists == 0) printf("%8s%14s%10s%12s%16s\n", "----", "-------", "------", "----", "-------");       
 }
 
-void procuranome(Sistema *fila, Pessoa chave, Sistema **ant, Sistema **atual, int funcao){
-        *ant = fila; 
-        *atual = fila->prox;
-        if(funcao == 1) while ((*atual) != NULL && (strcmp((*atual)->usuario.nome, chave.nome) != 0 
-                              || (*atual)->usuario.dia != chave.dia || (*atual)->usuario.mes != chave.mes 
-                              || (*atual)->usuario.ano != chave.ano || (*atual)->usuario.hora != chave.hora 
-                              || (*atual)->usuario.min != chave.min)){
-                *ant = *atual;
-                *atual = (*atual)->prox;
+void procuranome(System *queue, Person key, System **ant, System **app_present_time, int service){
+        *ant = queue; 
+        *app_present_time = queue->next;
+        if(service == 1) while ((*app_present_time) != NULL && (strcmp((*app_present_time)->user.name, key.name) != 0 
+                              || (*app_present_time)->user.day != key.day || (*app_present_time)->user.month != key.month 
+                              || (*app_present_time)->user.year != key.year || (*app_present_time)->user.hour != key.hour 
+                              || (*app_present_time)->user.min != key.min)){
+                *ant = *app_present_time;
+                *app_present_time = (*app_present_time)->next;
                 }
-        if(funcao == 2) while ((*atual) != NULL && ((*atual)->usuario.dia != chave.dia 
-                                || (*atual)->usuario.mes != chave.mes 
-                                || (*atual)->usuario.ano != chave.ano || (*atual)->usuario.hora != chave.hora 
-                                || (*atual)->usuario.min != chave.min)){
-                *ant = *atual;
-                *atual = (*atual)->prox;
+        if(service == 2) while ((*app_present_time) != NULL && ((*app_present_time)->user.day != key.day 
+                                || (*app_present_time)->user.month != key.month 
+                                || (*app_present_time)->user.year != key.year || (*app_present_time)->user.hour != key.hour 
+                                || (*app_present_time)->user.min != key.min)){
+                *ant = *app_present_time;
+                *app_present_time = (*app_present_time)->next;
                 }
 
-    if (*atual == NULL) {
+    if (*app_present_time == NULL) {
         *ant = NULL; // elemento não encontrado
     }
 }
 
-void ordena(Sistema *lista, char *nome){
-        Sistema *aux = lista->prox;
-        int contador = 0;
-        int encontrou = 0;
-        if(!vazia(lista) && aux->usuario.work == 1) printf("\nAs reservas de %s são:\n", nome);
-        else if(!vazia(lista)) printf("\nAs pré-reservas de %s são:\n", nome);
-        printf("\n%8s%15s%12s\n", "Data", "Horário", "Função");
+void check_specific_user(System *list, char *name){
+        System *aux = list->next;
+        int counter = 0;
+        int exists = 0;
+        if(!isEmpty(list) && aux->user.work == 1) printf("\nReservations of %s:\n", name);
+        else if(!isEmpty(list)) printf("\n Pre-reservations of %s:\n", name);
+        printf("\n%8s%15s%12s\n", "Date", "Time", "Service");
         while((aux) != NULL){
-                contador++;
-                aux = aux->prox;
+                counter++;
+                aux = aux->next;
         }
-        while(contador != 0){
-                Sistema *aux = lista;
-                for(int i = 0; i <= contador; i++){
-                        if(i == contador && strcmp(aux->usuario.nome,nome) == 0){
-                                encontrou++;
-                                if(aux->usuario.func == 1) printf("(%02d/%02d/%d)   [%02d:%02d]    %-11s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Lavagem");
-                        if(aux->usuario.func == 2) printf("(%02d/%02d/%d)   [%02d:%02d]    %-11s\n", aux->usuario.dia , aux->usuario.mes , aux->usuario.ano , aux->usuario.hora , aux->usuario.min , "Manutenção");
+        while(counter != 0){
+                System *aux = list;
+                for(int i = 0; i <= counter; i++){
+                        if(i == counter && strcmp(aux->user.name,name) == 0){
+                                exists++;
+                                if(aux->user.func == 1) printf("(%02d/%02d/%d)   [%02d:%02d]    %-11s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Lavagem");
+                        if(aux->user.func == 2) printf("(%02d/%02d/%d)   [%02d:%02d]    %-11s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Manutenção");
                             
                         }
-                        aux = aux->prox;               
+                        aux = aux->next;               
                 }
-                contador--;
+                counter--;
         }
-        if(encontrou == 0) printf("%8s%14s%10s\n", "----", "-------", "------");       
+        if(exists == 0) printf("%8s%14s%10s\n", "----", "-------", "------");       
 }
 
-void retira(Sistema *listaR, Sistema *listaP, Time actual){
-        Pessoa usuario;
-        int erro = 0;
-        printf("Preencha os dados para efetuar o cancelamento!\n");
-        printf("Digite o seu nome: ");
-        fgets(usuario.nome,MAX,stdin);
-        usuario.nome[strcspn(usuario.nome, "\n")] = '\0';
-        imprimenome(listaR, listaP, usuario.nome);
-        printf("\n[1] Cancelar Reserva ---- [2] Cancelar pré-reserva\n\n>>> ");
-        usuario.work = checkint();
-        if(usuario.work == 1 || usuario.work == 2){
-                printf("* Data atual: %02d / %02d / %d *\n", actual.dia,actual.mes,actual.ano);
-                printf("Digite o ano: ");
-                usuario.ano = checkint();
-                if(usuario.ano >= actual.ano){
-                        printf("Digite o mes : ");
-                        usuario.mes = checkint();
-                        if(usuario.mes >=1 && usuario.mes <= 12 && (usuario.ano > actual.ano || (usuario.ano == actual.ano && usuario.mes >= actual.mes))){
-                                printf("Digite o dia : ");
-                                usuario.dia = checkint();
-                                if((usuario.ano > actual.ano || (usuario.ano == actual.ano && usuario.mes > actual.mes) || (usuario.ano == actual.ano && usuario.mes == actual.mes && usuario.dia >= actual.dia))){
-                                        printf("Digite as horas : ");
-                                        usuario.hora = checkint();
-                                        if(usuario.hora >= 8 && usuario.hora <= 17){
-                                                printf("Digite os minutos : ");
-                                                usuario.min = checkint();
-                                        }else{ printf("\nHora inválida.\n"); erro++;}
-                                }else {printf("\nDia inválido.\n"); erro++;}
-                        }else {printf("\nMês inválido.\n"); erro++;}
-                }else {printf("\nAno inválido.\n"); erro++;}
-        }else {printf("\nNão existe esta função.\n"); erro++;}
+void cancel_service(System *reservation_list, System *pre_reservation_list, Time actual){
+        Person user;
+        int error = 0;
+        printf("Fill in the details to cancel!\n");
+        printf("Write the book owner name: ");
+        fgets(user.name,MAX,stdin);
+        user.name[strcspn(user.name, "\n")] = '\0';
+        print_user_reservations(reservation_list, pre_reservation_list, user.name);
+        printf("\n[1] Cancel booking ---- [2] Cancel pre-booking\n\n>>> ");
+        user.work = checkint();
+        if(user.work == 1 || user.work == 2){
+                printf("* Real time date: %02d / %02d / %d *\n", actual.day,actual.month,actual.year);
+                printf("Year: ");
+                user.year = checkint();
+                if(user.year >= actual.year){
+                        printf("Month: ");
+                        user.month = checkint();
+                        if(user.month >=1 && user.month <= 12 && (user.year > actual.year || (user.year == actual.year && user.month >= actual.month))){
+                                printf("Day : ");
+                                user.day = checkint();
+                                if((user.year > actual.year || (user.year == actual.year && user.month > actual.month) || (user.year == actual.year && user.month == actual.month && user.day >= actual.day))){
+                                        printf("Hour: ");
+                                        user.hour = checkint();
+                                        if(user.hour >= 8 && user.hour <= 17){
+                                                printf("Minutes: ");
+                                                user.min = checkint();
+                                        }else{ printf("\nInvalid hour\n"); error++;}
+                                }else {printf("\nInvalid day\n"); error++;}
+                        }else {printf("\nInvalid month\n"); error++;}
+                }else {printf("\nInvalid year\n"); error++;}
+        }else {printf("\nThis function don't exists\n"); error++;}
 
-        Sistema *ant, *atual;
-        if(usuario.work == 1 && erro == 0){
+        System *ant, *app_present_time;
+        if(user.work == 1 && error == 0){
                 /* Eliminar e checar pré-reserva! */
-                procuranome (listaR, usuario, &ant, &atual,1);
-                if (atual != NULL) {
-                        ant->prox = atual->prox;
-                        free(atual);
-                        printf("A reserva de %s foi cancelada com sucesso.\n", usuario.nome);
+                procuranome (reservation_list, user, &ant, &app_present_time,1);
+                if (app_present_time != NULL) {
+                        ant->next = app_present_time->next;
+                        free(app_present_time);
+                        printf("The %s booking was successfully cancelled.\n", user.name);
                         /* Verifica pré-reserva e substitui */
-                        verificafila(listaP,listaR);
+                        update_queues(pre_reservation_list,reservation_list);
                 }
-                else printf("Usuario não encontrado.\n");
+                else printf("User not found\n");
         }
-        else if(usuario.work == 2 && erro == 0){
+        else if(user.work == 2 && error == 0){
                 /* Eliminar pré-reserva */
-                procuranome (listaP, usuario, &ant, &atual,1);
-                if (atual != NULL) {
-                        ant->prox = atual->prox;
-                        free (atual);
-                        printf("A pré-reserva de %s foi cancelada com sucesso.\n", usuario.nome);
+                procuranome (pre_reservation_list, user, &ant, &app_present_time,1);
+                if (app_present_time != NULL) {
+                        ant->next = app_present_time->next;
+                        free (app_present_time);
+                        printf("The %s pre-booking was successfully cancelled.\n", user.name);
                 }
-                else printf("Usuario não encontrado.\n");
+                else printf("User not found\n");
         }
 }
 
-void verificafila(Sistema *listaP, Sistema *listaR){
-        Sistema *aux = listaP->prox;
-        Sistema *temp = listaP;
+void update_queues(System *pre_reservation_list, System *reservation_list){
+        System *aux = pre_reservation_list->next;
+        System *temp = pre_reservation_list;
         while (aux != NULL) {
-                aux->usuario.work = 1;
-                if(verificavaga(listaR, aux->usuario)){
-                        insere(listaR, NULL,aux->usuario,0);
-                        temp->prox = aux->prox;  // Atualiza o ponteiro do elemento anterior
+                aux->user.work = 1;
+                if(check_time_spot(reservation_list, aux->user)){
+                        create_service(reservation_list, NULL,aux->user,0);
+                        temp->next = aux->next;  // app_present_timeiza o ponteiro do elemento anterior
                         free(aux);  // Libera a memória do elemento
-                        aux = temp->prox;  // Atualiza o ponteiro auxiliar
+                        aux = temp->next;  // app_present_timeiza o ponteiro auxiliar
                 } else {
-                aux->usuario.work = 2;
-                temp = aux;  // Atualiza o ponteiro temporário
-                aux = aux->prox;  // Atualiza o ponteiro auxiliar
+                aux->user.work = 2;
+                temp = aux;  // app_present_timeiza o ponteiro temporário
+                aux = aux->next;  // app_present_timeiza o ponteiro auxiliar
                 }
         }
 }
@@ -599,116 +600,116 @@ void verificafila(Sistema *listaP, Sistema *listaR){
 int checkint() {
     int x;
     while (scanf("%d", &x) != 1 || getchar() != '\n') {
-        printf("Opção inválida. Digite novamente.\n>>> ");
+        printf("Option does not exist. Please re-enter the option you want.\n>>> ");
         while (getchar() != '\n');
     }
     return x;
 }
 
-void atualizatempo(Sistema *lista, Time atual) {
-    Sistema *aux = lista->prox;
-    Sistema *temp = lista;
+void update_time(System *list, Time app_present_time) {
+    System *aux = list->next;
+    System *temp = list;
 
     while (aux != NULL) {
-        if (aux->usuario.ano < atual.ano || 
-            (aux->usuario.ano == atual.ano && aux->usuario.mes < atual.mes) || 
-            (aux->usuario.ano == atual.ano && aux->usuario.mes == atual.mes && aux->usuario.dia < atual.dia)) {
+        if (aux->user.year < app_present_time.year || 
+            (aux->user.year == app_present_time.year && aux->user.month < app_present_time.month) || 
+            (aux->user.year == app_present_time.year && aux->user.month == app_present_time.month && aux->user.day < app_present_time.day)) {
             
-            temp->prox = aux->prox;     /* Atualiza o ponteiro do elemento anterior */
+            temp->next = aux->next;     /* app_present_timeiza o ponteiro do elemento anterior */
             free(aux);                  /* Libera a memória do elemento   */
-            aux = temp->prox;           /* Atualiza o ponteiro auxiliar   */
+            aux = temp->next;           /* app_present_timeiza o ponteiro auxiliar   */
         } else {
-            temp = aux;                 /* Atualiza o ponteiro temporário */
-            aux = aux->prox;            /* Atualiza o ponteiro auxiliar   */
+            temp = aux;                 /* app_present_timeiza o ponteiro temporário */
+            aux = aux->next;            /* app_present_timeiza o ponteiro auxiliar   */
         }
     }
 }
 
-void atualizafila(Sistema *lista, Pessoa atual){
-        Sistema *aux = lista->prox;
-        Sistema *temp = lista;
+void update_queue(System *list, Person app_present_time){
+        System *aux = list->next;
+        System *temp = list;
         while (aux != NULL) {
-                if (aux->usuario.ano < atual.ano || 
-                (aux->usuario.ano == atual.ano && aux->usuario.mes < atual.mes) || 
-                (aux->usuario.ano == atual.ano && aux->usuario.mes == atual.mes && aux->usuario.dia < atual.dia) || 
-                (aux->usuario.ano == atual.ano && aux->usuario.mes == atual.mes && aux->usuario.dia == atual.dia && aux->usuario.hora < atual.hora) ||
-                (aux->usuario.ano == atual.ano && aux->usuario.mes == atual.mes && aux->usuario.dia == atual.dia && aux->usuario.hora < atual.hora) || 
-                (aux->usuario.ano == atual.ano && aux->usuario.mes == atual.mes && aux->usuario.dia == atual.dia && aux->usuario.hora == atual.hora && aux->usuario.min < atual.min) || 
-                (aux->usuario.ano == atual.ano && aux->usuario.mes == atual.mes && aux->usuario.dia == atual.dia && aux->usuario.hora == atual.hora && aux->usuario.min == atual.min)){
-                temp->prox = aux->prox;  /* Atualiza o ponteiro do elemento anterior */
+                if (aux->user.year < app_present_time.year || 
+                (aux->user.year == app_present_time.year && aux->user.month < app_present_time.month) || 
+                (aux->user.year == app_present_time.year && aux->user.month == app_present_time.month && aux->user.day < app_present_time.day) || 
+                (aux->user.year == app_present_time.year && aux->user.month == app_present_time.month && aux->user.day == app_present_time.day && aux->user.hour < app_present_time.hour) ||
+                (aux->user.year == app_present_time.year && aux->user.month == app_present_time.month && aux->user.day == app_present_time.day && aux->user.hour < app_present_time.hour) || 
+                (aux->user.year == app_present_time.year && aux->user.month == app_present_time.month && aux->user.day == app_present_time.day && aux->user.hour == app_present_time.hour && aux->user.min < app_present_time.min) || 
+                (aux->user.year == app_present_time.year && aux->user.month == app_present_time.month && aux->user.day == app_present_time.day && aux->user.hour == app_present_time.hour && aux->user.min == app_present_time.min)){
+                temp->next = aux->next;  /* app_present_timeiza o ponteiro do elemento anterior */
                 free(aux);               /* Libera a memória do elemento */
-                aux = temp->prox;        /* Atualiza o ponteiro auxiliar */
+                aux = temp->next;        /* app_present_timeiza o ponteiro auxiliar */
                 } else {
-                temp = aux;              /* Atualiza o ponteiro temporário */
-                aux = aux->prox;         /* Atualiza o ponteiro auxiliar */
+                temp = aux;              /* app_present_timeiza o ponteiro temporário */
+                aux = aux->next;         /* app_present_timeiza o ponteiro auxiliar */
                 }
         }
 }
 
-void executa(Sistema *listaR, Sistema *listaP){
-        Sistema *aux = listaR->prox;
-        if(!vazia(listaR)){
-                listaR->prox = aux->prox;
-                if(!vazia(listaP)){
-                        atualizafila(listaP,aux->usuario);                        
+void execute_service(System *reservation_list, System *pre_reservation_list){
+        System *aux = reservation_list->next;
+        if(!isEmpty(reservation_list)){
+                reservation_list->next = aux->next;
+                if(!isEmpty(pre_reservation_list)){
+                        update_queue(pre_reservation_list,aux->user);                        
                 }
                 free(aux);
         }
 }
 
-void carrega(Sistema *lista, const char *ficheiro){
+void load_queue(System *list, const char *file){
 
-        char caminho[128];
-        snprintf(caminho, sizeof(caminho), "data/%s", ficheiro);
-        FILE *arquivo = fopen(caminho, "r");
+        char file_path[128];
+        snprintf(file_path, sizeof(file_path), "data/%s", file);
+        FILE *file_manager = fopen(file_path, "r");
         
-        if (arquivo == NULL) {
-                if(strcmp(ficheiro, "ListaR.txt") == 0) printf("** No reservations on database. **\n");
-                else if(strcmp(ficheiro, "ListaP.txt") == 0) printf("** No pre-reservations on database. **\n");
+        if (file_manager == NULL) {
+                if(strcmp(file, "reservation_list.txt") == 0) printf("** No reservations on database. **\n");
+                else if(strcmp(file, "pre_reservation_list.txt") == 0) printf("** No pre-reservations on database. **\n");
                 else printf("** Error opening save files. **\n");
                 return;
         }
 
-        Pessoa insert;
-        /* Percorre as listas e lê os dados do arquivo */
-        while (fscanf(arquivo, "%d %d %d %d %d %d %d", &insert.work, &insert.func, &insert.ano, &insert.mes, &insert.dia, &insert.hora, &insert.min) == 7) {
-                fgets(insert.nome, MAX, arquivo);
-                insert.nome[strcspn(insert.nome, "\n")] = '\0';
-                if(strcmp(ficheiro,"ListaR.txt") == 0 && verificavaga(lista,insert)) insere(lista, NULL, insert,0);
-                else if (strcmp(ficheiro,"ListaP.txt") == 0) insere(lista, NULL, insert,0);
+        Person insert;
+        /* Percorre as listas e lê os dados do file_manager */
+        while (fscanf(file_manager, "%d %d %d %d %d %d %d", &insert.work, &insert.func, &insert.year, &insert.month, &insert.day, &insert.hour, &insert.min) == 7) {
+                fgets(insert.name, MAX, file_manager);
+                insert.name[strcspn(insert.name, "\n")] = '\0';
+                if(strcmp(file,"reservation_list.txt") == 0 && check_time_spot(list,insert)) create_service(list, NULL, insert,0);
+                else if (strcmp(file,"pre_reservation_list.txt") == 0) create_service(list, NULL, insert,0);
         }
-        fclose(arquivo);
+        fclose(file_manager);
 }
 
-void save(Sistema *lista, const char *ficheiro){
-        /* Abre o arquivo para escrita */
+void save(System *list, const char *file){
+        /* Abre o file_manager para escrita */
         mkdir("data", 0777);  // garante que a pasta exista
-        char caminho[128];
-        snprintf(caminho, sizeof(caminho), "data/%s", ficheiro);
+        char file_path[128];
+        snprintf(file_path, sizeof(file_path), "data/%s", file);
 
-        FILE *arquivo = fopen(caminho, "w");
+        FILE *file_manager = fopen(file_path, "w");
 
-        if (arquivo == NULL) {
-                printf("Erro ao abrir o arquivo %s\n", caminho);
+        if (file_manager == NULL) {
+                printf("Not possible to open %s\n", file_path);
                 return;
         }
         
-        /* Percorre a lista e escreve dados no arquivo */
-        Sistema *atual = lista->prox;
-        while (atual != NULL) {
-                fprintf(arquivo, "%d %d %d %d %d %d %d", atual->usuario.work, atual->usuario.func, atual->usuario.ano, atual->usuario.mes, atual->usuario.dia, atual->usuario.hora, atual->usuario.min);
-                fprintf(arquivo, "%s\n", atual->usuario.nome);
-                atual = atual->prox;
+        /* Percorre a list e escreve dados no file_manager */
+        System *app_present_time = list->next;
+        while (app_present_time != NULL) {
+                fprintf(file_manager, "%d %d %d %d %d %d %d", app_present_time->user.work, app_present_time->user.func, app_present_time->user.year, app_present_time->user.month, app_present_time->user.day, app_present_time->user.hour, app_present_time->user.min);
+                fprintf(file_manager, "%s\n", app_present_time->user.name);
+                app_present_time = app_present_time->next;
         }
-        fclose(arquivo);
+        fclose(file_manager);
 }
 
-void destroi(Sistema *fila){
-        Sistema *aux;
-        while (!vazia (fila)) {
-                aux = fila;
-                fila = fila->prox;
+void destroi(System *queue){
+        System *aux;
+        while (!isEmpty (queue)) {
+                aux = queue;
+                queue = queue->next;
                 free (aux);
         }
-        free(fila);
+        free(queue);
 }

@@ -1,5 +1,8 @@
 # Ignore IDE settings, runtime data, and compiled object files
 .vscode
+
+projeto
+
 data
 
 *.o
