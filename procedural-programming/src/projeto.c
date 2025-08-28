@@ -322,7 +322,7 @@ void book_service(System *reservation_queue, System *pre_reservation_queue, Time
 
 void print_queue(System *queue){
         if(!isEmpty(queue)){
-                printf("%8s%15s%12s%16s\n", "Data", "Horário", "Função", "user");
+                printf("%8s%15s%12s%16s\n", "Date", "Time", "Service", "User");
                 for(System *aux = queue->next; aux != NULL; aux = aux->next){
                         if(aux->user.func == 1){ 
                                 printf("(%02d/%02d/%d)   [%02d:%02d]    %-11s%10s\n", aux->user.day , aux->user.month , aux->user.year , aux->user.hour , aux->user.min , "Lavagem",aux->user.name);
@@ -332,7 +332,7 @@ void print_queue(System *queue){
                      }
                 }
         }
-        else printf("*** Ainda não há nenhuma marcação nesta list ***\n");
+        else printf("*** There are no entries in this list yet ***\n");
 }
 
 int isEmpty(System *queue){
@@ -472,7 +472,7 @@ void print_specific_bookings(System *list, Person p1){
         if(exists == 0) printf("%8s%14s%10s%12s%16s\n", "----", "-------", "------", "----", "-------");       
 }
 
-void procuranome(System *queue, Person key, System **ant, System **app_present_time, int service){
+void search_booking_by_username(System *queue, Person key, System **ant, System **app_present_time, int service){
         *ant = queue; 
         *app_present_time = queue->next;
         if(service == 1) while ((*app_present_time) != NULL && (strcmp((*app_present_time)->user.name, key.name) != 0 
@@ -557,7 +557,7 @@ void cancel_service(System *reservation_list, System *pre_reservation_list, Time
         System *ant, *app_present_time;
         if(user.work == 1 && error == 0){
                 /* Eliminar e checar pré-reserva! */
-                procuranome (reservation_list, user, &ant, &app_present_time,1);
+                search_booking_by_username (reservation_list, user, &ant, &app_present_time,1);
                 if (app_present_time != NULL) {
                         ant->next = app_present_time->next;
                         free(app_present_time);
@@ -569,7 +569,7 @@ void cancel_service(System *reservation_list, System *pre_reservation_list, Time
         }
         else if(user.work == 2 && error == 0){
                 /* Eliminar pré-reserva */
-                procuranome (pre_reservation_list, user, &ant, &app_present_time,1);
+                search_booking_by_username (pre_reservation_list, user, &ant, &app_present_time,1);
                 if (app_present_time != NULL) {
                         ant->next = app_present_time->next;
                         free (app_present_time);
@@ -625,7 +625,7 @@ void update_time(System *list, Time app_present_time) {
     }
 }
 
-void update_queue(System *list, Person app_present_time){
+void update_queue_by_real_time(System *list, Person app_present_time){
         System *aux = list->next;
         System *temp = list;
         while (aux != NULL) {
@@ -651,7 +651,7 @@ void execute_service(System *reservation_list, System *pre_reservation_list){
         if(!isEmpty(reservation_list)){
                 reservation_list->next = aux->next;
                 if(!isEmpty(pre_reservation_list)){
-                        update_queue(pre_reservation_list,aux->user);                        
+                        update_queue_by_real_time(pre_reservation_list,aux->user);                        
                 }
                 free(aux);
         }

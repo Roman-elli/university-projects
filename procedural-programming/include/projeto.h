@@ -30,7 +30,7 @@ int isEmpty(System *queue);                           /* Verifica se a list esta
 void destroi(System *queue);                        /* Liberta toda a memória alocada em uma list específica */
 int check_time_spot(System *list, Person p1);        /* Verifica se um horário específico está disponível para reserva */
 void search(System *queue, Person key, System **ant, System **app_present_time);                      /* search um elemento específico da list levando em conta a data e horário */
-void procuranome(System *queue, Person key, System **ant, System **app_present_time, int service);      /* search um elemento específico da list levando em conta o name de uma Person */
+void search_booking_by_username(System *queue, Person key, System **ant, System **app_present_time, int service);      /* search um elemento específico da list levando em conta o name de uma Person */
 void create_service(System *list,System *pre_reservation_list, Person p1, int x);      /* create_service um elemento na list caso seja possível */
 void print_queue(System *queue);                                        /* print_queue a list em ordem temporal */
 void print_user_reservations(System *queue, System *pre_reservation_queue, char *name);        /* print_queue as reservas e pré-reservas de uma Person específica */
@@ -42,7 +42,7 @@ void cancel_service(System *reservation_list, System *pre_reservation_list, Time
 void load_queue(System *reservation_list, const char *file);                /* Coleta todas as informações salvas em um file específico e as create_service em sua respetiva list */
 void save(System *list, const char *file);                    /* Salva todos os dados das listas em seus respetivos ficheiros */
 void update_time(System *list, Time app_present_time);                     /* app_present_timeiza as listas para as novas definições de tempo app_present_time */
-void update_queue(System *list, Person app_present_time);                    /* Após a execução de uma reserva, verifica todas as pré-reservas anteriores a ordem executada e as cancel_service */
+void update_queue_by_real_time(System *list, Person app_present_time);                    /* Após a execução de uma reserva, verifica todas as pré-reservas anteriores a ordem executada e as cancel_service */
 void update_queues(System *pre_reservation_list, System *reservation_list);                /* app_present_timeiza a queue de pré-reservas após a remoção de um usuário das reservas */
 void execute_service(System *reservation_list, System *pre_reservation_list);                     /* execute_service a ordem mais antiga das reservas */
 
