@@ -24,6 +24,6 @@ Each folder has its own README with more detailed documentation.
 ---
 
 ## Procedural Programming
-- 🚗 [**CarWash Manager**](procedural-programming/carwash)  
+- 🚗 [**CarWash Manager**](procedural-programming)  
   Language: **C**  
   → A **car wash and maintenance reservation system** that allows you to **create, list, cancel, execute, save, and load reservations**, including a waiting list and time validation.  
