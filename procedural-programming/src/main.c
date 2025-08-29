@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "../include/projeto.h"
+#include "../include/project.h"
 
 int main(){   
 

@@ -1,6 +1,8 @@
+#include "../../include/project.h"
+
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../../include/projeto.h"
 
 void print_menu(System *reservation_queue, System *pre_reservation_queue){
         /* opening */
@@ -8,7 +10,6 @@ void print_menu(System *reservation_queue, System *pre_reservation_queue){
     printf("   __/  | \\__   | Welcome to ManuWash! Book car washes and maintenance services conveniently! |   __/ |  \\__   \n");
     printf("  '--0----0--'  -------------------------------------------------------------------------------  '--0----0--'  \n\n");
 
-    /* define the real time moment */
     int x = 1;
     Time app_present_time;
     while(x){
@@ -39,7 +40,6 @@ void print_menu(System *reservation_queue, System *pre_reservation_queue){
         else printf("\n*** Invalid Year ***\n");
     }
     
-    /* User interaction */
     x = 1;
     int option;
 

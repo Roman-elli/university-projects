@@ -1,4 +1,4 @@
-#include "../../include/projeto.h"
+#include "../../include/project.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -238,13 +238,13 @@ void cancel_service(System *reservation_list, System *pre_reservation_list, Time
                 }else {printf("\nInvalid year\n"); error++;}
         }else {printf("\nThis function don't exists\n"); error++;}
 
-        System *ant, *app_present_time;
+        System *ant, *current_node;
         if(user.work == 1 && error == 0){
                 /* Eliminar e checar pré-reserva! */
-                search_booking_by_username (reservation_list, user, &ant, &app_present_time,1);
-                if (app_present_time != NULL) {
-                        ant->next = app_present_time->next;
-                        free(app_present_time);
+                search_booking_by_username (reservation_list, user, &ant, &current_node,1);
+                if (current_node != NULL) {
+                        ant->next = current_node->next;
+                        free(current_node);
                         printf("The %s booking was successfully cancelled.\n", user.name);
                         /* Verifica pré-reserva e substitui */
                         update_queues(pre_reservation_list,reservation_list);
@@ -253,10 +253,10 @@ void cancel_service(System *reservation_list, System *pre_reservation_list, Time
         }
         else if(user.work == 2 && error == 0){
                 /* Eliminar pré-reserva */
-                search_booking_by_username (pre_reservation_list, user, &ant, &app_present_time,1);
-                if (app_present_time != NULL) {
-                        ant->next = app_present_time->next;
-                        free (app_present_time);
+                search_booking_by_username (pre_reservation_list, user, &ant, &current_node,1);
+                if (current_node != NULL) {
+                        ant->next = current_node->next;
+                        free (current_node);
                         printf("The %s pre-booking was successfully cancelled.\n", user.name);
                 }
                 else printf("User not found\n");
@@ -270,13 +270,13 @@ void update_queues(System *pre_reservation_list, System *reservation_list){
                 aux->user.work = 1;
                 if(check_time_spot(reservation_list, aux->user)){
                         create_service(reservation_list, NULL,aux->user,0);
-                        temp->next = aux->next;  // atualiza o ponteiro do elemento anterior
-                        free(aux);  // Libera a memória do elemento
-                        aux = temp->next;  // app_present_timeiza o ponteiro auxiliar
+                        temp->next = aux->next;
+                        free(aux);
+                        aux = temp->next;
                 } else {
                 aux->user.work = 2;
-                temp = aux;  // app_present_timeiza o ponteiro temporário
-                aux = aux->next;  // app_present_timeiza o ponteiro auxiliar
+                temp = aux;
+                aux = aux->next;
                 }
         }
 }

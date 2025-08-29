@@ -1,4 +1,8 @@
-#include "../../include/projeto.h"
+#include "../../include/project.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 int leap_year(int x){
         if(x % 400 == 0) return 1;
@@ -63,12 +67,12 @@ void update_time(System *list, Time app_present_time) {
             (aux->user.year == app_present_time.year && aux->user.month < app_present_time.month) || 
             (aux->user.year == app_present_time.year && aux->user.month == app_present_time.month && aux->user.day < app_present_time.day)) {
             
-            temp->next = aux->next;     /* app_present_timeiza o ponteiro do elemento anterior */
-            free(aux);                  /* Libera a memória do elemento   */
-            aux = temp->next;           /* app_present_timeiza o ponteiro auxiliar   */
+            temp->next = aux->next;
+            free(aux);
+            aux = temp->next;
         } else {
-            temp = aux;                 /* app_present_timeiza o ponteiro temporário */
-            aux = aux->next;            /* app_present_timeiza o ponteiro auxiliar   */
+            temp = aux;
+            aux = aux->next;
         }
     }
 }

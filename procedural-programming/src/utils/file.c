@@ -1,4 +1,9 @@
-#include "../../include/projeto.h"
+#include "../../include/project.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 void load_queue(System *list, const char *file){
 
@@ -14,7 +19,6 @@ void load_queue(System *list, const char *file){
         }
 
         Person insert;
-        /* Percorre as listas e lê os dados do file_manager */
         while (fscanf(file_manager, "%d %d %d %d %d %d %d", &insert.work, &insert.func, &insert.year, &insert.month, &insert.day, &insert.hour, &insert.min) == 7) {
                 fgets(insert.name, MAX, file_manager);
                 insert.name[strcspn(insert.name, "\n")] = '\0';
@@ -25,8 +29,7 @@ void load_queue(System *list, const char *file){
 }
 
 void save(System *list, const char *file){
-        /* Abre o file_manager para escrita */
-        mkdir("data", 0777);  // garante que a pasta exista
+        mkdir("data", 0777);
         char file_path[128];
         snprintf(file_path, sizeof(file_path), "data/%s", file);
 
@@ -37,12 +40,11 @@ void save(System *list, const char *file){
                 return;
         }
         
-        /* Percorre a list e escreve dados no file_manager */
-        System *app_present_time = list->next;
-        while (app_present_time != NULL) {
-                fprintf(file_manager, "%d %d %d %d %d %d %d", app_present_time->user.work, app_present_time->user.func, app_present_time->user.year, app_present_time->user.month, app_present_time->user.day, app_present_time->user.hour, app_present_time->user.min);
-                fprintf(file_manager, "%s\n", app_present_time->user.name);
-                app_present_time = app_present_time->next;
+        System *current_node = list->next;
+        while (current_node != NULL) {
+                fprintf(file_manager, "%d %d %d %d %d %d %d", current_node->user.work, current_node->user.func, current_node->user.year, current_node->user.month, current_node->user.day, current_node->user.hour, current_node->user.min);
+                fprintf(file_manager, "%s\n", current_node->user.name);
+                current_node = current_node->next;
         }
         fclose(file_manager);
 }
