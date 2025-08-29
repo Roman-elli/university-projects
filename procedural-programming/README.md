@@ -1,4 +1,4 @@
-# 🚗 Manutenlava – Reservation System
+# 🚗 ManuWash – Reservation System
 
 I made this project during my first year at university. it was developed in **C** and implements a **car wash and maintenance reservation system**. It allows you to **create, list, cancel, execute, save, and load reservations** in a simple and practical way.  
 
