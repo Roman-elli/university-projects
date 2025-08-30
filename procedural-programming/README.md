@@ -11,7 +11,7 @@ I made this project during my first year at university. it was developed in **C*
   - Maintenance (**1 hour**)  
 - 📝 Reservations and **pre-reservations** (waiting list).  
 - ⏳ Automatic update of the waiting list.  
-- 💾 **Save and load** reservations from files (`ListaR.txt` and `ListaP.txt`).  
+- 💾 **Save and load** reservations from files (`pre_reservation_list.txt` and `reservation_list.txt`).  
 - ❌ Cancel reservations and pre-reservations.  
 - ▶️ Execute the most recent task.  
 - 🔍 Display options:
