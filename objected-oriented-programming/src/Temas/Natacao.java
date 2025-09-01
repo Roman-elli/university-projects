@@ -22,7 +22,7 @@ public class Natacao extends Desporto{
      * @param labelImage label onde será apresentada a imagem
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("../assets/images/Natação.png");
+        ImageIcon image = new ImageIcon("assets/images/Natação.png");
         labelImage.setIcon(image);
     }
 }

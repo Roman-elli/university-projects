@@ -39,7 +39,7 @@ public class POOTrivia {
      * é utilizado o método turnTrue que ira tornar as strings de respostas inicializadas anteriormente em "falso" como "verdadeiro"
      */
     public void readFile(){
-        File f = new File("src/POOTrivia/Perguntas.txt");
+        File f = new File("assets/game-questions/Perguntas.txt");
         if(f.exists() && f.isFile()) {
             try {
                 FileReader fr = new FileReader(f);
@@ -177,7 +177,7 @@ public class POOTrivia {
      * @param nomeJogador nome do jogador utilizado para o título do ficheiro
      */
     public void writePlayer(String nomeJogador){
-        String nomeFicheiro = "src/Jogos/" + converteTitle(nomeJogador);
+        String nomeFicheiro = "data/save-game/" + converteTitle(nomeJogador);
         File f = new File(nomeFicheiro);
         try (FileOutputStream fos = new FileOutputStream(f);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
@@ -196,11 +196,25 @@ public class POOTrivia {
         Collections.sort(players);
     }
 
+
+    public void ensureSaveFolderExists() {
+        File pasta = new File("data/save-game");
+        if (!pasta.exists()) {
+            boolean criado = pasta.mkdirs(); // cria todas as pastas necessárias
+            if (criado) {
+                System.out.println("Pasta data/save-game criada com sucesso!");
+            } else {
+                System.out.println("Falha ao criar a pasta data/save-game.");
+            }
+        }
+    }
     /**
-     * método que lê o ficheiro de objetos dos jgadores, aramazenando os jogadores na lista de jogadores
+     * método que lê o ficheiro de objetos dos jogadores, aramazenando os jogadores na lista de jogadores
      */
     public void readPlayers() {
-        File pasta = new File("src/Jogos");
+        ensureSaveFolderExists();
+        
+        File pasta = new File("data/save-game");
 
         if (pasta.isDirectory()) {
             File[] arquivos = pasta.listFiles();

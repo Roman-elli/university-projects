@@ -1,4 +1,3 @@
-import javax.swing.*;
 import POOTrivia.*;
 
 /**
@@ -8,6 +7,6 @@ import POOTrivia.*;
  */
 public class Main {
     public static void main(String[] args){
-        JFrame menu = new FrameClass();
+        new FrameClass();
     }
 }

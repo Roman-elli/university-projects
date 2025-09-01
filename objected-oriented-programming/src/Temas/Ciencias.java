@@ -95,7 +95,7 @@ public class Ciencias extends Pergunta{
      * @param labelImage label onde será apresentada a imagem
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("../assets/images/Ciência.png");
+        ImageIcon image = new ImageIcon("assets/images/Ciência.png");
         labelImage.setIcon(image);
     }
 }

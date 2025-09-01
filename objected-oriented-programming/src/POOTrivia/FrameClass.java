@@ -33,7 +33,7 @@ public class FrameClass extends JFrame{
 
         JPanel panelMenuGrid = new JPanel(new GridLayout(3, 1, 0, altura / 12));
 
-        ImageIcon logo = new ImageIcon("../assets/images/Logo.png");
+        ImageIcon logo = new ImageIcon("assets/images/Logo.png");
         JLabel labelLogo = new JLabel(logo);
 
         JButton buttonPlay = new JButton("Iniciar Jogo");
@@ -129,25 +129,25 @@ public class FrameClass extends JFrame{
         JPanel panelFlow4 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JPanel panelFlow5 = new JPanel(new FlowLayout());
 
-        ImageIcon goldImage = new ImageIcon("../assets/images/Ouro.png");
+        ImageIcon goldImage = new ImageIcon("assets/images/Ouro.png");
         JLabel labelImage1 = new JLabel(goldImage);
 
         labelPlayer1 = new JLabel("1º lugar");
         labelPlayer1.setFont(new Font("Century Gothic", Font.BOLD, 18));
 
-        ImageIcon silverImage = new ImageIcon("../assets/images/Prata.png");
+        ImageIcon silverImage = new ImageIcon("assets/images/Prata.png");
         JLabel labelImage2 = new JLabel(silverImage);
 
         labelPlayer2 = new JLabel("2º lugar");
         labelPlayer2.setFont(new Font("Century Gothic", Font.BOLD, 18));
 
-        ImageIcon bronzeImage = new ImageIcon("../assets/images/Bronze.png");
+        ImageIcon bronzeImage = new ImageIcon("assets/images/Bronze.png");
         JLabel labelImage3 = new JLabel(bronzeImage);
 
         labelPlayer3 = new JLabel("3º lugar");
         labelPlayer3.setFont(new Font("Century Gothic", Font.BOLD, 18));
 
-        ImageIcon penguimIcon = new ImageIcon("../assets/images/Pinguim.png");
+        ImageIcon penguimIcon = new ImageIcon("assets/images/Pinguim.png");
         JLabel labelPinguim = new JLabel(penguimIcon);
 
         labelPlayerName = new JLabel();
@@ -300,11 +300,11 @@ public class FrameClass extends JFrame{
             buttonNext.setVisible(true);
             ImageIcon image;
             if (resposta.equals(correta)) {
-                image = new ImageIcon("../assets/images/Correto.png");
+                image = new ImageIcon("assets/images/Correto.png");
                 labelResult.setText("Ganhou " + gameTrivia.newQuestion().calculatePoints() + " pontos");
                 player.addRight(gameTrivia.newQuestion());
             } else {
-                image = new ImageIcon("../assets/images/Errado.png");
+                image = new ImageIcon("assets/images/Errado.png");
                 player.addWrong(gameTrivia.newQuestion());
             }
 

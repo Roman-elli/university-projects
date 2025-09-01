@@ -95,7 +95,7 @@ public class Artes extends Pergunta{
      * @param labelImage label onde será apresentada a imagem
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("../assets/images/Artes.png");
+        ImageIcon image = new ImageIcon("assets/images/Artes.png");
         labelImage.setIcon(image);
     }
 }

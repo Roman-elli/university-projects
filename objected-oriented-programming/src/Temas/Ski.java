@@ -22,7 +22,7 @@ public class Ski extends Desporto{
      * @param labelImage label onde será apresentada a imagem
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("../assets/images/Ski.png");
+        ImageIcon image = new ImageIcon("assets/images/Ski.png");
         labelImage.setIcon(image);
     }
 }
