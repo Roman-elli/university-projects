@@ -93,7 +93,7 @@ public abstract class Pergunta implements Serializable {
      * @param buttons lista com os botões
      * @param rodada rodada do jogo
      */
-    public void defineTema(JButton[] buttons, int rodada){
+    public void defineTheme(JButton[] buttons, int rodada){
         for(int i = 2; i < buttons.length; i++) buttons[i].setVisible(false);
         buttons[0].setText("Verdadeiro");
         buttons[1].setText("Falso");

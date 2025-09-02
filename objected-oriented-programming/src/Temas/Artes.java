@@ -79,7 +79,7 @@ public class Artes extends Pergunta{
      * @param rodada rodada do jogo
      */
     @Override
-    public void defineTema(JButton[] buttons, int rodada){
+    public void defineTheme(JButton[] buttons, int rodada){
         String[] respostas;
         if(rodada < 2){
             for(int i = 3; i < buttons.length; i++) buttons[i].setVisible(false);

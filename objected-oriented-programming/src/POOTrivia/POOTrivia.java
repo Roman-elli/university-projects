@@ -208,6 +208,7 @@ public class POOTrivia {
             }
         }
     }
+    
     /**
      * método que lê o ficheiro de objetos dos jogadores, aramazenando os jogadores na lista de jogadores
      */
