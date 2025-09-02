@@ -6,6 +6,6 @@ import POOTrivia.*;
  */
 public class Main {
     public static void main(String[] args){
-        new FrameClass();
+        new Frame();
     }
 }

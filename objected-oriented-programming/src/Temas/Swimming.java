@@ -2,10 +2,10 @@ package Temas;
 import javax.swing.*;
 
 /**
- * A class Natacao armazena os dados especificos das perguntas e respostas relacionados com esta categoria
+ * A class Swimming armazena os dados especificos das perguntas e respostas relacionados com esta categoria
  */
-public class Natacao extends Desporto{
-    public Natacao(String question){
+public class Swimming extends Sports{
+    public Swimming(String question){
         super(question);
     }
 
@@ -18,11 +18,11 @@ public class Natacao extends Desporto{
     }
 
     /**
-     * método que insere à label a imagem de Natacao
+     * método que insere à label a imagem de Swimming
      * @param labelImage label onde será apresentada a imagem
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("assets/images/Natação.png");
+        ImageIcon image = new ImageIcon("assets/images/Swim.png");
         labelImage.setIcon(image);
     }
 }

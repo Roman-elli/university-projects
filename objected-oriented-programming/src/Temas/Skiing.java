@@ -2,10 +2,10 @@ package Temas;
 import javax.swing.*;
 
 /**
- * A class Ski armazena os dados especificos das perguntas e respostas relacionados com esta categoria
+ * A class Skiing armazena os dados especificos das perguntas e respostas relacionados com esta categoria
  */
-public class Ski extends Desporto{
-    public Ski(String question){
+public class Skiing extends Sports{
+    public Skiing(String question){
         super(question);
     }
 
@@ -18,11 +18,11 @@ public class Ski extends Desporto{
     }
 
     /**
-     * método que insere à label a imagem de Ski
+     * método que insere à label a imagem de Skiing
      * @param labelImage label onde será apresentada a imagem
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("assets/images/Ski.png");
+        ImageIcon image = new ImageIcon("assets/images/Skiing.png");
         labelImage.setIcon(image);
     }
 }

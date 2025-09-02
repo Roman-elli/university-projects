@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * A class Futebol armazena os dados especificos das perguntas e respostas relacionados com esta categoria
+ * A class Football armazena os dados especificos das perguntas e respostas relacionados com esta categoria
  * Esta classe contêm dois arrays um com as respostas dos jogadores(faceis) e outro com as respostas das camisas(dificeis),
  * e uma string correct1 que armazena a resposta correta dos jogadores e uma string correct2 que armazena a resposta
  * correta das camisas
  */
-public class Futebol extends Desporto{
+public class Football extends Sports{
     private final ArrayList<String> respostasJogador;
     private final ArrayList<String> respostasCamisa;
     private String correct1, correct2;
 
-    public Futebol(String question){
+    public Football(String question){
         super(question);
         respostasJogador = new ArrayList<>();
         respostasCamisa = new ArrayList<>();
@@ -31,7 +31,7 @@ public class Futebol extends Desporto{
     }
 
     /**
-     * método que adiciona uma resposta de Futebol ao array com as respostas dos jogadores
+     * método que adiciona uma resposta de Football ao array com as respostas dos jogadores
      * @param newFutebol resposta a ser adicionada
      */
     @Override
@@ -40,7 +40,7 @@ public class Futebol extends Desporto{
     }
 
     /**
-     * método que adiciona uma resposta de Futebol ao array com as respostas das camisas
+     * método que adiciona uma resposta de Football ao array com as respostas das camisas
      * @param newFutebol resposta a ser adicionada
      */
     @Override
@@ -49,7 +49,7 @@ public class Futebol extends Desporto{
     }
 
     /**
-     * método que embaralha as seis respostas de Futebol relativas aos jogadores, define a correct1 como resposta principal e retorna uma lista com as
+     * método que embaralha as seis respostas de Football relativas aos jogadores, define a correct1 como resposta principal e retorna uma lista com as
      * respostas dos jogadores(fáceis), sendo utilizado apenas na rodada 1 e 2 do jogo
      * @return lista com as seis respostas fáceis
      */
@@ -65,7 +65,7 @@ public class Futebol extends Desporto{
     }
 
     /**
-     * método que embaralha as seis respostas de Futebol relativas as camisas, define a correct2 como resposta principal e retorna uma lista com as
+     * método que embaralha as seis respostas de Football relativas as camisas, define a correct2 como resposta principal e retorna uma lista com as
      * respostas das camisas(difíceis), sendo utilizado quando a rodada é igual ou superior a três
      * @return lista com as seis respostas difíceis
      */
@@ -98,11 +98,11 @@ public class Futebol extends Desporto{
     }
 
     /**
-     * método que insere à label a imagem de Futebol
+     * método que insere à label a imagem de Football
      * @param labelImage label onde será apresentada a imagem
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("assets/images/Futebol.png");
+        ImageIcon image = new ImageIcon("assets/images/Football.png");
         labelImage.setIcon(image);
     }
 

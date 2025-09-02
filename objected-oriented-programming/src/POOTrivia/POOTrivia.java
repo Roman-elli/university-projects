@@ -9,17 +9,17 @@ import java.time.LocalDateTime;
 
 /**
  * A class POOTrivia é onde se encontram os principais métodos do programa.
- * Esta classe contêm um array do tipo Pergunta, onde serão armazenadas as perguntas do jogo que são embaralhadas por meio de um shuffle
- * sempre que o jogo começa, um array do tipo Jogador, onde serão armazenados os jogadores, um int numeroRespostas,
+ * Esta classe contêm um array do tipo Question, onde serão armazenadas as perguntas do jogo que são embaralhadas por meio de um shuffle
+ * sempre que o jogo começa, um array do tipo Player, onde serão armazenados os jogadores, um int numeroRespostas,
  * onde está o número de respostas de cada pergunta e um int rodada, que representa em que rodada do jogo estamos e a
- * variável jogadorAtivo do tipo Jogador, que representa o jogador atual
+ * variável jogadorAtivo do tipo Player, que representa o jogador atual
  */
 public class POOTrivia {
-    private final ArrayList<Pergunta> gameQuestions;
-    private final ArrayList<Jogador> players;
+    private final ArrayList<Question> gameQuestions;
+    private final ArrayList<Player> players;
     private final int numeroRespostas;
     private int rodada;
-    private Jogador jogadorAtivo;
+    private Player jogadorAtivo;
     public POOTrivia(){
         gameQuestions = new ArrayList<>();
         players = new ArrayList<>();
@@ -27,29 +27,29 @@ public class POOTrivia {
         rodada = 0;
         readFile();
         Collections.shuffle(gameQuestions);
-        jogadorAtivo = new Jogador();
+        jogadorAtivo = new Player();
         readPlayers();
     }
 
     /**
      * método que lê o ficheiro das perguntas, analisando se este ficheiro existe e, caso exista, efetua a leitura armazenando
      * cada pergunta com as respetivas respostas na sua respetiva categoria. Em seguida, a primeira resposta(resposta correta)
-     * de cada pergunta é armazenada por meio do metodo setCorrect, o qual é utilizado apenas quando a categoria é Artes, Ciencias ou Futebol (utilizando
-     * neste também setCorrect2, pois para cada pergunta desta modalidade existe dois tipos de resposta) e nas categorias de Natação e Ski
+     * de cada pergunta é armazenada por meio do metodo setCorrect, o qual é utilizado apenas quando a categoria é Arts, Science ou Football (utilizando
+     * neste também setCorrect2, pois para cada pergunta desta modalidade existe dois tipos de resposta) e nas categorias de Natação e Skiing
      * é utilizado o método turnTrue que ira tornar as strings de respostas inicializadas anteriormente em "falso" como "verdadeiro"
      */
     public void readFile(){
-        File f = new File("assets/game-questions/Perguntas.txt");
+        File f = new File("assets/game-questions/questions.txt");
         if(f.exists() && f.isFile()) {
             try {
                 FileReader fr = new FileReader(f);
                 BufferedReader br = new BufferedReader(fr);
-                Pergunta novaPergunta;
+                Question novaPergunta;
                 String line, leitura;
                 while((line = br.readLine()) != null){
                     switch (line){
-                        case "Artes":
-                            novaPergunta = new Artes(br.readLine());
+                        case "Arts":
+                            novaPergunta = new Arts(br.readLine());
                             addQuestion(novaPergunta);
                             for(int i = 0; i < numeroRespostas; i++){
                                 leitura = br.readLine();
@@ -57,8 +57,8 @@ public class POOTrivia {
                                 novaPergunta.addResposta(leitura);
                             }
                             break;
-                        case "Ciências":
-                            novaPergunta = new Ciencias(br.readLine());
+                        case "Science":
+                            novaPergunta = new Science(br.readLine());
                             addQuestion(novaPergunta);
                             for(int i = 0; i < numeroRespostas; i++){
                                 leitura = br.readLine();
@@ -72,18 +72,18 @@ public class POOTrivia {
                                 novaPergunta.addResposta2(leitura);
                             }
                             break;
-                        case "Ski":
-                            novaPergunta = new Ski(br.readLine());
+                        case "Skiing":
+                            novaPergunta = new Skiing(br.readLine());
                             addQuestion(novaPergunta);
                             novaPergunta.setCorrect(br.readLine());
                             break;
-                        case "Natação":
-                            novaPergunta = new Natacao(br.readLine());
+                        case "Swimming":
+                            novaPergunta = new Swimming(br.readLine());
                             addQuestion(novaPergunta);
                             novaPergunta.setCorrect(br.readLine());
                             break;
-                        case "Futebol":
-                            novaPergunta = new Futebol(br.readLine());
+                        case "Football":
+                            novaPergunta = new Football(br.readLine());
                             addQuestion(novaPergunta);
                             for(int i = 0; i < numeroRespostas; i++){
                                 leitura = br.readLine();
@@ -132,7 +132,7 @@ public class POOTrivia {
      * método que adiciona as perguntas ao array de perguntas
      * @param novaPergunta pergunta a ser adiciona
      */
-    public void addQuestion(Pergunta novaPergunta){
+    public void addQuestion(Question novaPergunta){
         gameQuestions.add(novaPergunta);
     }
 
@@ -140,7 +140,7 @@ public class POOTrivia {
      * método que retorna a questão que será apresentada em cada rodada
      * @return questão que será apresentada em cada rodada
      */
-    public Pergunta newQuestion(){
+    public Question newQuestion(){
         return gameQuestions.get(rodada);
     }
 
@@ -148,7 +148,7 @@ public class POOTrivia {
      * método que adiciona o jogador no array de jogadores
      * @param novoJogador jogador a ser adicionado
      */
-    public void addPlayer(Jogador novoJogador){
+    public void addPlayer(Player novoJogador){
         players.add(novoJogador);
     }
 
@@ -169,7 +169,7 @@ public class POOTrivia {
         for (String i : splitName) {
             newName.append(i.charAt(0));
         }
-        return "pootrivia_jogo_" + formatter.format(agora) + "_" + newName + ".dat";
+        return "pootrivia_game_" + formatter.format(agora) + "_" + newName + ".dat";
     }
 
     /**
@@ -223,7 +223,7 @@ public class POOTrivia {
             if (arquivos != null) {
                 for (File arquivo : arquivos) {
                     try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
-                        Jogador novoJogador = (Jogador) ois.readObject();
+                        Player novoJogador = (Player) ois.readObject();
                         addPlayer(novoJogador);
 
                     } catch (IOException | ClassNotFoundException ex) {
@@ -240,7 +240,7 @@ public class POOTrivia {
      * método que retorna o jogador atual do jogo
      * @return jogador atual
      */
-    public Jogador getPlayer(){
+    public Player getPlayer(){
         return jogadorAtivo;
     }
 
@@ -264,7 +264,7 @@ public class POOTrivia {
     public void reset(){
         if(rodada != 0){
             Collections.shuffle(gameQuestions);
-            jogadorAtivo = new Jogador();
+            jogadorAtivo = new Player();
             rodada = 0;
         }
     }

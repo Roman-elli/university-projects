@@ -3,16 +3,16 @@ import javax.swing.*;
 import java.io.Serializable;
 
 /**
- * A class abstract Pergunta é onde serão armazenadas as informações comuns das perguntas e seus repetivos métodos
+ * A class abstract Question é onde serão armazenadas as informações comuns das perguntas e seus repetivos métodos
  * Está classe contêm uma String question, que representa uma pergunta, o int questionPoints, que representa os pontos
  * dessa pergunta e uma String correct, que representa a resposta correta inicializada como vazio pois será alterada
  * assim que a leitura do ficheiro de perguntas for executada
  */
-public abstract class Pergunta implements Serializable {
+public abstract class Question implements Serializable {
     private final String question;
     private final int questionPoints;
     private String correct;
-    public Pergunta(String question){
+    public Question(String question){
         this.question = question;
         questionPoints = 5;
         correct = "";
@@ -72,7 +72,7 @@ public abstract class Pergunta implements Serializable {
 
     /**
      * método implementado nas subclasses para retornar uma lista com as respostas faceis, retornando null caso
-     * haja um erro de implementação, pois deve sempre ser executada pela subclasse Artes, Ciencias e Futebol
+     * haja um erro de implementação, pois deve sempre ser executada pela subclasse Arts, Science e Football
      * @return lista com as respostas
      */
     public String[] respostasA(){
@@ -81,7 +81,7 @@ public abstract class Pergunta implements Serializable {
 
     /**
      * método implementado nas subclasses para retornar uma lista com as respostas dificeis, retornando null caso
-     * haja um erro de implementação, pois deve sempre ser executada pela subclasse Artes, Ciencias e Futebol
+     * haja um erro de implementação, pois deve sempre ser executada pela subclasse Arts, Science e Football
      * @return lista com as respostas
      */
     public String[] respostasB(){
@@ -95,8 +95,8 @@ public abstract class Pergunta implements Serializable {
      */
     public void defineTheme(JButton[] buttons, int rodada){
         for(int i = 2; i < buttons.length; i++) buttons[i].setVisible(false);
-        buttons[0].setText("Verdadeiro");
-        buttons[1].setText("Falso");
+        buttons[0].setText("True");
+        buttons[1].setText("False");
     }
 
     /**

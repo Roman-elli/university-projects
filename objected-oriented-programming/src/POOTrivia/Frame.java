@@ -6,20 +6,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * The FrameClass contains the necessary methods to create the program's graphical interface.
+ * The Frame contains the necessary methods to create the program's graphical interface.
  * This class includes several variables such as labels, buttons, and panels.
  * A JPanel was used for the menu, one for the questions, and another for the results, with the transition between them
  * handled through setVisible. Furthermore, it is worth noting that the game instance is only created
  * at the initial moment of the program.
  */
-public class FrameClass extends JFrame{
+public class Frame extends JFrame{
     private final POOTrivia gameTrivia;
     private final JButton[] buttons;
     private final JLabel labelQuestion, labelResult, labelImage, labelCorrect, labelPlayer1, labelPlayer2, labelPlayer3, labelPlayerName;
     private final JButton buttonNext;
     private final JPanel panelMenu, panelQuestions, panelResult;
 
-    public FrameClass(){
+    public Frame(){
         super();
         gameTrivia = new POOTrivia();
         int frame_width = 1200;
@@ -176,7 +176,7 @@ public class FrameClass extends JFrame{
         panelResult.add(panelFlow1, BorderLayout.NORTH);
         panelResult.add(labelPinguim, BorderLayout.EAST);
 
-        FrameClass.this.add(panelMenu);
+        Frame.this.add(panelMenu);
         setVisible(true);
     }
 
@@ -203,7 +203,7 @@ public class FrameClass extends JFrame{
     * of the question passed as a parameter.
     * @param playQuestion the question
     */
-    private void nextQuestion(Pergunta playQuestion) {
+    private void nextQuestion(Question playQuestion) {
         for(JButton i: buttons) {
             i.setEnabled(true);
             i.setVisible(true);
@@ -231,7 +231,7 @@ public class FrameClass extends JFrame{
             gameTrivia.reset();
             panelMenu.setVisible(false);
             panelQuestions.setVisible(true);
-            FrameClass.this.add(panelQuestions);
+            Frame.this.add(panelQuestions);
             buttonNext.setText("Next Question");
             nextQuestion(gameTrivia.newQuestion());
         }
@@ -262,7 +262,7 @@ public class FrameClass extends JFrame{
                         panelResult.setVisible(true);
                         labelPlayerName.setText("Your score was " + gameTrivia.getPlayer().getPoints() + "!!! Thank you for playing POOTrivia " + nome + "!!!");
                         gameTrivia.getWinner(labelPlayer1, labelPlayer2, labelPlayer3);
-                        FrameClass.this.add(panelResult);
+                        Frame.this.add(panelResult);
                     }
                     else{
                         JOptionPane.showMessageDialog(null, "Please enter a name with fewer characters (maximum 50).", "Error", JOptionPane.ERROR_MESSAGE);
@@ -291,7 +291,7 @@ public class FrameClass extends JFrame{
             for(JButton i: buttons) i.setEnabled(false);
             String answer = button.getText();
             String right_answer = gameTrivia.newQuestion().returnCorrect();
-            Jogador player = gameTrivia.getPlayer();
+            Player player = gameTrivia.getPlayer();
             labelCorrect.setVisible(true);
             buttonNext.setVisible(true);
             ImageIcon image;
@@ -322,7 +322,7 @@ public class FrameClass extends JFrame{
         public void actionPerformed(ActionEvent e){
             panelResult.setVisible(false);
             panelMenu.setVisible(true);
-            FrameClass.this.add(panelMenu);
+            Frame.this.add(panelMenu);
         }
     }
 
@@ -342,7 +342,7 @@ public class FrameClass extends JFrame{
             panelResult.setVisible(true);
             labelPlayerName.setText("Best Players Ranking!!!");
             gameTrivia.getWinner(labelPlayer1, labelPlayer2, labelPlayer3);
-            FrameClass.this.add(panelResult);
+            Frame.this.add(panelResult);
         }
     }
 

@@ -1,19 +1,19 @@
 package Temas;
-import POOTrivia.Pergunta;
+import POOTrivia.Question;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * A class Ciencias armazena os dados especificos das perguntas e respostas relacionadas com esta categoria
+ * A class Science armazena os dados especificos das perguntas e respostas relacionadas com esta categoria
  * Esta classe contêm dois arrays um com as respostas faceis e outro com as respostas dificeis de ciencias
  */
 
-public class Ciencias extends Pergunta{
+public class Science extends Question{
     private final ArrayList<String> respostasFaceis;
     private final ArrayList<String> respostasDificeis;
 
-    public Ciencias(String question){
+    public Science(String question){
         super(question);
         respostasFaceis = new ArrayList<>();
         respostasDificeis = new ArrayList<>();
@@ -28,7 +28,7 @@ public class Ciencias extends Pergunta{
     }
 
     /**
-     * método que adiciona uma resposta de Ciencias ao array com as respostas faceis
+     * método que adiciona uma resposta de Science ao array com as respostas faceis
      * @param newCiencia resposta a ser adicionada
      */
     @Override
@@ -37,7 +37,7 @@ public class Ciencias extends Pergunta{
     }
 
     /**
-     * método que adiciona uma resposta de Ciencias ao array com as respostas dificeis
+     * método que adiciona uma resposta de Science ao array com as respostas dificeis
      * @param newCiencia resposta a ser adiciona
      */
     @Override
@@ -46,7 +46,7 @@ public class Ciencias extends Pergunta{
     }
 
     /**
-     * método que embaralha as seis respostas de Ciencias faceis e retorna uma lista com essas
+     * método que embaralha as seis respostas de Science faceis e retorna uma lista com essas
      * respostas, sendo utilizado apenas na rodada 1 e 2 do jogo
      * @return lista com as seis respostas
      */
@@ -61,7 +61,7 @@ public class Ciencias extends Pergunta{
     }
 
     /**
-     * método que embaralha as seis respostas de Ciencias dificeis e retorna uma lista com essas
+     * método que embaralha as seis respostas de Science dificeis e retorna uma lista com essas
      * respostas, sendo utilizado apenas quando a rodada é igual ou superior a três
      * @return lista com as seis respostas
      */
@@ -91,11 +91,11 @@ public class Ciencias extends Pergunta{
     }
 
     /**
-     * método que insere à label a imagem de Ciencias
+     * método que insere à label a imagem de Science
      * @param labelImage label onde será apresentada a imagem
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("assets/images/Ciência.png");
+        ImageIcon image = new ImageIcon("assets/images/Science.png");
         labelImage.setIcon(image);
     }
 }

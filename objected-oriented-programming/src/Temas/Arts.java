@@ -1,5 +1,5 @@
 package Temas;
-import POOTrivia.Pergunta;
+import POOTrivia.Question;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,9 +8,9 @@ import java.util.Collections;
  * A class Arte armazena os dados especificos das perguntas e respostas relacionados com esta categoria
  * Esta classe contêm um array com as respostas de arte
  */
-public class Artes extends Pergunta{
+public class Arts extends Question{
     private final ArrayList<String> respostasArtes;
-    public Artes(String question){
+    public Arts(String question){
         super(question);
         respostasArtes = new ArrayList<>();
     }
@@ -95,7 +95,7 @@ public class Artes extends Pergunta{
      * @param labelImage label onde será apresentada a imagem
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("assets/images/Artes.png");
+        ImageIcon image = new ImageIcon("assets/images/Arts.png");
         labelImage.setIcon(image);
     }
 }
