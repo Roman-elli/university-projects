@@ -10,7 +10,6 @@ Each folder has its own README with more detailed documentation.
   Language: **C / Arduino (.ino)**  
   → An interactive game to practice **binary logic operations** (AND, OR, XOR) using Arduino, LEDs, and a button.  
 
-
 ---
 
 ## Introduction to Programming
@@ -25,7 +24,7 @@ Each folder has its own README with more detailed documentation.
 --- 
 
 ## Object-Oriented Programming
-- 🎮 [**POOTrivia – Quiz Game**](object-oriented-programming)  
+- 🎮 [**POOTrivia – Quiz Game**](objected-oriented-programming)  
   Language: **Java**  
   → A **quiz game** where players answer questions from different themes (**Arts, Science, Football, Swimming, Skiing**), earn points, and compete for the **top 3 scores**.  
   Players can **save their name and score**, view the **best players ranking**, and replay the game with shuffled questions.  
