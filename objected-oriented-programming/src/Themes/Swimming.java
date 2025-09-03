@@ -1,8 +1,8 @@
-package Temas;
+package Themes;
 import javax.swing.*;
 
 /**
- * A class Swimming armazena os dados especificos das perguntas e respostas relacionados com esta categoria
+ * The Swimming class stores the specific data of questions and answers related to this category.
  */
 public class Swimming extends Sports{
     public Swimming(String question){
@@ -10,16 +10,16 @@ public class Swimming extends Sports{
     }
 
     /**
-     * método que retorna os pontos da pergunta, caso esta seja respondida corretamente
-     * @return pontos da pergunta
+     * Method that returns the points of the question if it is answered correctly
+     * @return points of the question
      */
     public int calculatePoints(){
         return super.getQuestionPoints() + super.getMajoracao() + 10;
     }
 
     /**
-     * método que insere à label a imagem de Swimming
-     * @param labelImage label onde será apresentada a imagem
+     * Method that sets the Swimming image on the label
+     * @param labelImage label where the image will be displayed
      */
     public void changeImage(JLabel labelImage){
         ImageIcon image = new ImageIcon("assets/images/Swim.png");

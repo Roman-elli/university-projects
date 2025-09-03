@@ -1,14 +1,13 @@
-package Temas;
+package Themes;
 import POOTrivia.Question;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * A class Science armazena os dados especificos das perguntas e respostas relacionadas com esta categoria
- * Esta classe contêm dois arrays um com as respostas faceis e outro com as respostas dificeis de ciencias
+ * The Science class stores the specific data of questions and answers related to this category.
+ * This class contains two arrays: one with easy Science answers and another with difficult Science answers.
  */
-
 public class Science extends Question{
     private final ArrayList<String> respostasFaceis;
     private final ArrayList<String> respostasDificeis;
@@ -20,16 +19,16 @@ public class Science extends Question{
     }
 
     /**
-     * método que retorna os pontos da pergunta, caso esta seja respondida corretamente
-     * @return pontos da pergunta
+     * Method that returns the points of the question if it is answered correctly
+     * @return points of the question
      */
     public int calculatePoints(){
         return super.getQuestionPoints() + 5;
     }
 
     /**
-     * método que adiciona uma resposta de Science ao array com as respostas faceis
-     * @param newCiencia resposta a ser adicionada
+     * Method that adds a Science answer to the array of easy answers
+     * @param newCiencia answer to be added
      */
     @Override
     public void addResposta(String newCiencia){
@@ -37,8 +36,8 @@ public class Science extends Question{
     }
 
     /**
-     * método que adiciona uma resposta de Science ao array com as respostas dificeis
-     * @param newCiencia resposta a ser adiciona
+     * Method that adds a Science answer to the array of difficult answers
+     * @param newCiencia answer to be added
      */
     @Override
     public void addResposta2(String newCiencia){
@@ -46,9 +45,9 @@ public class Science extends Question{
     }
 
     /**
-     * método que embaralha as seis respostas de Science faceis e retorna uma lista com essas
-     * respostas, sendo utilizado apenas na rodada 1 e 2 do jogo
-     * @return lista com as seis respostas
+     * Method that shuffles the six easy Science answers and returns a list of them,
+     * used only in rounds 1 and 2 of the game
+     * @return list with six answers
      */
     @Override
     public String[] respostasA(){
@@ -61,9 +60,9 @@ public class Science extends Question{
     }
 
     /**
-     * método que embaralha as seis respostas de Science dificeis e retorna uma lista com essas
-     * respostas, sendo utilizado apenas quando a rodada é igual ou superior a três
-     * @return lista com as seis respostas
+     * Method that shuffles the six difficult Science answers and returns a list of them,
+     * used only when the round is equal or greater than three
+     * @return list with six answers
      */
     @Override
     public String[] respostasB(){
@@ -76,9 +75,9 @@ public class Science extends Question{
     }
 
     /**
-     * método que escreve nos botôes as respostas correspondentes de acordo com a rodada em que o jogo se encontra
-     * @param buttons lista com os botões
-     * @param rodada rodada do jogo
+     * Method that sets the button text with the corresponding answers according to the current round
+     * @param buttons list of buttons
+     * @param rodada current round of the game
      */
     @Override
     public void defineTheme(JButton[] buttons, int rodada){
@@ -91,8 +90,8 @@ public class Science extends Question{
     }
 
     /**
-     * método que insere à label a imagem de Science
-     * @param labelImage label onde será apresentada a imagem
+     * Method that sets the Science image on the label
+     * @param labelImage label where the image will be displayed
      */
     public void changeImage(JLabel labelImage){
         ImageIcon image = new ImageIcon("assets/images/Science.png");

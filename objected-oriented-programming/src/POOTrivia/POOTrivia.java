@@ -1,5 +1,5 @@
 package POOTrivia;
-import Temas.*;
+import Themes.*;
 import javax.swing.*;
 import java.io.*;
 import java.time.format.DateTimeFormatter;
@@ -8,11 +8,11 @@ import java.util.Collections;
 import java.time.LocalDateTime;
 
 /**
- * A class POOTrivia é onde se encontram os principais métodos do programa.
- * Esta classe contêm um array do tipo Question, onde serão armazenadas as perguntas do jogo que são embaralhadas por meio de um shuffle
- * sempre que o jogo começa, um array do tipo Player, onde serão armazenados os jogadores, um int numeroRespostas,
- * onde está o número de respostas de cada pergunta e um int rodada, que representa em que rodada do jogo estamos e a
- * variável jogadorAtivo do tipo Player, que representa o jogador atual
+ * The POOTrivia class contains the main methods of the program.
+ * This class contains an array of type Question, where the game questions are stored and shuffled
+ * whenever the game starts, an array of type Player, where the players are stored, an int numeroRespostas,
+ * which is the number of answers for each question, an int rodada, which represents the current round of the game, and
+ * the variable jogadorAtivo of type Player, which represents the current player.
  */
 public class POOTrivia {
     private final ArrayList<Question> gameQuestions;
@@ -32,11 +32,11 @@ public class POOTrivia {
     }
 
     /**
-     * método que lê o ficheiro das perguntas, analisando se este ficheiro existe e, caso exista, efetua a leitura armazenando
-     * cada pergunta com as respetivas respostas na sua respetiva categoria. Em seguida, a primeira resposta(resposta correta)
-     * de cada pergunta é armazenada por meio do metodo setCorrect, o qual é utilizado apenas quando a categoria é Arts, Science ou Football (utilizando
-     * neste também setCorrect2, pois para cada pergunta desta modalidade existe dois tipos de resposta) e nas categorias de Natação e Skiing
-     * é utilizado o método turnTrue que ira tornar as strings de respostas inicializadas anteriormente em "falso" como "verdadeiro"
+     * Method that reads the questions file, checking if the file exists and, if it does, reads and stores
+     * each question with its respective answers in its respective category. Then, the first answer (correct answer)
+     * of each question is stored using the setCorrect method, which is used only when the category is Arts, Science, or Football (also using
+     * setCorrect2, because for each question of this type there are two types of answers) and in the Swimming and Skiing categories
+     * the method turnTrue is used, which will change the previously initialized answer strings from "false" to "true".
      */
     public void readFile(){
         File f = new File("assets/game-questions/questions.txt");
@@ -98,65 +98,65 @@ public class POOTrivia {
                             }
                             break;
                         default:
-                            System.out.println("Tema não existe.");
+                            System.out.println("Theme does not exist.");
                         }
                         br.readLine();
                     }
                 br.close();
             } catch (FileNotFoundException ex) {
-                System.out.println("Erro a abrir ficheiro de texto.");
+                System.out.println("Error opening text file.");
             } catch (IOException ex) {
-                System.out.println("Erro a ler ficheiro de texto.");
+                System.out.println("Error reading text file.");
             }
         } else {
-            System.out.println("Ficheiro não existe.");
+            System.out.println("File does not exist.");
         }
     }
 
     /**
-     * método que avança a rodada do jogo
+     * Method that advances the game round
      */
     public void nextRound(){
         rodada++;
     }
 
     /**
-     * método que retorna em que rodada do jogo nos encontramos
-     * @return rodada atual
+     * Method that returns the current round of the game
+     * @return current round
      */
     public int getRound(){
         return rodada;
     }
 
     /**
-     * método que adiciona as perguntas ao array de perguntas
-     * @param novaPergunta pergunta a ser adiciona
+     * Method that adds a question to the array of questions
+     * @param novaPergunta question to be added
      */
     public void addQuestion(Question novaPergunta){
         gameQuestions.add(novaPergunta);
     }
 
     /**
-     * método que retorna a questão que será apresentada em cada rodada
-     * @return questão que será apresentada em cada rodada
+     * Method that returns the question that will be presented in each round
+     * @return question to be presented in the current round
      */
     public Question newQuestion(){
         return gameQuestions.get(rodada);
     }
 
     /**
-     * método que adiciona o jogador no array de jogadores
-     * @param novoJogador jogador a ser adicionado
+     * Method that adds a player to the array of players
+     * @param novoJogador player to be added
      */
     public void addPlayer(Player novoJogador){
         players.add(novoJogador);
     }
 
     /**
-     * método que pega o nome do jogador, armazenando as suas iniciais atravês de um split, a data e a hora do momento em que o jogador
-     * está jogando o jogo, sendo utilizado um format para que o formato pretendido para o nome do ficheiro seja gerado e retornado
-     * @param nomeJogador nome do jogador
-     * @return nome do ficheiro pretendido
+     * Method that gets the player's name, storing their initials through a split, the date and time when the player
+     * is playing the game, using a formatter to generate the desired file name format and returning it
+     * @param nomeJogador player’s name
+     * @return desired file name
      */
     public String converteTitle(String nomeJogador) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
@@ -173,8 +173,8 @@ public class POOTrivia {
     }
 
     /**
-     * método que cria um ficheiro de objetos com o nome pretendido armazenando  um objeto do tipo jogador
-     * @param nomeJogador nome do jogador utilizado para o título do ficheiro
+     * Method that creates an object file with the desired name, storing a Player object
+     * @param nomeJogador player’s name used for the file title
      */
     public void writePlayer(String nomeJogador){
         String nomeFicheiro = "data/save-game/" + converteTitle(nomeJogador);
@@ -183,14 +183,14 @@ public class POOTrivia {
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
             oos.writeObject(jogadorAtivo);
         } catch (FileNotFoundException ex) {
-            System.out.println("Erro ao criar ficheiro.");
+            System.out.println("Error creating file.");
         } catch (IOException ex) {
-            System.out.println("Erro ao escrever para o ficheiro.");
+            System.out.println("Error writing to file.");
         }
     }
 
     /**
-     * método que ordena a lista de jogadores(players) de acordo com os seus pontos totais
+     * Method that sorts the list of players according to their total points
      */
     public void ordenaPlayers(){
         Collections.sort(players);
@@ -200,17 +200,17 @@ public class POOTrivia {
     public void ensureSaveFolderExists() {
         File pasta = new File("data/save-game");
         if (!pasta.exists()) {
-            boolean criado = pasta.mkdirs(); // cria todas as pastas necessárias
+            boolean criado = pasta.mkdirs(); // creates all necessary folders
             if (criado) {
-                System.out.println("Pasta data/save-game criada com sucesso!");
+                System.out.println("Folder data/save-game created successfully!");
             } else {
-                System.out.println("Falha ao criar a pasta data/save-game.");
+                System.out.println("Failed to create folder data/save-game.");
             }
         }
     }
     
     /**
-     * método que lê o ficheiro de objetos dos jogadores, aramazenando os jogadores na lista de jogadores
+     * Method that reads the player objects file, storing the players in the players list
      */
     public void readPlayers() {
         ensureSaveFolderExists();
@@ -227,28 +227,28 @@ public class POOTrivia {
                         addPlayer(novoJogador);
 
                     } catch (IOException | ClassNotFoundException ex) {
-                        System.out.println("Erro ao ler o arquivo: " + arquivo.getName());
+                        System.out.println("Error reading file: " + arquivo.getName());
                     }
                 }
             }
         } else {
-            System.out.println("O caminho fornecido não é um diretório.");
+            System.out.println("The provided path is not a directory.");
         }
     }
 
     /**
-     * método que retorna o jogador atual do jogo
-     * @return jogador atual
+     * Method that returns the current player of the game
+     * @return current player
      */
     public Player getPlayer(){
         return jogadorAtivo;
     }
 
     /**
-     * método que coloca nas posições do ranking os três melhores jogadores sendo sempre verificada a existência dos jogadores na lista
-     * @param player1 JLabel primeiro lugar
-     * @param player2 JLabel segundo lugar
-     * @param player3 JLabel terceiro lugar
+     * Method that places the top three players in the ranking positions, always checking for the existence of players in the list
+     * @param player1 JLabel first place
+     * @param player2 JLabel second place
+     * @param player3 JLabel third place
      */
     public void getWinner(JLabel player1, JLabel player2, JLabel player3){
         ordenaPlayers();
@@ -258,8 +258,8 @@ public class POOTrivia {
     }
 
     /**
-     * método que reseta o jogo, quando o jogador decide jogar novamente gerando um novo jogador, definindo a rodada a 0
-     * e embaralhando novamente a lista de perguntas para que no próximo jogo sejam geradas novas perguntas ao jogador
+     * Method that resets the game when the player decides to play again, generating a new player, setting the round to 0
+     * and shuffling the list of questions again so that new questions are generated for the next game
      */
     public void reset(){
         if(rodada != 0){

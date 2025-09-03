@@ -1,12 +1,12 @@
-package Temas;
+package Themes;
 import POOTrivia.Question;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * A class Arte armazena os dados especificos das perguntas e respostas relacionados com esta categoria
- * Esta classe contêm um array com as respostas de arte
+ * The Arts class stores the specific data of questions and answers related to this category.
+ * This class contains an array with the art answers.
  */
 public class Arts extends Question{
     private final ArrayList<String> respostasArtes;
@@ -16,16 +16,16 @@ public class Arts extends Question{
     }
 
     /**
-     * método que calcula os pontos de uma pergunta caso esta seja respondida corretamente ou caso seja necessário
-     * @return pontos da pergunta
+     * Method that calculates the points of a question if it is answered correctly or if necessary
+     * @return points of the question
      */
     public int calculatePoints(){
         return super.getQuestionPoints() * 10;
     }
 
     /**
-     * método que adiciona uma resposta de artes ao array com as respostas
-     * @param newArt resposta a ser adicionada
+     * Method that adds an art answer to the array of answers
+     * @param newArt answer to be added
      */
     @Override
     public void addResposta(String newArt){
@@ -33,9 +33,9 @@ public class Arts extends Question{
     }
 
     /**
-     * método que embaralha três respostas de artes incluindo a correta, devolvendo a lista com essas três respostas,
-     * sendo apenas utilizado na rodada 1 e 2 do jogo
-     * @return lista com tres respostas
+     * Method that shuffles three art answers including the correct one, returning the list with these three answers,
+     * used only in rounds 1 and 2 of the game
+     * @return list with three answers
      */
     @Override
     public String[] respostasA(){
@@ -59,9 +59,9 @@ public class Arts extends Question{
     }
 
     /**
-     * método que embaralha as seis respostas de artes, retornando uma lista com essas respostas, sendo utilizado apenas
-     * quando a rodada é igual ou superior a três
-     * @return lista com as seis respostas
+     * Method that shuffles six art answers, returning a list with these answers, used only
+     * when the round is equal to or greater than three
+     * @return list with six answers
      */
     @Override
     public String[] respostasB(){
@@ -74,9 +74,9 @@ public class Arts extends Question{
     }
 
     /**
-     * método que escreve nos botôes as respostas correspondentes de acordo com a rodada
-     * @param buttons lista com os botões
-     * @param rodada rodada do jogo
+     * Method that sets the button text with the corresponding answers according to the current round
+     * @param buttons list of buttons
+     * @param rodada current round of the game
      */
     @Override
     public void defineTheme(JButton[] buttons, int rodada){
@@ -91,8 +91,8 @@ public class Arts extends Question{
     }
 
     /**
-     * método que insere à label a imagem de artes
-     * @param labelImage label onde será apresentada a imagem
+     * Method that sets the art image on the label
+     * @param labelImage label where the image will be displayed
      */
     public void changeImage(JLabel labelImage){
         ImageIcon image = new ImageIcon("assets/images/Arts.png");

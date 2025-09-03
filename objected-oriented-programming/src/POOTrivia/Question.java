@@ -3,10 +3,10 @@ import javax.swing.*;
 import java.io.Serializable;
 
 /**
- * A class abstract Question é onde serão armazenadas as informações comuns das perguntas e seus repetivos métodos
- * Está classe contêm uma String question, que representa uma pergunta, o int questionPoints, que representa os pontos
- * dessa pergunta e uma String correct, que representa a resposta correta inicializada como vazio pois será alterada
- * assim que a leitura do ficheiro de perguntas for executada
+ * The abstract class Question stores the common information of questions and their respective methods.
+ * This class contains a String question, which represents the question text, an int questionPoints, which represents the points
+ * for that question, and a String correct, which represents the correct answer initialized as empty and will be set
+ * when the questions file is read.
  */
 public abstract class Question implements Serializable {
     private final String question;
@@ -19,79 +19,79 @@ public abstract class Question implements Serializable {
     }
 
     /**
-     * método que retorna os pontos da pergunta
-     * @return pontos da pergunta
+     * Method that returns the points of the question
+     * @return points of the question
      */
     public int getQuestionPoints(){
         return questionPoints;
     }
 
     /**
-     * método que retorna o enunciado da pergunta
-     * @return String com o enunciado da pergunta
+     * Method that returns the text of the question
+     * @return String with the question text
      */
     public String getQuestion(){
         return question;
     }
 
     /**
-     * método que armazena as respostas corretas após ler do ficheiro
-     * @param correta resposta correta
+     * Method that stores the correct answers after reading from the file
+     * @param correta correct answer
      */
     public void setCorrect(String correta){
         correct = correta;
     }
 
     /**
-     * método que retorna a resposta correta
-     * @return resposta correta
+     * Method that returns the correct answer
+     * @return correct answer
      */
     public String returnCorrect(){
         return correct;
     }
 
     /**
-     * método que devolve os pontos calculados de cada pergunta
-     * @return pontos totais de cada pergunta
+     * Method that returns the calculated points of each question
+     * @return total points of the question
      */
     public abstract int calculatePoints();
 
     /**
-     * método que adiciona uma resposta da categoria específica ao array com as respostas dessa categoria, usada para
-     * armazenar respostas faceis (respostas apresentadas antes da terceira rodada do jogo)
-     * @param newResposta resposta a ser adicionada
+     * Method that adds an answer of the specific category to the array of answers of that category,
+     * used to store easy answers (answers presented before the third round of the game)
+     * @param newResposta answer to be added
      */
     public void addResposta(String newResposta){}
 
     /**
-     * método que adiciona uma resposta de uma categoria específica ao array com as respostas dessa categoria, usada para
-     * categorias que possuem respostas dificeis (respostas apresentadas a partir da terceira rodada do jogo)
-     * @param newResposta resposta a ser adicionada
+     * Method that adds an answer of the specific category to the array of answers of that category,
+     * used for categories that have difficult answers (answers presented from the third round of the game)
+     * @param newResposta answer to be added
      */
     public void addResposta2(String newResposta){}
 
     /**
-     * método implementado nas subclasses para retornar uma lista com as respostas faceis, retornando null caso
-     * haja um erro de implementação, pois deve sempre ser executada pela subclasse Arts, Science e Football
-     * @return lista com as respostas
+     * Method implemented in subclasses to return a list of easy answers, returning null in case
+     * of implementation error, should always be executed by the subclasses Arts, Science, and Football
+     * @return list of answers
      */
     public String[] respostasA(){
         return null;
     }
 
     /**
-     * método implementado nas subclasses para retornar uma lista com as respostas dificeis, retornando null caso
-     * haja um erro de implementação, pois deve sempre ser executada pela subclasse Arts, Science e Football
-     * @return lista com as respostas
+     * Method implemented in subclasses to return a list of difficult answers, returning null in case
+     * of implementation error, should always be executed by the subclasses Arts, Science, and Football
+     * @return list of answers
      */
     public String[] respostasB(){
         return null;
     }
 
     /**
-     * método que define o texto dos botões de resposta, de acordo com a rodada em que o jogo se encontra
-     * @param buttons lista com os botões
-     * @param rodada rodada do jogo
+     * Method that sets the text of the answer buttons according to the current round of the game
+     * @param buttons list of buttons
+     * @param rodada current round of the game
      */
     public void defineTheme(JButton[] buttons, int rodada){
         for(int i = 2; i < buttons.length; i++) buttons[i].setVisible(false);
@@ -100,21 +100,21 @@ public abstract class Question implements Serializable {
     }
 
     /**
-     * método que troca a imagem que é apresentada ao lado da pergunta, de acordo com a categoria da pergunta
-     * @param labelImage label onde será apresentada a imagem
+     * Method that changes the image displayed next to the question according to the category of the question
+     * @param labelImage label where the image will be displayed
      */
     public abstract void changeImage(JLabel labelImage);
 
     /**
-     * método que armazena a resposta correta (facil) da categoria futebol, executada na leitura do ficheiro
-     * @param correta resposta correta
+     * Method that stores the correct (easy) answer for the Football category, executed when reading the file
+     * @param correta correct answer
      */
     public void setCorrect1(String correta){
     }
 
     /**
-     * método que armazena a resposta correta (difícil) da categoria futebol, executada na leitura do ficheiro
-     * @param correta resposta correta
+     * Method that stores the correct (difficult) answer for the Football category, executed when reading the file
+     * @param correta correct answer
      */
     public void setCorrect2(String correta){
     }
