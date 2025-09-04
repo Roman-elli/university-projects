@@ -1,5 +1,4 @@
-import POOTrivia.*;
-
+import ui.Frame;
 /**
  * @author Beatriz Alexandra Azeitona Mourato & Thales Barbuto Romanelli Lopes
  * @version 1.0

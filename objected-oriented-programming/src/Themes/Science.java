@@ -1,5 +1,5 @@
-package Themes;
-import POOTrivia.Question;
+package themes;
+import core.Question;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +23,7 @@ public class Science extends Question{
      * @return points of the question
      */
     public int calculatePoints(){
-        return super.getQuestionPoints() + 5;
+        return super.getQuestionPoints() + ThemeConfig.SCIENCE_POINT_WEIGHT;
     }
 
     /**
@@ -94,7 +94,7 @@ public class Science extends Question{
      * @param labelImage label where the image will be displayed
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("assets/images/Science.png");
+        ImageIcon image = new ImageIcon(ThemeConfig.SCIENCE_ICON);
         labelImage.setIcon(image);
     }
 }

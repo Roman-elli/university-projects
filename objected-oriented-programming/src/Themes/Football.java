@@ -1,4 +1,4 @@
-package Themes;
+package themes;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +27,7 @@ public class Football extends Sports{
      * @return points of the question
      */
     public int calculatePoints(){
-        return super.getQuestionPoints() + super.getScoreWeight() + 1;
+        return super.getQuestionPoints() + super.getScoreWeight() + ThemeConfig.FOOTBALL_POINT_WEIGHT;
     }
 
     /**
@@ -102,7 +102,7 @@ public class Football extends Sports{
      * @param labelImage label where the image will be displayed
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("assets/images/Football.png");
+        ImageIcon image = new ImageIcon(ThemeConfig.FOOTBALL_ICON);
         labelImage.setIcon(image);
     }
 

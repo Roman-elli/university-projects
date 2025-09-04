@@ -1,5 +1,5 @@
-package Themes;
-import POOTrivia.Question;
+package themes;
+import core.Question;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +20,7 @@ public class Arts extends Question{
      * @return points of the question
      */
     public int calculatePoints(){
-        return super.getQuestionPoints() * 10;
+        return super.getQuestionPoints() * ThemeConfig.ART_POINT_WEIGHT;
     }
 
     /**
@@ -95,7 +95,7 @@ public class Arts extends Question{
      * @param labelImage label where the image will be displayed
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("assets/images/Arts.png");
+        ImageIcon image = new ImageIcon(ThemeConfig.ART_ICON);
         labelImage.setIcon(image);
     }
 }

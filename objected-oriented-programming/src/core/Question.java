@@ -1,4 +1,4 @@
-package POOTrivia;
+package core;
 import javax.swing.*;
 import java.io.Serializable;
 
@@ -14,7 +14,7 @@ public abstract class Question implements Serializable {
     private String correct;
     public Question(String question){
         this.question = question;
-        questionPoints = 5;
+        questionPoints = CoreConfig.GAME_QUESTION_POINTS;
         correct = "";
     }
 

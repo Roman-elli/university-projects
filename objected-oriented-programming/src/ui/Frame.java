@@ -1,4 +1,5 @@
-package POOTrivia;
+package ui;
+import core.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -13,7 +14,7 @@ import java.awt.event.ActionListener;
  * at the initial moment of the program.
  */
 public class Frame extends JFrame{
-    private final POOTrivia gameTrivia;
+    private final GameEngine gameTrivia;
     private final JButton[] buttons;
     private final JLabel labelQuestion, labelResult, labelImage, labelCorrect, labelPlayer1, labelPlayer2, labelPlayer3, labelPlayerName;
     private final JButton buttonNext;
@@ -21,9 +22,9 @@ public class Frame extends JFrame{
 
     public Frame(){
         super();
-        gameTrivia = new POOTrivia();
-        int frame_width = 1200;
-        int frame_height = 800;
+        gameTrivia = new GameEngine();
+        int frame_width = FrameConfig.FRAME_WIDTH;
+        int frame_height = FrameConfig.FRAME_HEIGHT;
         window_setup(frame_width,frame_height);
 
         // Game Menu
@@ -32,19 +33,19 @@ public class Frame extends JFrame{
 
         JPanel panelMenuGrid = new JPanel(new GridLayout(3, 1, 0, frame_height / 12));
 
-        ImageIcon logo = new ImageIcon("assets/images/Logo.png");
+        ImageIcon logo = new ImageIcon(FrameConfig.LOGO_PATH);
         JLabel labelLogo = new JLabel(logo);
 
         JButton buttonPlay = new JButton("Start Game");
-        buttonPlay.setFont(new Font("Century Gothic", Font.BOLD, 20));
+        buttonPlay.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 20));
         buttonPlay.addActionListener(new ButtonInitiateListener());
 
         JButton buttonPlayers = new JButton("Best Players");
-        buttonPlayers.setFont(new Font("Century Gothic", Font.BOLD, 20));
+        buttonPlayers.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 20));
         buttonPlayers.addActionListener(new ButtonRankListener());
 
         JButton buttonEnd = new JButton("Exit Game");
-        buttonEnd.setFont(new Font("Century Gothic", Font.BOLD, 20));
+        buttonEnd.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 20));
         buttonEnd.addActionListener(new ButtonEndListener());
 
         panelMenuGrid.add(buttonPlay);
@@ -63,42 +64,42 @@ public class Frame extends JFrame{
         JPanel panelQuestionsFlow = new JPanel(new FlowLayout());
 
         labelResult = new JLabel();
-        labelResult.setFont(new Font("Century Gothic", Font.BOLD, 20));
+        labelResult.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 20));
 
         labelQuestion = new JLabel();
-        labelQuestion.setFont(new Font("Century Gothic", Font.BOLD, 17));
+        labelQuestion.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 17));
 
         labelImage = new JLabel();
         labelCorrect = new JLabel();
 
         JButton button1 = new JButton();
-        button1.setFont(new Font("Century Gothic", Font.BOLD, 15));
+        button1.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 15));
         button1.addActionListener(new ButtonListen());
 
         JButton button2 = new JButton();
-        button2.setFont(new Font("Century Gothic", Font.BOLD, 15));
+        button2.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 15));
         button2.addActionListener(new ButtonListen());
 
         JButton button3 = new JButton();
-        button3.setFont(new Font("Century Gothic", Font.BOLD, 15));
+        button3.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 15));
         button3.addActionListener(new ButtonListen());
 
         JButton button4 = new JButton();
-        button4.setFont(new Font("Century Gothic", Font.BOLD, 15));
+        button4.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 15));
         button4.addActionListener(new ButtonListen());
 
         JButton button5 = new JButton();
-        button5.setFont(new Font("Century Gothic", Font.BOLD, 15));
+        button5.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 15));
         button5.addActionListener(new ButtonListen());
 
         JButton button6 = new JButton();
-        button6.setFont(new Font("Century Gothic", Font.BOLD, 15));
+        button6.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 15));
         button6.addActionListener(new ButtonListen());
 
         buttons = new JButton[]{button1, button2, button3, button4, button5, button6};
 
         buttonNext = new JButton();
-        buttonNext.setFont(new Font("Century Gothic", Font.BOLD, 17));
+        buttonNext.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 17));
         buttonNext.addActionListener(new ButtonNext());
 
         panelQuestionsFlow.add(labelQuestion);
@@ -128,32 +129,32 @@ public class Frame extends JFrame{
         JPanel panelFlow4 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JPanel panelFlow5 = new JPanel(new FlowLayout());
 
-        ImageIcon goldImage = new ImageIcon("assets/images/Gold.png");
+        ImageIcon goldImage = new ImageIcon(FrameConfig.GOLD_ICON);
         JLabel labelImage1 = new JLabel(goldImage);
 
         labelPlayer1 = new JLabel("1st place");
-        labelPlayer1.setFont(new Font("Century Gothic", Font.BOLD, 18));
+        labelPlayer1.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 18));
 
-        ImageIcon silverImage = new ImageIcon("assets/images/Silver.png");
+        ImageIcon silverImage = new ImageIcon(FrameConfig.SILVER_ICON);
         JLabel labelImage2 = new JLabel(silverImage);
 
         labelPlayer2 = new JLabel("2nd place");
-        labelPlayer2.setFont(new Font("Century Gothic", Font.BOLD, 18));
+        labelPlayer2.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 18));
 
-        ImageIcon bronzeImage = new ImageIcon("assets/images/Bronze.png");
+        ImageIcon bronzeImage = new ImageIcon(FrameConfig.BRONZE_ICON);
         JLabel labelImage3 = new JLabel(bronzeImage);
 
         labelPlayer3 = new JLabel("3rd place");
-        labelPlayer3.setFont(new Font("Century Gothic", Font.BOLD, 18));
+        labelPlayer3.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 18));
 
-        ImageIcon penguimIcon = new ImageIcon("assets/images/Penguin.png");
+        ImageIcon penguimIcon = new ImageIcon(FrameConfig.PENGUIN_ICON);
         JLabel labelPinguim = new JLabel(penguimIcon);
 
         labelPlayerName = new JLabel();
-        labelPlayerName.setFont(new Font("Century Gothic", Font.BOLD, 20));
+        labelPlayerName.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 20));
 
         JButton buttonReturn = new JButton("Return to menu");
-        buttonReturn.setFont(new Font("Century Gothic", Font.BOLD, 20));
+        buttonReturn.setFont(new Font(FrameConfig.FONT_FAMILY, Font.BOLD, 20));
         Dimension dimension = new Dimension(200,80);
         buttonReturn.setPreferredSize(dimension);
         buttonReturn.addActionListener(new ButtonReturnListener());
@@ -186,7 +187,7 @@ public class Frame extends JFrame{
      * @param frame_height
      */
     private void window_setup(int frame_width, int frame_height) {
-        setTitle("POOTrivia");
+        setTitle(FrameConfig.GAME_TITLE);
         setSize(frame_width, frame_height);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -250,11 +251,11 @@ public class Frame extends JFrame{
          */
         @Override
         public void actionPerformed(ActionEvent e){
-            if(gameTrivia.getRound() < 5) nextQuestion(gameTrivia.newQuestion());
+            if(gameTrivia.getRound() < FrameConfig.MAX_ROUNDS) nextQuestion(gameTrivia.newQuestion());
             else {
                 String nome = JOptionPane.showInputDialog(null, "Write your name:", "Player Name", JOptionPane.PLAIN_MESSAGE);
                 if (nome != null && !nome.isEmpty()) {
-                    if(nome.length() < 40) {
+                    if(nome.length() < FrameConfig.MAX_PLAYER_NAME_LENGTH) {
                         gameTrivia.getPlayer().setPlayerName(nome);
                         gameTrivia.addPlayer(gameTrivia.getPlayer());
                         gameTrivia.writePlayer(nome);
@@ -296,17 +297,17 @@ public class Frame extends JFrame{
             buttonNext.setVisible(true);
             ImageIcon image;
             if (answer.equals(right_answer)) {
-                image = new ImageIcon("assets/images/Correct.png");
+                image = new ImageIcon(FrameConfig.CORRECT_ICON);
                 labelResult.setText("Won " + gameTrivia.newQuestion().calculatePoints() + " points");
                 player.addRight(gameTrivia.newQuestion());
             } else {
-                image = new ImageIcon("assets/images/Wrong.png");
+                image = new ImageIcon(FrameConfig.WRONG_ICON);
                 player.addWrong(gameTrivia.newQuestion());
             }
 
             labelCorrect.setIcon(image);
             gameTrivia.nextRound();
-            if(gameTrivia.getRound() == 5) buttonNext.setText("End Game");
+            if(gameTrivia.getRound() == FrameConfig.MAX_ROUNDS) buttonNext.setText("End Game");
         }
     }
 

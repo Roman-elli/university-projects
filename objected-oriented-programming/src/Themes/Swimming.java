@@ -1,4 +1,4 @@
-package Themes;
+package themes;
 import javax.swing.*;
 
 /**
@@ -14,7 +14,7 @@ public class Swimming extends Sports{
      * @return points of the question
      */
     public int calculatePoints(){
-        return super.getQuestionPoints() + super.getScoreWeight() + 10;
+        return super.getQuestionPoints() + super.getScoreWeight() + ThemeConfig.SWIM_POINT_WEIGHT;
     }
 
     /**
@@ -22,7 +22,7 @@ public class Swimming extends Sports{
      * @param labelImage label where the image will be displayed
      */
     public void changeImage(JLabel labelImage){
-        ImageIcon image = new ImageIcon("assets/images/Swim.png");
+        ImageIcon image = new ImageIcon(ThemeConfig.SWIM_ICON);
         labelImage.setIcon(image);
     }
 }

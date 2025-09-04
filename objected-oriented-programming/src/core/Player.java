@@ -1,4 +1,4 @@
-package POOTrivia;
+package core;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -23,16 +23,16 @@ public class Player implements Serializable, Comparable<Player> {
      * Method that adds the questions the player answered correctly to the rightQuestions array
      * @param newQuestion the new question to be added
      */
-    public void addRight(Question novaPergunta){
-        rightQuestions.add(novaPergunta);
+    public void addRight(Question newQuestion){
+        rightQuestions.add(newQuestion);
     }
 
     /**
      * Method that adds the questions the player answered incorrectly to the wrongQuestions array
      * @param newQuestion the new question to be added
      */
-    public void addWrong(Question novaPergunta){
-        wrongQuestions.add(novaPergunta);
+    public void addWrong(Question newQuestion){
+        wrongQuestions.add(newQuestion);
     }
 
     /**

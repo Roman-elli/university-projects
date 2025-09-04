@@ -1,5 +1,5 @@
-package POOTrivia;
-import Themes.*;
+package core;
+import themes.*;
 import javax.swing.*;
 import java.io.*;
 import java.time.format.DateTimeFormatter;
@@ -8,26 +8,27 @@ import java.util.Collections;
 import java.time.LocalDateTime;
 
 /**
- * The POOTrivia class contains the main methods of the program.
+ * The pootrivia class contains the main methods of the program.
  * This class contains an array of type Question, where the game questions are stored and shuffled
- * whenever the game starts, an array of type Player, where the players are stored, an int numeroRespostas,
+ * whenever the game starts, an array of type Player, where the players are stored, an int answerCounter,
  * which is the number of answers for each question, an int round, which represents the current round of the game, and
- * the variable jogadorAtivo of type Player, which represents the current player.
+ * the variable activePlayer of type Player, which represents the current player.
  */
-public class POOTrivia {
+public class GameEngine {
     private final ArrayList<Question> gameQuestions;
     private final ArrayList<Player> players;
-    private final int numeroRespostas;
+    private final int answerCounter;
     private int round;
-    private Player jogadorAtivo;
-    public POOTrivia(){
+    private Player activePlayer;
+    
+    public GameEngine(){
         gameQuestions = new ArrayList<>();
         players = new ArrayList<>();
-        numeroRespostas = 6;
+        answerCounter = CoreConfig.GAME_ANSWER_COUNTER;
         round = 0;
         readFile();
         Collections.shuffle(gameQuestions);
-        jogadorAtivo = new Player();
+        activePlayer = new Player();
         readPlayers();
     }
 
@@ -44,57 +45,57 @@ public class POOTrivia {
             try {
                 FileReader fr = new FileReader(f);
                 BufferedReader br = new BufferedReader(fr);
-                Question novaPergunta;
-                String line, leitura;
+                Question newQuestion;
+                String line, temp_read;
                 while((line = br.readLine()) != null){
                     switch (line){
                         case "Arts":
-                            novaPergunta = new Arts(br.readLine());
-                            addQuestion(novaPergunta);
-                            for(int i = 0; i < numeroRespostas; i++){
-                                leitura = br.readLine();
-                                if(i == 0) novaPergunta.setCorrect(leitura);
-                                novaPergunta.addEasyAnswer(leitura);
+                            newQuestion = new Arts(br.readLine());
+                            addQuestion(newQuestion);
+                            for(int i = 0; i < answerCounter; i++){
+                                temp_read = br.readLine();
+                                if(i == 0) newQuestion.setCorrect(temp_read);
+                                newQuestion.addEasyAnswer(temp_read);
                             }
                             break;
                         case "Science":
-                            novaPergunta = new Science(br.readLine());
-                            addQuestion(novaPergunta);
-                            for(int i = 0; i < numeroRespostas; i++){
-                                leitura = br.readLine();
-                                if(i == 0) novaPergunta.setCorrect(leitura);
-                                novaPergunta.addEasyAnswer(leitura);
+                            newQuestion = new Science(br.readLine());
+                            addQuestion(newQuestion);
+                            for(int i = 0; i < answerCounter; i++){
+                                temp_read = br.readLine();
+                                if(i == 0) newQuestion.setCorrect(temp_read);
+                                newQuestion.addEasyAnswer(temp_read);
                             }
                             br.readLine();
-                            for(int i = 0; i < numeroRespostas; i++){
-                                leitura = br.readLine();
-                                if(i == 0) novaPergunta.setCorrect(leitura);
-                                novaPergunta.addHardAnswer(leitura);
+                            for(int i = 0; i < answerCounter; i++){
+                                temp_read = br.readLine();
+                                if(i == 0) newQuestion.setCorrect(temp_read);
+                                newQuestion.addHardAnswer(temp_read);
                             }
                             break;
                         case "Skiing":
-                            novaPergunta = new Skiing(br.readLine());
-                            addQuestion(novaPergunta);
-                            novaPergunta.setCorrect(br.readLine());
+                            newQuestion = new Skiing(br.readLine());
+                            addQuestion(newQuestion);
+                            newQuestion.setCorrect(br.readLine());
                             break;
                         case "Swimming":
-                            novaPergunta = new Swimming(br.readLine());
-                            addQuestion(novaPergunta);
-                            novaPergunta.setCorrect(br.readLine());
+                            newQuestion = new Swimming(br.readLine());
+                            addQuestion(newQuestion);
+                            newQuestion.setCorrect(br.readLine());
                             break;
                         case "Football":
-                            novaPergunta = new Football(br.readLine());
-                            addQuestion(novaPergunta);
-                            for(int i = 0; i < numeroRespostas; i++){
-                                leitura = br.readLine();
-                                if(i == 0) novaPergunta.setCorrect1(leitura);
-                                novaPergunta.addEasyAnswer(leitura);
+                            newQuestion = new Football(br.readLine());
+                            addQuestion(newQuestion);
+                            for(int i = 0; i < answerCounter; i++){
+                                temp_read = br.readLine();
+                                if(i == 0) newQuestion.setCorrect1(temp_read);
+                                newQuestion.addEasyAnswer(temp_read);
                             }
                             br.readLine();
-                            for(int i = 0; i < numeroRespostas; i++){
-                                leitura = br.readLine();
-                                if(i == 0) novaPergunta.setCorrect2(leitura);
-                                novaPergunta.addHardAnswer(leitura);
+                            for(int i = 0; i < answerCounter; i++){
+                                temp_read = br.readLine();
+                                if(i == 0) newQuestion.setCorrect2(temp_read);
+                                newQuestion.addHardAnswer(temp_read);
                             }
                             break;
                         default:
@@ -130,10 +131,10 @@ public class POOTrivia {
 
     /**
      * Method that adds a question to the array of questions
-     * @param novaPergunta question to be added
+     * @param newQuestion question to be added
      */
-    public void addQuestion(Question novaPergunta){
-        gameQuestions.add(novaPergunta);
+    public void addQuestion(Question newQuestion){
+        gameQuestions.add(newQuestion);
     }
 
     /**
@@ -146,42 +147,42 @@ public class POOTrivia {
 
     /**
      * Method that adds a player to the array of players
-     * @param novoJogador player to be added
+     * @param newPlayer player to be added
      */
-    public void addPlayer(Player novoJogador){
-        players.add(novoJogador);
+    public void addPlayer(Player newPlayer){
+        players.add(newPlayer);
     }
 
     /**
      * Method that gets the player's name, storing their initials through a split, the date and time when the player
      * is playing the game, using a formatter to generate the desired file name format and returning it
-     * @param nomeJogador player’s name
+     * @param playerName player’s name
      * @return desired file name
      */
-    public String converteTitle(String nomeJogador) {
+    public String converteTitle(String playerName) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
         DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm");
-        LocalDateTime agora = LocalDateTime.now();
-        jogadorAtivo.setData(formatter2.format(agora));
+        LocalDateTime actualTime = LocalDateTime.now();
+        activePlayer.setData(formatter2.format(actualTime));
 
-        String[] splitName = nomeJogador.split(" ");
+        String[] splitName = playerName.split(" ");
         StringBuilder newName = new StringBuilder();
         for (String i : splitName) {
             newName.append(i.charAt(0));
         }
-        return "pootrivia_game_" + formatter.format(agora) + "_" + newName + ".dat";
+        return "pootrivia_game_" + formatter.format(actualTime) + "_" + newName + ".dat";
     }
 
     /**
      * Method that creates an object file with the desired name, storing a Player object
-     * @param nomeJogador player’s name used for the file title
+     * @param playerName player’s name used for the file title
      */
-    public void writePlayer(String nomeJogador){
-        String nomeFicheiro = "data/save-game/" + converteTitle(nomeJogador);
-        File f = new File(nomeFicheiro);
+    public void writePlayer(String playerName){
+        String fileName = CoreConfig.SAVE_GAME_PATH + converteTitle(playerName);
+        File f = new File(fileName);
         try (FileOutputStream fos = new FileOutputStream(f);
              ObjectOutputStream oos = new ObjectOutputStream(fos)) {
-            oos.writeObject(jogadorAtivo);
+            oos.writeObject(activePlayer);
         } catch (FileNotFoundException ex) {
             System.out.println("Error creating file.");
         } catch (IOException ex) {
@@ -198,9 +199,9 @@ public class POOTrivia {
 
 
     public void ensureSaveFolderExists() {
-        File pasta = new File("data/save-game");
-        if (!pasta.exists()) {
-            boolean criado = pasta.mkdirs(); // creates all necessary folders
+        File dataFolder = new File(CoreConfig.SAVE_GAME_PATH);
+        if (!dataFolder.exists()) {
+            boolean criado = dataFolder.mkdirs(); // creates all necessary folders
             if (criado) {
                 System.out.println("Folder data/save-game created successfully!");
             } else {
@@ -215,19 +216,19 @@ public class POOTrivia {
     public void readPlayers() {
         ensureSaveFolderExists();
         
-        File pasta = new File("data/save-game");
+        File dataFolder = new File("data/save-game");
 
-        if (pasta.isDirectory()) {
-            File[] arquivos = pasta.listFiles();
+        if (dataFolder.isDirectory()) {
+            File[] fileList = dataFolder.listFiles();
 
-            if (arquivos != null) {
-                for (File arquivo : arquivos) {
-                    try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(arquivo))) {
-                        Player novoJogador = (Player) ois.readObject();
-                        addPlayer(novoJogador);
+            if (fileList != null) {
+                for (File fileUnit : fileList) {
+                    try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileUnit))) {
+                        Player newPlayer = (Player) ois.readObject();
+                        addPlayer(newPlayer);
 
                     } catch (IOException | ClassNotFoundException ex) {
-                        System.out.println("Error reading file: " + arquivo.getName());
+                        System.out.println("Error reading file: " + fileUnit.getName());
                     }
                 }
             }
@@ -241,7 +242,7 @@ public class POOTrivia {
      * @return current player
      */
     public Player getPlayer(){
-        return jogadorAtivo;
+        return activePlayer;
     }
 
     /**
@@ -264,7 +265,7 @@ public class POOTrivia {
     public void reset(){
         if(round != 0){
             Collections.shuffle(gameQuestions);
-            jogadorAtivo = new Player();
+            activePlayer = new Player();
             round = 0;
         }
     }

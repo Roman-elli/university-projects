@@ -1,5 +1,5 @@
-package Themes;
-import POOTrivia.Question;
+package themes;
+import core.Question;
 
 /**
  * The Sports class is subdivided into three categories (Swimming, Football, and Skiing) 
@@ -15,6 +15,6 @@ public abstract class Sports extends Question{
      * @return bonus points
      */
     public int getScoreWeight(){
-        return 3;
+        return ThemeConfig.SPORTS_POINT_WEIGHT;
     }
 }
