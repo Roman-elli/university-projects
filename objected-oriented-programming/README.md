@@ -6,7 +6,7 @@ I created this project in my second year at university. It’s a quiz game where
 
 ## 🚀 Features
 
-- 🎯 **Multiple Question Themes:**  
+- 🎯 **Multiple Question themes:**  
   Arts, Science, Football, Swimming, Skiing.
 
 - 📝 **Question Types:**  
