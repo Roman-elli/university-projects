@@ -36,10 +36,10 @@ public abstract class Question implements Serializable {
 
     /**
      * Method that stores the correct answers after reading from the file
-     * @param correta correct answer
+     * @param rightAnswer correct answer
      */
-    public void setCorrect(String correta){
-        correct = correta;
+    public void setCorrect(String rightAnswer){
+        correct = rightAnswer;
     }
 
     /**
@@ -61,21 +61,21 @@ public abstract class Question implements Serializable {
      * used to store easy answers (answers presented before the third round of the game)
      * @param newResposta answer to be added
      */
-    public void addResposta(String newResposta){}
+    public void addEasyAnswer(String newResposta){}
 
     /**
      * Method that adds an answer of the specific category to the array of answers of that category,
      * used for categories that have difficult answers (answers presented from the third round of the game)
      * @param newResposta answer to be added
      */
-    public void addResposta2(String newResposta){}
+    public void addHardAnswer(String newResposta){}
 
     /**
      * Method implemented in subclasses to return a list of easy answers, returning null in case
      * of implementation error, should always be executed by the subclasses Arts, Science, and Football
      * @return list of answers
      */
-    public String[] respostasA(){
+    public String[] easyAnswersManage(){
         return null;
     }
 
@@ -84,16 +84,16 @@ public abstract class Question implements Serializable {
      * of implementation error, should always be executed by the subclasses Arts, Science, and Football
      * @return list of answers
      */
-    public String[] respostasB(){
+    public String[] hardAnswersManage(){
         return null;
     }
 
     /**
      * Method that sets the text of the answer buttons according to the current round of the game
      * @param buttons list of buttons
-     * @param rodada current round of the game
+     * @param round current round of the game
      */
-    public void defineTheme(JButton[] buttons, int rodada){
+    public void defineTheme(JButton[] buttons, int round){
         for(int i = 2; i < buttons.length; i++) buttons[i].setVisible(false);
         buttons[0].setText("True");
         buttons[1].setText("False");
@@ -107,15 +107,15 @@ public abstract class Question implements Serializable {
 
     /**
      * Method that stores the correct (easy) answer for the Football category, executed when reading the file
-     * @param correta correct answer
+     * @param rightAnswer correct answer
      */
-    public void setCorrect1(String correta){
+    public void setCorrect1(String rightAnswer){
     }
 
     /**
      * Method that stores the correct (difficult) answer for the Football category, executed when reading the file
-     * @param correta correct answer
+     * @param rightAnswer correct answer
      */
-    public void setCorrect2(String correta){
+    public void setCorrect2(String rightAnswer){
     }
 }

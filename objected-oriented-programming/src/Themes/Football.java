@@ -6,20 +6,20 @@ import java.util.Collections;
 /**
  * The Football class stores the specific data of questions and answers related to this category.
  * This class contains two arrays: one with player answers (easy) and another with jersey answers (difficult),
- * and a string correct1 that stores the correct player answer and a string correct2 that stores the correct
+ * and a string easyAnswer that stores the correct player answer and a string hardAnswer that stores the correct
  * jersey answer.
  */
 public class Football extends Sports{
-    private final ArrayList<String> respostasJogador;
-    private final ArrayList<String> respostasCamisa;
-    private String correct1, correct2;
+    private final ArrayList<String> easyAnswerList;
+    private final ArrayList<String> hardAnswerList;
+    private String easyAnswer, hardAnswer;
 
     public Football(String question){
         super(question);
-        respostasJogador = new ArrayList<>();
-        respostasCamisa = new ArrayList<>();
-        correct1 = "";
-        correct2 = "";
+        easyAnswerList = new ArrayList<>();
+        hardAnswerList = new ArrayList<>();
+        easyAnswer = "";
+        hardAnswer = "";
     }
 
     /**
@@ -27,55 +27,55 @@ public class Football extends Sports{
      * @return points of the question
      */
     public int calculatePoints(){
-        return super.getQuestionPoints() + super.getMajoracao() + 1;
+        return super.getQuestionPoints() + super.getScoreWeight() + 1;
     }
 
     /**
      * Method that adds a Football answer to the array of player answers
-     * @param newFutebol answer to be added
+     * @param newFootballAnswer answer to be added
      */
     @Override
-    public void addResposta(String newFutebol){
-        respostasJogador.add(newFutebol);
+    public void addEasyAnswer(String newFootballAnswer){
+        easyAnswerList.add(newFootballAnswer);
     }
 
     /**
      * Method that adds a Football answer to the array of jersey answers
-     * @param newFutebol answer to be added
+     * @param newFootballAnswer answer to be added
      */
     @Override
-    public void addResposta2(String newFutebol){
-        respostasCamisa.add(newFutebol);
+    public void addHardAnswer(String newFootballAnswer){
+        hardAnswerList.add(newFootballAnswer);
     }
 
     /**
-     * Method that shuffles the six Football player answers, sets correct1 as the main answer, 
+     * Method that shuffles the six Football player answers, sets easyAnswer as the main answer, 
      * and returns a list of player answers (easy), used only in rounds 1 and 2 of the game
      * @return list with six easy answers
      */
     @Override
-    public String[] respostasA(){
+    public String[] easyAnswersManage(){
         String[] random = new String[6];
-        setCorrect(correct1);
-        Collections.shuffle(respostasJogador);
+        setCorrect(easyAnswer);
+        Collections.shuffle(easyAnswerList);
         for(int i = 0; i < random.length; i++){
-            random[i] = respostasJogador.get(i);
+            random[i] = easyAnswerList.get(i);
         }
         return random;
     }
 
     /**
-     * Method that shuffles the six Football jersey answers, sets correct2 as the main answer, 
+     * Method that shuffles the six Football jersey answers, sets hardAnswer as the main answer, 
      * and returns a list of jersey answers (difficult), used when the round is equal or greater than three
      * @return list with six difficult answers
      */
     @Override
-    public String[] respostasB(){
+    public String[] hardAnswersManage(){
         String[] random = new String[6];
-        setCorrect(correct2);
-        Collections.shuffle(respostasCamisa);
+        setCorrect(hardAnswer);
+        Collections.shuffle(hardAnswerList);
         for(int i = 0; i < random.length; i++){
-            random[i] = respostasCamisa.get(i);
+            random[i] = hardAnswerList.get(i);
         }
         return random;
     }
@@ -83,18 +83,18 @@ public class Football extends Sports{
     /**
      * Method that sets the button text with the corresponding answers according to the current round
      * @param buttons list of buttons
-     * @param rodada current round of the game
+     * @param round current round of the game
      */
     @Override
-    public void defineTheme(JButton[] buttons, int rodada){
-        String[] respostas;
-        if(rodada < 2){
-            respostas = respostasA();
+    public void defineTheme(JButton[] buttons, int round){
+        String[] answerList;
+        if(round < 2){
+            answerList = easyAnswersManage();
         }
         else{
-            respostas = respostasB();
+            answerList = hardAnswersManage();
         }
-        for(int i = 0; i < respostas.length; i++) buttons[i].setText(respostas[i]);
+        for(int i = 0; i < answerList.length; i++) buttons[i].setText(answerList[i]);
     }
 
     /**
@@ -108,19 +108,19 @@ public class Football extends Sports{
 
     /**
      * Method that stores the correct answer for players (easy), executed when reading the questions file
-     * @param correta correct answer
+     * @param rightAnswer correct answer
      */
     @Override
-    public void setCorrect1(String correta){
-        correct1 = correta;
+    public void setCorrect1(String rightAnswer){
+        easyAnswer = rightAnswer;
     }
 
     /**
      * Method that stores the correct answer for jerseys (difficult), executed when reading the questions file
-     * @param correta correct answer
+     * @param rightAnswer correct answer
      */
     @Override
-    public void setCorrect2(String correta){
-        correct2 = correta;
+    public void setCorrect2(String rightAnswer){
+        hardAnswer = rightAnswer;
     }
 }

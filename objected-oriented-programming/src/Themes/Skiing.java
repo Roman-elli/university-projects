@@ -14,7 +14,7 @@ public class Skiing extends Sports{
      * @return points of the question
      */
     public int calculatePoints(){
-        return (super.getQuestionPoints() + super.getMajoracao()) * 2;
+        return (super.getQuestionPoints() + super.getScoreWeight()) * 2;
     }
 
     /**

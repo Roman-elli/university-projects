@@ -14,7 +14,7 @@ public abstract class Sports extends Question{
      * Method that returns the bonus points for a question in the sports category
      * @return bonus points
      */
-    public int getMajoracao(){
+    public int getScoreWeight(){
         return 3;
     }
 }

@@ -9,10 +9,10 @@ import java.util.Collections;
  * This class contains an array with the art answers.
  */
 public class Arts extends Question{
-    private final ArrayList<String> respostasArtes;
+    private final ArrayList<String> artAnswerList;
     public Arts(String question){
         super(question);
-        respostasArtes = new ArrayList<>();
+        artAnswerList = new ArrayList<>();
     }
 
     /**
@@ -28,8 +28,8 @@ public class Arts extends Question{
      * @param newArt answer to be added
      */
     @Override
-    public void addResposta(String newArt){
-        respostasArtes.add(newArt);
+    public void addEasyAnswer(String newArt){
+        artAnswerList.add(newArt);
     }
 
     /**
@@ -38,20 +38,20 @@ public class Arts extends Question{
      * @return list with three answers
      */
     @Override
-    public String[] respostasA(){
+    public String[] easyAnswersManage(){
         String[] random = new String[3];
-        int respostaRandom = (int)(Math.random() * 3);
-        random[respostaRandom] = returnCorrect();
-        Collections.shuffle(respostasArtes);
+        int randomChoice = (int)(Math.random() * 3);
+        random[randomChoice] = returnCorrect();
+        Collections.shuffle(artAnswerList);
         String test;
         for(int i = 0; i < random.length; i++){
-            if(i != respostaRandom){
-                 test = respostasArtes.get(i);
-                 if(!test.equals(random[respostaRandom])){
+            if(i != randomChoice){
+                 test = artAnswerList.get(i);
+                 if(!test.equals(random[randomChoice])){
                      random[i] = test;
                  }
                  else{
-                     random[i] = respostasArtes.getLast();
+                     random[i] = artAnswerList.getLast();
                  }
             }
         }
@@ -64,11 +64,11 @@ public class Arts extends Question{
      * @return list with six answers
      */
     @Override
-    public String[] respostasB(){
+    public String[] hardAnswersManage(){
         String[] random = new String[6];
-        Collections.shuffle(respostasArtes);
+        Collections.shuffle(artAnswerList);
         for(int i = 0; i < random.length; i++){
-            random[i] = respostasArtes.get(i);
+            random[i] = artAnswerList.get(i);
         }
         return random;
     }
@@ -76,18 +76,18 @@ public class Arts extends Question{
     /**
      * Method that sets the button text with the corresponding answers according to the current round
      * @param buttons list of buttons
-     * @param rodada current round of the game
+     * @param round current round of the game
      */
     @Override
-    public void defineTheme(JButton[] buttons, int rodada){
-        String[] respostas;
-        if(rodada < 2){
+    public void defineTheme(JButton[] buttons, int round){
+        String[] answerList;
+        if(round < 2){
             for(int i = 3; i < buttons.length; i++) buttons[i].setVisible(false);
-            respostas = respostasA();
+            answerList = easyAnswersManage();
         }
-        else respostas = respostasB();
+        else answerList = hardAnswersManage();
 
-        for(int i = 0; i < respostas.length; i++) buttons[i].setText(respostas[i]);
+        for(int i = 0; i < answerList.length; i++) buttons[i].setText(answerList[i]);
     }
 
     /**

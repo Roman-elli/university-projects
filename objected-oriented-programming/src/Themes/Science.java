@@ -9,13 +9,13 @@ import java.util.Collections;
  * This class contains two arrays: one with easy Science answers and another with difficult Science answers.
  */
 public class Science extends Question{
-    private final ArrayList<String> respostasFaceis;
-    private final ArrayList<String> respostasDificeis;
+    private final ArrayList<String> easyAnswerList;
+    private final ArrayList<String> hardAnswerList;
 
     public Science(String question){
         super(question);
-        respostasFaceis = new ArrayList<>();
-        respostasDificeis = new ArrayList<>();
+        easyAnswerList = new ArrayList<>();
+        hardAnswerList = new ArrayList<>();
     }
 
     /**
@@ -28,20 +28,20 @@ public class Science extends Question{
 
     /**
      * Method that adds a Science answer to the array of easy answers
-     * @param newCiencia answer to be added
+     * @param newScienceAnswer answer to be added
      */
     @Override
-    public void addResposta(String newCiencia){
-        respostasFaceis.add(newCiencia);
+    public void addEasyAnswer(String newScienceAnswer){
+        easyAnswerList.add(newScienceAnswer);
     }
 
     /**
      * Method that adds a Science answer to the array of difficult answers
-     * @param newCiencia answer to be added
+     * @param newScienceAnswer answer to be added
      */
     @Override
-    public void addResposta2(String newCiencia){
-        respostasDificeis.add(newCiencia);
+    public void addHardAnswer(String newScienceAnswer){
+        hardAnswerList.add(newScienceAnswer);
     }
 
     /**
@@ -50,11 +50,11 @@ public class Science extends Question{
      * @return list with six answers
      */
     @Override
-    public String[] respostasA(){
+    public String[] easyAnswersManage(){
         String[] random = new String[6];
-        Collections.shuffle(respostasFaceis);
+        Collections.shuffle(easyAnswerList);
         for(int i = 0; i < random.length; i++){
-            random[i] = respostasFaceis.get(i);
+            random[i] = easyAnswerList.get(i);
         }
         return random;
     }
@@ -65,11 +65,11 @@ public class Science extends Question{
      * @return list with six answers
      */
     @Override
-    public String[] respostasB(){
+    public String[] hardAnswersManage(){
         String[] random = new String[6];
-        Collections.shuffle(respostasDificeis);
+        Collections.shuffle(hardAnswerList);
         for(int i = 0; i < random.length; i++){
-            random[i] = respostasDificeis.get(i);
+            random[i] = hardAnswerList.get(i);
         }
         return random;
     }
@@ -77,16 +77,16 @@ public class Science extends Question{
     /**
      * Method that sets the button text with the corresponding answers according to the current round
      * @param buttons list of buttons
-     * @param rodada current round of the game
+     * @param round current round of the game
      */
     @Override
-    public void defineTheme(JButton[] buttons, int rodada){
-        String[] respostas;
-        if(rodada < 2){
-            respostas = respostasA();
+    public void defineTheme(JButton[] buttons, int round){
+        String[] answerList;
+        if(round < 2){
+            answerList = easyAnswersManage();
         }
-        else respostas = respostasB();
-        for(int i = 0; i < respostas.length; i++) buttons[i].setText(respostas[i]);
+        else answerList = hardAnswersManage();
+        for(int i = 0; i < answerList.length; i++) buttons[i].setText(answerList[i]);
     }
 
     /**

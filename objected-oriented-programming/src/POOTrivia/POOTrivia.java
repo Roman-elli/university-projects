@@ -11,20 +11,20 @@ import java.time.LocalDateTime;
  * The POOTrivia class contains the main methods of the program.
  * This class contains an array of type Question, where the game questions are stored and shuffled
  * whenever the game starts, an array of type Player, where the players are stored, an int numeroRespostas,
- * which is the number of answers for each question, an int rodada, which represents the current round of the game, and
+ * which is the number of answers for each question, an int round, which represents the current round of the game, and
  * the variable jogadorAtivo of type Player, which represents the current player.
  */
 public class POOTrivia {
     private final ArrayList<Question> gameQuestions;
     private final ArrayList<Player> players;
     private final int numeroRespostas;
-    private int rodada;
+    private int round;
     private Player jogadorAtivo;
     public POOTrivia(){
         gameQuestions = new ArrayList<>();
         players = new ArrayList<>();
         numeroRespostas = 6;
-        rodada = 0;
+        round = 0;
         readFile();
         Collections.shuffle(gameQuestions);
         jogadorAtivo = new Player();
@@ -54,7 +54,7 @@ public class POOTrivia {
                             for(int i = 0; i < numeroRespostas; i++){
                                 leitura = br.readLine();
                                 if(i == 0) novaPergunta.setCorrect(leitura);
-                                novaPergunta.addResposta(leitura);
+                                novaPergunta.addEasyAnswer(leitura);
                             }
                             break;
                         case "Science":
@@ -63,13 +63,13 @@ public class POOTrivia {
                             for(int i = 0; i < numeroRespostas; i++){
                                 leitura = br.readLine();
                                 if(i == 0) novaPergunta.setCorrect(leitura);
-                                novaPergunta.addResposta(leitura);
+                                novaPergunta.addEasyAnswer(leitura);
                             }
                             br.readLine();
                             for(int i = 0; i < numeroRespostas; i++){
                                 leitura = br.readLine();
                                 if(i == 0) novaPergunta.setCorrect(leitura);
-                                novaPergunta.addResposta2(leitura);
+                                novaPergunta.addHardAnswer(leitura);
                             }
                             break;
                         case "Skiing":
@@ -88,13 +88,13 @@ public class POOTrivia {
                             for(int i = 0; i < numeroRespostas; i++){
                                 leitura = br.readLine();
                                 if(i == 0) novaPergunta.setCorrect1(leitura);
-                                novaPergunta.addResposta(leitura);
+                                novaPergunta.addEasyAnswer(leitura);
                             }
                             br.readLine();
                             for(int i = 0; i < numeroRespostas; i++){
                                 leitura = br.readLine();
                                 if(i == 0) novaPergunta.setCorrect2(leitura);
-                                novaPergunta.addResposta2(leitura);
+                                novaPergunta.addHardAnswer(leitura);
                             }
                             break;
                         default:
@@ -117,7 +117,7 @@ public class POOTrivia {
      * Method that advances the game round
      */
     public void nextRound(){
-        rodada++;
+        round++;
     }
 
     /**
@@ -125,7 +125,7 @@ public class POOTrivia {
      * @return current round
      */
     public int getRound(){
-        return rodada;
+        return round;
     }
 
     /**
@@ -141,7 +141,7 @@ public class POOTrivia {
      * @return question to be presented in the current round
      */
     public Question newQuestion(){
-        return gameQuestions.get(rodada);
+        return gameQuestions.get(round);
     }
 
     /**
@@ -262,10 +262,10 @@ public class POOTrivia {
      * and shuffling the list of questions again so that new questions are generated for the next game
      */
     public void reset(){
-        if(rodada != 0){
+        if(round != 0){
             Collections.shuffle(gameQuestions);
             jogadorAtivo = new Player();
-            rodada = 0;
+            round = 0;
         }
     }
 }

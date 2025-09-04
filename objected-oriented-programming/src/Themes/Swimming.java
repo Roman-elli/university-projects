@@ -14,7 +14,7 @@ public class Swimming extends Sports{
      * @return points of the question
      */
     public int calculatePoints(){
-        return super.getQuestionPoints() + super.getMajoracao() + 10;
+        return super.getQuestionPoints() + super.getScoreWeight() + 10;
     }
 
     /**
