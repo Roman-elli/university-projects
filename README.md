@@ -26,9 +26,8 @@ Each folder has its own README with more detailed documentation.
 ## Object-Oriented Programming
 - 🎮 [**POOTrivia – Quiz Game**](objected-oriented-programming)  
   Language: **Java**  
-  → A **quiz game** where players answer questions from different themes (**Arts, Science, Football, Swimming, Skiing**), earn points, and compete for the **top 3 scores**.  
-  Players can **save their name and score**, view the **best players ranking**, and replay the game with shuffled questions.  
-  The game features a **graphical interface built with Swing**, with images, answer buttons, and dynamic round-based difficulty.
+  → A **quiz game** with questions from **Arts, Science, Football, Swimming, and Skiing**.  
+  Players earn points, save their name and score, view the **top 3 ranking**, and play through rounds with a **Swing-based graphical interface**.
 
 ---
 
