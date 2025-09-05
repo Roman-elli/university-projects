@@ -12,6 +12,13 @@ Each folder has its own README with more detailed documentation.
 
 ---
 
+## Information Theory
+- 📂 [**Gzip Decompressor**](information-theory)  
+  Language: **Python**  
+  → A **menu-driven GZIP decompressor** that allows you to select **images, sounds, or text files** and decompress them using **Deflate (Huffman + LZ77)**.
+
+---
+
 ## Introduction to Programming
 - 🏟️ [**Football Game**](introduction-to-programming/football)  
   Language: **Python**  
