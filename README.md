@@ -47,5 +47,5 @@ Each folder has its own README with more detailed documentation.
 
 ## PSQL - Hospital Management API
 - 🏥 [**Hospital Management API**](psql-hospital-api)  
-  Language: **Python + SQL + PostgreSQL**  
+  Language: **Python + PostgreSQL**  
   → A **REST API** for managing patients, doctors, appointments, prescriptions, surgeries, and billing, with **JWT authentication**, role-based access, and automated reporting.
