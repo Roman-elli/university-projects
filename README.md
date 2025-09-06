@@ -42,3 +42,10 @@ Each folder has its own README with more detailed documentation.
 - 🚗 [**CarWash Manager**](procedural-programming)  
   Language: **C**  
   → A **car wash and maintenance reservation system** that allows you to **create, list, cancel, execute, save, and load reservations**, including a waiting list and time validation.  
+
+---
+
+### PSQL - Hospital Management API
+- 🏥 [**Hospital Management API**](psql-hospital-api)  
+  Language: **Python + SQL + PostgreSQL**  
+  → A **REST API** for managing patients, doctors, appointments, prescriptions, surgeries, and billing, with **JWT authentication**, role-based access, and automated reporting.
