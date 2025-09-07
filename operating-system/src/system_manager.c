@@ -1,7 +1,4 @@
-//Beatriz Alexandra Azeitona Mourato nº2022224891
-//Thales Barbuto Romanelli Lopes nº2022169928
-
-#include "functions.h"
+#include "../include/functions.h"
 
 int main(int argc, char *argv[]){
 	if(argc != 2){
@@ -12,7 +9,20 @@ int main(int argc, char *argv[]){
 
 	cria_semaforo();
 
-	arquivo = fopen("log.txt", "a");
+    if (mkdir("data", 0755) == -1 && errno != EEXIST) {
+        perror("Erro ao criar pasta data");
+        exit(1);
+    }
+    if (mkdir("data/log", 0755) == -1 && errno != EEXIST) {
+        perror("Erro ao criar pasta data/log");
+        exit(1);
+    }
+
+	arquivo = fopen("data/log/log.txt", "a");
+	if (!arquivo) {
+		perror("Erro ao abrir log.txt");
+		exit(1);
+	}
 
 	write_log("5G_AUTH_PLATFORM SIMULATOR STARTING");
 	message_queue();

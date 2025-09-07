@@ -1,6 +1,3 @@
-//Beatriz Alexandra Azeitona Mourato nº2022224891
-//Thales Barbuto Romanelli Lopes nº2022169928
-
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,30 +9,21 @@
 #include <errno.h>
 #include <sys/msg.h>
 #include <semaphore.h>
+#include "../include/functions.h"
 
-#define MESSAGE_SIZE 512
 #define DEBUG
 #define PIPE_NAME "USER_PIPE"
 #define QUEUE_KEY 12345
 
-
-typedef struct
-{
-  long mtype;
-  int answer;
-} mq_user;
-
 void mq_analyser();
 void sigint_handler(int signum);
-int valida_numero(const char *argv);
 void *music_handler(void *arg);
+void read_mobile_config_file(char* filename);
 void *social_handler(void *arg);
 void *video_handler(void *arg);
 int fd;
-sem_t *sem_mobile;
 
 pthread_t social_pthread, music_pthread, video_pthread;
-char message[MESSAGE_SIZE];
 char message_video[MESSAGE_SIZE];
 char message_social[MESSAGE_SIZE];
 char message_music[MESSAGE_SIZE];
@@ -46,18 +34,21 @@ int intervalo_video;
 int intervalo_music;
 int intervalo_social;
 int dados;
-int id;
 int message_length;
 
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
 int main(int argc, char *argv[]) {
-    if (argc != 7) {
-        printf("Uso: %s <plafond inicial> <número de pedidos de autorização> <intervalo VIDEO> <intervalo MUSIC> <intervalo SOCIAL> <dados a reservar>\n", argv[0]);
+    if(argc != 2){
+        printf("Uso: %s <arquivo de configuração>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
     signal(SIGINT, sigint_handler);
-    printf("ANTES\n");
+
+    read_mobile_config_file(argv[1]);
+
+    intervalo_video *= 1000;
+    intervalo_music *= 1000;
+    intervalo_social *= 1000;
+    id = getpid();
 
     sem_mobile = sem_open("MOBILE", O_CREAT, 0666, 1);
     if (sem_mobile == SEM_FAILED) {
@@ -65,13 +56,7 @@ int main(int argc, char *argv[]) {
        return 1;  // Retorna 1 indicando falha
    }
 
-    plafond = valida_numero(argv[1]);
-    pedidos = valida_numero(argv[2]);
-    intervalo_video = valida_numero(argv[3]) * 1000;
-    intervalo_music = valida_numero(argv[4]) * 1000;
-    intervalo_social = valida_numero(argv[5]) * 1000;
-    dados = valida_numero(argv[6]);
-    id = getpid();
+    
 
 #ifdef DEBUG
     printf("Plafond: %d, Pedidos: %d, Intervalo_video: %dus, Intervalo_music: %dus, Intervalo_social: %dus, Dados: %d, ID: %d\n",
@@ -146,6 +131,21 @@ void *social_handler(void *arg) {
     pthread_exit(NULL);
 }
 
+void read_mobile_config_file(char* filename){
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        write_log("Erro ao ler ficheiro");
+        exit(1);
+    }
+
+    if (fscanf(file, "%d %d %d %d %d %d", &plafond, &pedidos, &intervalo_video, &intervalo_music, &intervalo_social, &dados) != 6) {
+        write_log("Erro ao ler valores do arquivo de configuração");
+        fclose(file);
+        exit(1);
+    }
+    fclose(file);
+}
+
 void *music_handler(void *arg) {
     while (1) {
         pthread_mutex_lock(&mutex);
@@ -202,15 +202,6 @@ void *video_handler(void *arg) {
         usleep(intervalo_video);
     }
     pthread_exit(NULL);
-}
-
-int valida_numero(const char *argv) {
-    int valor = atoi(argv);
-    if (valor == 0 && argv[0] != '0') {
-        printf("Argumento inválido. Por favor, digite um número!\n");
-        exit(EXIT_FAILURE);
-    }
-    return valor;
 }
 
 void mq_analyser(){

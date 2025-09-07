@@ -1,6 +1,3 @@
-//Beatriz Alexandra Azeitona Mourato nº2022224891
-//Thales Barbuto Romanelli Lopes nº2022169928
-
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>

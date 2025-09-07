@@ -1,5 +1,5 @@
-//Beatriz Alexandra Azeitona Mourato nº2022224891
-//Thales Barbuto Romanelli Lopes nº2022169928
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
 
 #include <sys/msg.h>
 #include <stdlib.h>
@@ -17,6 +17,7 @@
 #include <pthread.h>
 #include <signal.h>
 #include <errno.h>
+#include <sys/select.h>
 
 #define MESSAGE_SIZE 1024
 #define DEBUG
@@ -24,16 +25,11 @@
 #define BACK_PIPE "BACK_PIPE"
 #define QUEUE_KEY 12345
 
-// MQ info
-int mq_id;
-
 typedef struct
 {
   long mtype;
-  int answer;   // 0 > plafond terminado  1 > accepted
+  int answer;
 } mq_user;
-
-
 
 // SERVER_INFO
 typedef struct{
@@ -46,34 +42,17 @@ typedef struct{
 	int numero_usuario;
 } Servidor;
 
-Servidor server;
-
-
-// PIPE CONFIG
-fd_set read_set;
-int fd_user;
-int fd_back;
-char sem_name[20];
-char message[MESSAGE_SIZE];
-char message_stats[MESSAGE_SIZE];
-char receive_command[MESSAGE_SIZE];
-char receive_id[MESSAGE_SIZE];
-char receive_data[MESSAGE_SIZE];
-int data;
-int id;
-
 // SHARED_MEMORY_INFO
 typedef struct{
 	int user_id;
 	int data_total;
 	int used_data;
 	int on;
-  int mq_oitenta;
-  int mq_noventa;
-  int mq_cem;
+	int mq_oitenta;
+	int mq_noventa;
+	int mq_cem;
 }Shared_data;
-Shared_data *shared_var;
-int shmid;
+
 
 
 typedef struct{
@@ -84,8 +63,7 @@ typedef struct{
 	int total_music;
 	int auth_music;
 }Shared_report;
-Shared_report *shared_report;
-int shmid_report;
+
 
 typedef struct
 {
@@ -102,29 +80,16 @@ typedef struct Queue_organizer {
 } Queue_organizer;
 
 
-int request_video;
-int request_other;
-int size;
+// Variáveis globais definidas em functions.c
+extern FILE *arquivo;
+extern pid_t auth_engine_pid;
+extern pid_t monitor_pid;
 
-FILE *arquivo;
-
-// SEMAFORO INFO
-sem_t *sem_log;
-sem_t *sem_shared;
-sem_t *sem_report;
-sem_t *sem_online;
-sem_t *sem_monitor;
-sem_t *sem_mobile;
-sem_t** semaphores;
-sem_t *sem_queue;
-sem_t *sem_extra;
-
-// PROCCESS PID
-pid_t auth_engine_pid;
-pid_t monitor_pid;
-pid_t monitor_back_pid;
-
-pthread_t sender_pthread, receiver_pthread;
+extern char message[MESSAGE_SIZE];
+extern int id;
+extern pthread_mutex_t mutex;
+extern int valida_numero(const char *argv);
+extern sem_t *sem_mobile;
 
 void start_program();
 void cria_semaforo();
@@ -152,3 +117,5 @@ int check_user(int id);
 int check_offline();
 void free_queue(Queue_organizer **head_other, Queue_organizer **head_video);
 int valida_numero(const char *argv);
+
+#endif // FUNCTIONS_H

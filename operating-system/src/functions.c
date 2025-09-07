@@ -1,7 +1,30 @@
-//Beatriz Alexandra Azeitona Mourato nº2022224891
-//Thales Barbuto Romanelli Lopes nº2022169928
+#include "../include/functions.h"
 
-#include "functions.h"
+// MQ info
+int mq_id;
+
+Servidor server;
+
+// PIPE CONFIG
+
+fd_set read_set;
+int fd_user;
+int fd_back;
+char sem_name[20];
+char message[MESSAGE_SIZE];
+char message_stats[MESSAGE_SIZE];
+char receive_command[MESSAGE_SIZE];
+char receive_id[MESSAGE_SIZE];
+char receive_data[MESSAGE_SIZE];
+int data;
+int id;
+
+// SHARED_MEMORY_INFO
+Shared_data *shared_var;
+int shmid;
+
+Shared_report *shared_report;
+int shmid_report;
 
 Queue_organizer* fila_video;
 Queue_organizer* fila_other;
@@ -11,6 +34,28 @@ pid_t* auth_manager_pid;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t go_on_sender = PTHREAD_COND_INITIALIZER;
 
+int request_video;
+int request_other;
+int size;
+
+// SEMAFORO INFO
+sem_t *sem_log;
+sem_t *sem_shared;
+sem_t *sem_report;
+sem_t *sem_online;
+sem_t *sem_monitor;
+sem_t *sem_mobile;
+sem_t** semaphores;
+sem_t *sem_queue;
+sem_t *sem_extra;
+
+// PROCCESS PID
+FILE *arquivo;
+pid_t auth_engine_pid;
+pid_t monitor_pid;
+pid_t monitor_back_pid;
+
+pthread_t sender_pthread, receiver_pthread;
 
 void start_program(){
 	server.numero_usuario = 0;
@@ -103,7 +148,6 @@ void cria_semaforo() {
     }
 }
 
-
 void destroi_semaforo(){
 	sem_close(sem_log);
 	sem_unlink("LOG");
@@ -177,12 +221,10 @@ void sigint_request_handler(int signum){
     exit(EXIT_SUCCESS);
 }
 
-
 void erro(char *s) {
     perror(s);
     exit(1);
 }
-
 
 void read_file(char *filename){
 	FILE* file = fopen(filename, "r");
@@ -212,6 +254,7 @@ void read_file(char *filename){
 	exit(1);
 	}
 }
+
 void authorization(){
 		if ((mkfifo(USER_PIPE, O_CREAT|O_EXCL|0666)<0) && (errno!= EEXIST)) {
 			write_log("Cannot create pipe: USER_PIPE");
@@ -305,6 +348,7 @@ void monitor_engine() {
         sem_post(sem_shared);
     }
 }
+
 void message_queue(){
 	// Criar a fila de mensagens
     mq_id = msgget(QUEUE_KEY, 0666 | IPC_CREAT);
@@ -635,7 +679,6 @@ void *receiver_work(void *arg) {
     pthread_exit(NULL);
 }
 
-
 int check_user(int id){
 	for(int i = 0; i < server.mobile_users; i++)
 		if(shared_var[i].user_id == id) return i;
@@ -648,8 +691,6 @@ int check_offline(){
 	return -1;
 }
 
-
-// Função para adicionar outros tipos de serviços
 Queue_organizer* insert_queue(int user_id, char *type, int data) {
     Queue_organizer *new_node = (Queue_organizer *)malloc(sizeof(Queue_organizer));
     if (new_node == NULL) {
@@ -663,7 +704,6 @@ Queue_organizer* insert_queue(int user_id, char *type, int data) {
     new_node->next = NULL;
     return new_node;
 }
-
 
 void auth_engine(int engine_id) {
     Queue_organizer received_message;
@@ -765,6 +805,7 @@ void auth_engine(int engine_id) {
         }
     }
 }
+
 void reset(){
 	sem_wait(sem_report);
 	shared_report->total_video = 0;
@@ -796,7 +837,6 @@ void data_stats(){
 		sem_post(sem_queue);
 
 }
-
 
 int valida_numero(const char *argv) {
     if (atoi(argv) == 0) {
