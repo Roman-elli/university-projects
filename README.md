@@ -38,6 +38,13 @@ Each folder has its own README with more detailed documentation.
 
 ---
 
+## Operating System
+- 📡 [**5G Auth Platform**](operating-system)  
+  Language: **C**  
+  → A **multi-process 5G data management system** simulating mobile user requests, authorization, monitoring, and logging with semaphores, message queues, pipes, and shared memory.
+
+---
+
 ## Procedural Programming
 - 🚗 [**CarWash Manager**](procedural-programming)  
   Language: **C**  
