@@ -3,7 +3,10 @@ FLAGS = -g -pthread -lrt -Wall -Iinclude
 
 OBJ_DIR = obj
 DATA_DIR = data
-OBJS = $(OBJ_DIR)/functions.o
+
+SRC_COMMON = $(wildcard src/core/*.c src/signals/*.c src/authorization/*.c src/monitor/*.c)
+OBJS = $(patsubst src/%.c,$(OBJ_DIR)/%.o,$(SRC_COMMON))
+
 SYSTEM_MANAGER = src/system_manager.c
 MOBILE_USER = src/mobile_user.c
 BACKOFFICE_USER = src/backoffice_user.c
@@ -23,8 +26,9 @@ $(BIN_DIR):
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
-$(OBJ_DIR)/functions.o: src/functions.c | $(OBJ_DIR)
-	$(CC) $(FLAGS) -c src/functions.c -o $(OBJ_DIR)/functions.o
+$(OBJ_DIR)/%.o: src/%.c | $(OBJ_DIR)
+	@mkdir -p $(dir $@)
+	$(CC) $(FLAGS) -c $< -o $@
 
 $(TARGET): $(SYSTEM_MANAGER) $(OBJS)
 	$(CC) $(FLAGS) $(SYSTEM_MANAGER) $(OBJS) -o $(TARGET)
