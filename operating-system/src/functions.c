@@ -50,7 +50,7 @@ sem_t *sem_queue;
 sem_t *sem_extra;
 
 // PROCCESS PID
-FILE *arquivo;
+FILE *file;
 pid_t auth_engine_pid;
 pid_t monitor_pid;
 pid_t monitor_back_pid;
@@ -58,7 +58,7 @@ pid_t monitor_back_pid;
 pthread_t sender_pthread, receiver_pthread;
 
 void start_program(){
-	server.numero_usuario = 0;
+	server.user_number = 0;
 	request_video = 0;
 	request_other = 0;
 	for(int i = 0; i < server.mobile_users; i++) shared_var[i].on = 0;
@@ -72,7 +72,7 @@ void start_program(){
 	shared_report->auth_music = 0;
 }
 
-void cria_semaforo() {
+void create_semaphor() {
     sem_unlink("LOG");
     sem_log = sem_open("LOG", O_CREAT|O_EXCL, 0666, 1);
     if (sem_log == SEM_FAILED) {
@@ -148,7 +148,7 @@ void cria_semaforo() {
     }
 }
 
-void destroi_semaforo(){
+void destroy_semaphor(){
 	sem_close(sem_log);
 	sem_unlink("LOG");
 
@@ -202,13 +202,12 @@ void sigint_monitorback_handler(int signum){
 
 void sigint_auth_handler(int signum){
 		for (int i = 0; i < server.auth_servers_max; i++) {
-				close(unnamed_pipe[i][0]); // Fecha o descritor de leitura
-				close(unnamed_pipe[i][1]); // Fecha o descritor de escrita
+				close(unnamed_pipe[i][0]);
+				close(unnamed_pipe[i][1]);
 				waitpid(auth_manager_pid[i], NULL, 0);
 		}
 
-		// Libera a memória alocada para os ponteiros de array
-		free(unnamed_pipe);
+        free(unnamed_pipe);
 		free(auth_manager_pid);
 
 		#ifdef DEBUG
@@ -221,7 +220,7 @@ void sigint_request_handler(int signum){
     exit(EXIT_SUCCESS);
 }
 
-void erro(char *s) {
+void error(char *s) {
     perror(s);
     exit(1);
 }
@@ -245,13 +244,13 @@ void read_file(char *filename){
             printf("Max Others Wait: %d\n", server.max_others_wait);
             #endif
         } else {
-            write_log("Erro ao ler valores do arquivo.");
+            write_log("Error opening 5G config file.");
             exit(1);
         }
 		fclose(file);
 	}else {
-   write_log("Erro ao ler ficheiro");
-	exit(1);
+        write_log("Error opening 5G config file.");
+	    exit(1);
 	}
 }
 
@@ -269,7 +268,7 @@ void authorization(){
 		auth_manager_pid = malloc((server.auth_servers_max+1) * sizeof(pid_t));
     for (int i = 0; i < server.auth_servers_max; i++) {
 	    	if (pipe(unnamed_pipe[i]) == -1) {
-	    		write_log("Erro ao criar o unnamed pipe");
+	    		write_log("Error creating unnamed pipe");
 	    		exit(EXIT_FAILURE);
 				}
 
@@ -320,18 +319,18 @@ void monitor_engine() {
         sem_wait(sem_shared);
         for (int i = 0; i < server.mobile_users; i++) {
             usage_ratio = (float)shared_var[i].used_data / shared_var[i].data_total;
-            if (usage_ratio >= 1 && shared_var[i].mq_cem == 0) {
-								shared_var[i].mq_cem++;
+            if (usage_ratio >= 1 && shared_var[i].mq_hundred == 0) {
+								shared_var[i].mq_hundred++;
 								snprintf(message_monitor, sizeof(message_monitor), "ALERT 100%% (USER %d) TRIGGERED", i);
 								write_log(message_monitor);
                 msg.answer = 100;
-            } else if (usage_ratio >= 0.9 && shared_var[i].mq_noventa == 0) {
-								shared_var[i].mq_noventa++;
+            } else if (usage_ratio >= 0.9 && shared_var[i].mq_ninety == 0) {
+								shared_var[i].mq_ninety++;
 								snprintf(message_monitor, sizeof(message_monitor), "ALERT 90%% (USER %d) TRIGGERED", i);
 								write_log(message_monitor);
                 msg.answer = 90;
-            } else if (usage_ratio >= 0.8 && shared_var[i].mq_oitenta == 0) {
-								shared_var[i].mq_oitenta++;
+            } else if (usage_ratio >= 0.8 && shared_var[i].mq_eighty == 0) {
+								shared_var[i].mq_eighty++;
 								snprintf(message_monitor, sizeof(message_monitor), "ALERT 80%% (USER %d) TRIGGERED", i);
 								write_log(message_monitor);
                 msg.answer = 80;
@@ -350,7 +349,6 @@ void monitor_engine() {
 }
 
 void message_queue(){
-	// Criar a fila de mensagens
     mq_id = msgget(QUEUE_KEY, 0666 | IPC_CREAT);
     if (mq_id == -1) {
         perror("msgget failed");
@@ -359,27 +357,21 @@ void message_queue(){
 }
 
 void create_shared_memory(){
-	// Criando a memória compartilhada
     if ((shmid = shmget(IPC_PRIVATE, server.mobile_users * sizeof(Shared_data), IPC_CREAT | 0766)) < 0) {
     	write_log("Error in shmget with IPC_CREAT");
     	exit(1);
 	}
 
-	// Associando a memória compartilhada ao espaço de endereço do processo
 	if ((shared_var = (Shared_data *) shmat(shmid, NULL, 0)) == (Shared_data *) -1) {
     	write_log("Shmat error!");
     	exit(1);
 	}
 
-
-
-	// Criando a memória compartilhada
     if ((shmid_report = shmget(IPC_PRIVATE, sizeof(Shared_report), IPC_CREAT | 0766)) < 0) {
     	write_log("Error in shmget with IPC_CREAT");
     	exit(1);
 	}
 
-	// Associando a memória compartilhada ao espaço de endereço do processo
 	if ((shared_report = (Shared_report *) shmat(shmid_report, NULL, 0)) == (Shared_report *) -1) {
     	write_log("Shmat error!");
     	exit(1);
@@ -387,18 +379,18 @@ void create_shared_memory(){
 }
 
 void write_log(char* message){
-		time_t tempo_atual;
-    struct tm *info_tempo;
+	time_t actual_time;
+    struct tm *time_info;
 
-    time(&tempo_atual);
-    info_tempo = localtime(&tempo_atual);
+    time(&actual_time);
+    time_info = localtime(&actual_time);
 
     #ifdef DEBUG
     printf("%s\n", message);
     #endif
     sem_wait(sem_log);
-    fprintf(arquivo, "%02d:%02d:%02d %s\n", info_tempo->tm_hour, info_tempo->tm_min, info_tempo->tm_sec, message);
-    fflush(arquivo);
+    fprintf(file, "%02d:%02d:%02d %s\n", time_info->tm_hour, time_info->tm_min, time_info->tm_sec, message);
+    fflush(file);
     sem_post(sem_log);
 }
 
@@ -409,7 +401,7 @@ void *sender_work(void *arg) {
 		int video_full = 0;
 		int extra_type = 0;
 
-    for (int i = 0; i < server.auth_servers_max; i++) close(unnamed_pipe[i][0]); // Fechamento dos descritores de leitura
+    for (int i = 0; i < server.auth_servers_max; i++) close(unnamed_pipe[i][0]);
     time_t end_time;
     int i;
 
@@ -419,86 +411,81 @@ void *sender_work(void *arg) {
         while(request_video == 0 && request_other == 0) {
             pthread_cond_wait(&go_on_sender, &mutex);
         }
+        if(request_other >= server.queue_pos && other_full == 0 && video_full == 0 && extra_type == 0){
+                    extra_type = 1;
+                    other_full = 1;
+                    if (pipe(unnamed_pipe[server.auth_servers_max]) == -1) {
+                    perror("Error creating pipe.");
+                    exit(EXIT_FAILURE);
+                    }
+                    auth_manager_pid[server.auth_servers_max] = fork();
+                    if (auth_manager_pid[server.auth_servers_max] == 0) {
+            auth_engine(server.auth_servers_max);
+            exit(0);
+                    }
+                    else if(auth_manager_pid[server.auth_servers_max] == -1) {
+                write_log("AUTHORIZATION_ENGINE EXTRA CREATION PROCCESS FAILED");
+                exit(1);
+            }
+                    write_log("SENDER: (OTHER QUEUE FULL) EXTRA AUTHORIZATION_ENGINE READY");
+        }else if(request_video >= server.queue_pos && other_full == 0 && video_full == 0 && extra_type == 0){
+                extra_type = 1;
+                video_full = 1;
+                if (pipe(unnamed_pipe[server.auth_servers_max]) == -1) {
+                    perror("Error creating pipe.");
+                    exit(EXIT_FAILURE);
+                }
+                auth_manager_pid[server.auth_servers_max] = fork();
+                if (auth_manager_pid[server.auth_servers_max] == 0) {
+                    auth_engine(server.auth_servers_max);
+                    exit(0);
+                }
+                else if(auth_manager_pid[server.auth_servers_max] == -1) {
+                        write_log("AUTHORIZATION_ENGINE EXTRA CREATION PROCCESS FAILED");
+                        exit(1);
+                }
+                write_log("SENDER: (VIDEO QUEUE FULL) EXTRA AUTHORIZATION_ENGINE READY");
+        }
+
+        if(extra_type == 1 && other_full == 1 && request_other <= 0.5*server.queue_pos){
+                extra_type = 0;
+                other_full = 0;
+                kill(auth_manager_pid[server.auth_servers_max], SIGKILL);
+                write_log("SENDER: (OTHER QUEUE REACH 50%) EXTRA AUTHORIZATION_ENGINE ELIMINATED");
+                close(unnamed_pipe[server.auth_servers_max][0]);
+                close(unnamed_pipe[server.auth_servers_max][1]);
+        }else if(extra_type == 1 && video_full == 1 && request_video <= 0.5*server.queue_pos){
+                extra_type = 0;
+                video_full = 0;
+                kill(auth_manager_pid[server.auth_servers_max], SIGKILL);
+                write_log("SENDER: (VIDEO QUEUE REACH 50%) EXTRA AUTHORIZATION_ENGINE ELIMINATED");
+                close(unnamed_pipe[server.auth_servers_max][0]);
+                close(unnamed_pipe[server.auth_servers_max][1]);
+        }
 
 
-				//	CRIA AUTH ENGINE EXTRA
-				if(request_other >= server.queue_pos && other_full == 0 && video_full == 0 && extra_type == 0){
-							extra_type = 1;
-							other_full = 1;
-							if (pipe(unnamed_pipe[server.auth_servers_max]) == -1) {
-				    		perror("Erro ao criar o pipe");
-				    		exit(EXIT_FAILURE);
-							}
-							auth_manager_pid[server.auth_servers_max] = fork();
-							if (auth_manager_pid[server.auth_servers_max] == 0) {
-		            auth_engine(server.auth_servers_max);
-		            exit(0);
-							}
-							else if(auth_manager_pid[server.auth_servers_max] == -1) {
-			            write_log("AUTHORIZATION_ENGINE EXTRA CREATION PROCCESS FAILED");
-			            exit(1);
-			        }
-							write_log("SENDER: (OTHER QUEUE FULL) EXTRA AUTHORIZATION_ENGINE READY");
-				}else if(request_video >= server.queue_pos && other_full == 0 && video_full == 0 && extra_type == 0){
-						extra_type = 1;
-						video_full = 1;
-						if (pipe(unnamed_pipe[server.auth_servers_max]) == -1) {
-							perror("Erro ao criar o pipe");
-							exit(EXIT_FAILURE);
-						}
-						auth_manager_pid[server.auth_servers_max] = fork();
-						if (auth_manager_pid[server.auth_servers_max] == 0) {
-							auth_engine(server.auth_servers_max);
-							exit(0);
-						}
-						else if(auth_manager_pid[server.auth_servers_max] == -1) {
-								write_log("AUTHORIZATION_ENGINE EXTRA CREATION PROCCESS FAILED");
-								exit(1);
-						}
-						write_log("SENDER: (VIDEO QUEUE FULL) EXTRA AUTHORIZATION_ENGINE READY");
-				}
-
-				// DESTROI AUTH ENGINE EXTRA
-				if(extra_type == 1 && other_full == 1 && request_other <= 0.5*server.queue_pos){
-						extra_type = 0;
-						other_full = 0;
-						kill(auth_manager_pid[server.auth_servers_max], SIGKILL);
-						write_log("SENDER: (OTHER QUEUE REACH 50%) EXTRA AUTHORIZATION_ENGINE ELIMINATED");
-						close(unnamed_pipe[server.auth_servers_max][0]);
-						close(unnamed_pipe[server.auth_servers_max][1]);
-				}else if(extra_type == 1 && video_full == 1 && request_video <= 0.5*server.queue_pos){
-						extra_type = 0;
-						video_full = 0;
-						kill(auth_manager_pid[server.auth_servers_max], SIGKILL);
-						write_log("SENDER: (VIDEO QUEUE REACH 50%) EXTRA AUTHORIZATION_ENGINE ELIMINATED");
-						close(unnamed_pipe[server.auth_servers_max][0]);
-						close(unnamed_pipe[server.auth_servers_max][1]);
-				}
-
-
-				if(extra_type == 0){
-					sem_wait(sem_online);
-					i = 0;
-					while(i < server.auth_servers_max) {
-						if (sem_trywait(semaphores[i]) == 0) { // Tenta adquirir o semáforo da engine
-								break; // Sai do loop assim que encontrar uma engine livre
-						}
-							i++;
-					}
-					sem_post(semaphores[i]); // Libera o semáforo do servidor específico
-				}
-				else if (extra_type == 1){
-					sem_wait(sem_extra);
-					i = 0;
-					while(i <= server.auth_servers_max) {
-						if (sem_trywait(semaphores[i]) == 0) { // Tenta adquirir o semáforo da engine
-								break; // Sai do loop assim que encontrar uma engine livre
-						}
-							i++;
-					}
-					sem_post(semaphores[i]); // Libera o semáforo do servidor específic
-				}
-
+        if(extra_type == 0){
+            sem_wait(sem_online);
+            i = 0;
+            while(i < server.auth_servers_max) {
+                if (sem_trywait(semaphores[i]) == 0) {
+                        break;
+                }
+                    i++;
+            }
+            sem_post(semaphores[i]);
+        }
+        else if (extra_type == 1){
+            sem_wait(sem_extra);
+            i = 0;
+            while(i <= server.auth_servers_max) {
+                if (sem_trywait(semaphores[i]) == 0) {
+                        break;
+                }
+                    i++;
+            }
+            sem_post(semaphores[i]);
+        }
 
         end_time = time(NULL);
         if(request_video > 0) {
@@ -508,12 +495,12 @@ void *sender_work(void *arg) {
 								snprintf(message_sender, sizeof(message_sender), "SENDER: VIDEO AUTHORIZATION REQUEST (ID = %d) SENT FOR PROCESSING ON AUTHORIZATION_ENGINE %d", message_video->user_id,i);
 								write_log(message_sender);
                 write(unnamed_pipe[i][1], message_video, sizeof(Queue_organizer));
-                free(message_video); // Libera a memória alocada para a mensagem
+                free(message_video);
                 request_video--;
             } else {
 								snprintf(message_sender, sizeof(message_sender), "SENDER: TIME LIMIT REACHED FOR VIDEO REQUEST (ID = %d)", message_video->user_id);
                 write_log(message_sender);
-								free(message_video); // Libera a memória alocada para a mensagem
+								free(message_video);
                 request_video--;
             }
         } else if(request_other > 0) {
@@ -523,18 +510,18 @@ void *sender_work(void *arg) {
 								snprintf(message_sender, sizeof(message_sender), "SENDER: %s AUTHORIZATION REQUEST (ID = %d) SENT FOR PROCESSING ON AUTHORIZATION_ENGINE %d", message_other->type,message_other->user_id,i);
 								write_log(message_sender);
                 write(unnamed_pipe[i][1], message_other, sizeof(Queue_organizer));
-                free(message_other); // Libera a memória alocada para a mensagem
+                free(message_other);
                 request_other--;
             } else {
 								snprintf(message_sender, sizeof(message_sender), "SENDER: TIME LIMIT REACHED FOR OTHER REQUEST (ID = %d)", message_other->user_id);
 								write_log(message_sender);
-								free(message_other); // Libera a memória alocada para a mensagem
+								free(message_other);
                 request_other--;
             }
         }
 
 
-				if(extra_type == 0)sem_post(sem_online); // Libera o semáforo para o próximo sender
+				if(extra_type == 0)sem_post(sem_online);
 				else if(extra_type == 1)sem_post(sem_extra);
         pthread_mutex_unlock(&mutex);
     }
@@ -575,8 +562,8 @@ void *receiver_work(void *arg) {
                     char *token = strtok(message_receiver, "\n");
                     while (token != NULL) {
                         sscanf(token, "%[^#]#%[^#]#%s", receive_id, receive_command, receive_data);
-												int id = valida_numero(receive_id);
-												int data = valida_numero(receive_data);
+												int id = number_int_validation(receive_id);
+												int data = number_int_validation(receive_data);
 												sem_wait(sem_shared);
 												online = check_user(id);
 												sem_post(sem_shared);
@@ -646,7 +633,7 @@ void *receiver_work(void *arg) {
                 if (size > 0) {
                     message_receiver[size - 1] = '\0';
                     sscanf(message_receiver, "%[^#]#%s", receive_id, receive_command);
-                    int id = valida_numero(receive_id);
+                    int id = number_int_validation(receive_id);
                     if (request_other > server.queue_pos) {
                         snprintf(message_receiver, sizeof(message_receiver), "RECEIVER: OTHER SERVICE REQUEST REJECTED (OTHER QUEUE FULL) (ID = %d)", id);
                         write_log(message_receiver);
@@ -717,7 +704,6 @@ void auth_engine(int engine_id) {
 
 		sigset_t set;
 
-    // Prepara o conjunto de sinais para bloquear SIGINT
     sigemptyset(&set);
     sigaddset(&set, SIGINT);
 
@@ -737,9 +723,9 @@ void auth_engine(int engine_id) {
 								new_user.data_total = received_message.data;
 								new_user.used_data = 0;
 								new_user.on = 1;
-								new_user.mq_oitenta = 0;
-								new_user.mq_noventa = 0;
-								new_user.mq_cem = 0;
+								new_user.mq_eighty = 0;
+								new_user.mq_ninety = 0;
+								new_user.mq_hundred = 0;
                 sem_wait(sem_shared);
                 indice = check_offline();
                 if(indice != -1) {
@@ -768,12 +754,12 @@ void auth_engine(int engine_id) {
 												snprintf(message_auth, sizeof(message_auth), "AUTHORIZATION_ENGINE %d: %s AUTHORIZATION REQUEST (ID = %d)  PROCESSING COMPLETED", engine_id, received_message.type, received_message.user_id);
 												write_log(message_auth);
 		                    ratio = (float)shared_var[indice].used_data / shared_var[indice].data_total;
-		                    if (ratio >= 1 && shared_var[indice].mq_cem == 0) {
+		                    if (ratio >= 1 && shared_var[indice].mq_hundred == 0) {
 														shared_var[indice].on = 0;
 		                        sem_post(sem_monitor);
-		                    } else if (ratio >= 0.9 && shared_var[indice].mq_noventa == 0) {
+		                    } else if (ratio >= 0.9 && shared_var[indice].mq_ninety == 0) {
 		                        sem_post(sem_monitor);
-		                    } else if (ratio >= 0.8 && shared_var[indice].mq_oitenta == 0) {
+		                    } else if (ratio >= 0.8 && shared_var[indice].mq_eighty == 0) {
 		                        sem_post(sem_monitor);
 		                    }
                     		sem_post(sem_shared);
@@ -818,18 +804,16 @@ void reset(){
 }
 
 void data_stats(){
-		mq_back msg;
-	 // Enviar a mensagem
-    msg.mtype = 2;  // 1 para accepted, como exemplo
+	mq_back msg;
+    msg.mtype = 2;
     msg.answer.total_video = shared_report->total_video;
-		msg.answer.auth_video = shared_report->auth_video;
-		msg.answer.total_social = shared_report->total_social;
-		msg.answer.auth_social = shared_report->auth_social;
-		msg.answer.total_music = shared_report->total_music;
-		msg.answer.auth_music = shared_report->auth_music;
+    msg.answer.auth_video = shared_report->auth_video;
+    msg.answer.total_social = shared_report->total_social;
+    msg.answer.auth_social = shared_report->auth_social;
+    msg.answer.total_music = shared_report->total_music;
+    msg.answer.auth_music = shared_report->auth_music;
 
-		sem_wait(sem_queue);
-    // Enviar a mensagem
+    sem_wait(sem_queue);
     if (msgsnd(mq_id, &msg, sizeof(msg.answer), IPC_NOWAIT) == -1) {
         write_log("msgsnd failed");
         exit(EXIT_FAILURE);
@@ -838,7 +822,7 @@ void data_stats(){
 
 }
 
-int valida_numero(const char *argv) {
+int number_int_validation(const char *argv) {
     if (atoi(argv) == 0) {
 				write_log("ERROR IN INT CONVERTION");
         return -1;
@@ -847,32 +831,30 @@ int valida_numero(const char *argv) {
 }
 
 void free_queue(Queue_organizer **head_other, Queue_organizer **head_video) {
-		char message_free[MESSAGE_SIZE];
-    // Liberar a fila 'Queue_other'
+	char message_free[MESSAGE_SIZE];
     Queue_organizer *current_other = *head_other;
     Queue_organizer *next_other;
 
     while (current_other != NULL) {
-        next_other = current_other->next; // Salve o próximo nó
-				snprintf(message_free, sizeof(message_free), "5G_AUTH_PLATFORM SIMULATOR: %s AUTHORIZATION REQUEST (ID = %d)  PROCESSING IMCOMPLETED", current_other->type, current_other->user_id);
-				write_log(message_free);
-        free(current_other);              // Libere o nó atual
-        current_other = next_other;       // Mova para o próximo nó
+        next_other = current_other->next;
+        snprintf(message_free, sizeof(message_free), "5G_AUTH_PLATFORM SIMULATOR: %s AUTHORIZATION REQUEST (ID = %d)  PROCESSING IMCOMPLETED", current_other->type, current_other->user_id);
+        write_log(message_free);
+        free(current_other);
+        current_other = next_other;
     }
-    *head_other = NULL; // Certifique-se de que o cabeçalho agora aponta para NULL
+    *head_other = NULL;
 
-    // Liberar a fila 'Queue_video'
     Queue_organizer *current_video = *head_video;
     Queue_organizer *next_video;
 
     while (current_video != NULL) {
-        next_video = current_video->next; // Salve o próximo nó
-				snprintf(message_free, sizeof(message_free), "5G_AUTH_PLATFORM SIMULATOR: %s AUTHORIZATION REQUEST (ID = %d)  PROCESSING IMCOMPLETED", current_video->type, current_video->user_id);
-				write_log(message_free);
-        free(current_video);              // Libere o nó atual
-        current_video = next_video;       // Mova para o próximo nó
+        next_video = current_video->next;
+		snprintf(message_free, sizeof(message_free), "5G_AUTH_PLATFORM SIMULATOR: %s AUTHORIZATION REQUEST (ID = %d)  PROCESSING IMCOMPLETED", current_video->type, current_video->user_id);
+		write_log(message_free);
+        free(current_video);
+        current_video = next_video;
     }
-    *head_video = NULL; // Certifique-se de que o cabeçalho agora aponta para NULL
+    *head_video = NULL;
 }
 
 void end_program(){
@@ -882,12 +864,11 @@ void end_program(){
 	waitpid(auth_engine_pid, NULL, 0);
 	waitpid(monitor_pid, NULL, 0);
 
-
-		// Clean pipes
+	// Clean pipes
 	unlink(USER_PIPE);
 	unlink(BACK_PIPE);
 	close(fd_user);
-  close(fd_back);
+    close(fd_back);
 
     // Clean shared memory
 	shmdt(shared_var);
@@ -908,7 +889,7 @@ void end_program(){
     }
 	write_log("5G_AUTH_PLATFORM SIMULATOR CLOSING");
 	// Close file writer
-	fclose(arquivo);
-	destroi_semaforo();
+	fclose(file);
+	destroy_semaphor();
 	exit(EXIT_SUCCESS);
 }

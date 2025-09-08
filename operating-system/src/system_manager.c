@@ -7,20 +7,20 @@ int main(int argc, char *argv[]){
 	}
 	read_file(argv[1]);
 
-	cria_semaforo();
+	create_semaphor();
 
     if (mkdir("data", 0755) == -1 && errno != EEXIST) {
-        perror("Erro ao criar pasta data");
+        perror("Error creating data folder");
         exit(1);
     }
     if (mkdir("data/log", 0755) == -1 && errno != EEXIST) {
-        perror("Erro ao criar pasta data/log");
+        perror("Error creating log folder");
         exit(1);
     }
 
-	arquivo = fopen("data/log/log.txt", "a");
-	if (!arquivo) {
-		perror("Erro ao abrir log.txt");
+	file = fopen("data/log/log.txt", "a");
+	if (!file) {
+		perror("Error opening log.txt");
 		exit(1);
 	}
 

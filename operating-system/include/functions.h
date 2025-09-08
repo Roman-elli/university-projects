@@ -18,10 +18,11 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/select.h>
+#include <asm-generic/signal-defs.h>
 
 #define MESSAGE_SIZE 1024
 #define DEBUG
-#define USER_PIPE	"USER_PIPE"
+#define USER_PIPE "USER_PIPE"
 #define BACK_PIPE "BACK_PIPE"
 #define QUEUE_KEY 12345
 
@@ -39,7 +40,7 @@ typedef struct{
 	int auth_proc_time;
 	int max_video_wait;
 	int max_others_wait;
-	int numero_usuario;
+	int user_number;
 } Servidor;
 
 // SHARED_MEMORY_INFO
@@ -48,12 +49,10 @@ typedef struct{
 	int data_total;
 	int used_data;
 	int on;
-	int mq_oitenta;
-	int mq_noventa;
-	int mq_cem;
+	int mq_eighty;
+	int mq_ninety;
+	int mq_hundred;
 }Shared_data;
-
-
 
 typedef struct{
 	int total_video;
@@ -79,36 +78,36 @@ typedef struct Queue_organizer {
     struct Queue_organizer *next;
 } Queue_organizer;
 
-
-// Variáveis globais definidas em functions.c
-extern FILE *arquivo;
+// Global variables
+extern FILE *file;
 extern pid_t auth_engine_pid;
 extern pid_t monitor_pid;
-
 extern char message[MESSAGE_SIZE];
 extern int id;
 extern pthread_mutex_t mutex;
-extern int valida_numero(const char *argv);
+extern int number_int_validation(const char *argv);
 extern sem_t *sem_mobile;
 
+
+// Functions declarations
 void start_program();
-void cria_semaforo();
+void create_semaphor();
 void reset();
 void sigint_monitorback_handler(int signum);
 void data_stats();
-void destroi_semaforo();
+void destroy_semaphor();
 void sigint_system_handler(int signum);
 void sigint_monitor_handler(int signum);
 void sigint_auth_handler(int signum);
 void sigint_request_handler(int signum);
-void erro(char *s);
+void error(char *s);
 void read_file(char *filename);
 void authorization();
 void auth_engine(int engine_id);
 void monitor_engine();
 void message_queue();
 void create_shared_memory();
-void write_log();
+void write_log(char* message);
 void end_program();
 Queue_organizer* insert_queue(int user_id, char *type, int data);
 void *sender_work(void *arg);
@@ -116,6 +115,6 @@ void *receiver_work(void *arg);
 int check_user(int id);
 int check_offline();
 void free_queue(Queue_organizer **head_other, Queue_organizer **head_video);
-int valida_numero(const char *argv);
+int number_int_validation(const char *argv);
 
-#endif // FUNCTIONS_H
+#endif
