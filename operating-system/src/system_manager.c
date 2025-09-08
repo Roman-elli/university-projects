@@ -5,7 +5,7 @@ int main(int argc, char *argv[]){
 		printf("5g_auth_platform <config-file>\n");
 		exit(-1);
 	}
-	read_file(argv[1]);
+	read_5gconfig_file(argv[1]);
 
 	create_semaphor();
 
