@@ -37,13 +37,19 @@ When running the program, you will see the following options:
 
 ## ▶️ How to Run
 1. Build the program using the provided Makefile:
+    ```bash
     make
+    ```
 
 2. Run the program:
+    ```bash
     make run
+    ```
 
 3. (optional) Clean all build files:
+    ```bash
     make clean
+    ```
 
 4. Save files will be stored in the data/ folder:
     pre_reservation_list.txt → Reservations
