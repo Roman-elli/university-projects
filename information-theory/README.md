@@ -33,12 +33,14 @@ It allows you to **select a category (image, sound, or text)**, choose a file, a
 1. Clone or download the project.  
 
 2. Install requirements (only **NumPy** is needed):
-
+   ```bash
    pip install numpy
+   ```
 
 3. Run the program:
-
+    ```bash
     python gzip_compressor.py
+    ```
 
 4. The decompressed file will be stored automatically in the data/ folder, keeping the original filename.
 
