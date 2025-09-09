@@ -8,7 +8,6 @@ void mq_mobile_analyser(){
       exit(EXIT_FAILURE);
   }
   while(user_request > 0){
-    // Receber uma mensagem
     if (msgrcv(mq_id, &msg, sizeof(msg.answer), id, 0) == -1) {
         perror("msgrcv failed");
         exit(EXIT_FAILURE);
