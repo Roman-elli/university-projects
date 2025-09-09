@@ -13,14 +13,11 @@ enum category {
                 "Eq", "Ne", "Lt", "If","Gt", "Le", "Ge", "Natural", "Decimal", "StrLit", "Else", "For", "Return", "Print", \
                 "Assign", "Block", "Call", "Delete"}
 
-// Enum para os tipos
 enum type {integer_type, double_type, boolean_type, float_type, string_type, no_type, void_type, undefined};
 
-// Macro to return the type name as a string
 #define type_name(type) (type == integer_type ? "int" : type == double_type ? "double" : type == boolean_type ? "bool" : type == float_type ? "float32" : \
                          type == string_type ? "string" : type == no_type ? "none" : undefined ? "undef" : "")
 
-// Macro to map category values to type values
 #define category_type(category) (category == Int || category == Natural ? integer_type : \
                                  category == Bool ? boolean_type : \
                                  category == Float32 ? float_type :  category == String ? string_type : \
@@ -50,7 +47,7 @@ void addchild(struct node *parent, struct node *child);
 void show(struct node *root, int depth);
 void show_all(struct node *node, int depth);
 void delete(struct node *parent, struct node *child);
-void libertaArvore(struct node * node);
+void freeTree(struct node * node);
 
 struct node *getchild(struct node *parent, int position);
 int countchildren(struct node *node);

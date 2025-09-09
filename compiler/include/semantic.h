@@ -2,6 +2,7 @@
 #define SEMANTIC_H
 
 #include "functions.h"
+
 #define MAX_LENGHT 15000
 struct symbol_list {
 	char *identifier;
@@ -12,8 +13,8 @@ struct symbol_list {
 };
 
 struct symbol_table_list {
-    struct symbol_list *table;  // Tabela de símbolos de um escopo
-    struct symbol_table_list *next;  // Próxima tabela de símbolos (escopo)
+    struct symbol_list *table;
+    struct symbol_table_list *next;
 };
 
 struct symbol_check_list{
