@@ -40,8 +40,9 @@ It provides a **REST API** with JWT-based authentication, allowing assistants, d
     - `triggers/*.sql` (modularized triggers for billing, appointments, username checks)  
 
 4. Run the API:
-
+    ```bash
     python src/main.py
+    ```
 
 5. Access the API at:
 
