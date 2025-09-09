@@ -81,17 +81,20 @@ This project was developed during a university course on **process synchronizati
 ## 🕹️ How to Run
 
 1. **Build the project:**
-
+    ```bash
     make all
+    ```
 
 2. **Run the 5G Authorization Platform:**
-
+    ```bash
     make run_5g
-
+    ```
 3. **Run a Mobile User simulation:**
-
+    ```bash
     make run_mobile
+    ```
 
 4. **Run the BackOffice User:**
-
+    ```bash
     make run_back
+    ```
