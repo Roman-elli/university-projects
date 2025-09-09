@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "functions.h"
+#include "../../include/functions.h"
 
 char *category_name[] = names;
 
@@ -47,7 +47,6 @@ void show(struct node *node, int depth) {
     }
 }
 
-
 void show_all(struct node *node, int depth) {
     if (node == NULL) return; 
 
@@ -70,14 +69,13 @@ void show_all(struct node *node, int depth) {
     }
 }
 
-
 void delete (struct node *parent, struct node *child){
     if (child != NULL) {
         if (strcmp(category_name[child->category], "Delete") == 0) {
             struct node_list *delete_children = child->children;
             while (delete_children != NULL) {
-                addchild(parent, delete_children->node);  // Adiciona cada filho de 'Delete' ao Program
-                delete_children = delete_children->next;  // Avança para o próximo filho
+                addchild(parent, delete_children->node);
+                delete_children = delete_children->next;
             }
             free(child->children);
             free(child);
@@ -87,50 +85,42 @@ void delete (struct node *parent, struct node *child){
     }
 }
 
-void libertaArvore(struct node *node) {
-    if (node == NULL || node->freeNode) return;  // Caso base: Se o nó for NULL, nada precisa ser liberado
+void freeTree(struct node *node) {
+    if (node == NULL || node->freeNode) return;
     
     node->freeNode = 1;
 
-    // Itera sobre os filhos e libera-os recursivamente
-    struct node_list *child = node->children;  // Ponteiro para a lista de filhos
+    struct node_list *child = node->children;
     while (child != NULL) {
-        libertaArvore(child->node);  // Chama recursivamente para liberar cada filho
-        child = child->next;  // Avança para o próximo filho na lista
+        freeTree(child->node);
+        child = child->next;
     }
 
-    free(node->children);  // Libera a memória associada à lista de filhos
-    free(node);  // Libera a memória associada ao próprio nó
+    free(node->children);
+    free(node);
 }
 
-// get a pointer to a specific child, numbered 0, 1, 2, ...
 struct node *getchild(struct node *parent, int position) {
-    // Verifica se o parent ou o parent->children são NULL
     if (parent == NULL || parent->children == NULL) {
-        return NULL; // Se não houver filhos, retorna NULL
+        return NULL;
     }
 
     struct node_list *children = parent->children;
     int current_position = 0;
 
-    // Percorre a lista de filhos
     while (children != NULL) {
-        // Ignora filhos que não sejam válidos (node == NULL)
         if (children->node != NULL) {
-            // Verifica a posição desejada
             if (current_position == position) {
-                return children->node;  // Retorna o filho na posição indicada
+                return children->node;
             }
             current_position++;
         }
-        // Avança para o próximo filho
         children = children->next;
     }
 
-    // Se não encontrar o filho na posição dada, retorna NULL
     return NULL;
 }
-// count the children of a node
+
 int countchildren(struct node *node) {
     int i = 0;
     while(getchild(node, i) != NULL)

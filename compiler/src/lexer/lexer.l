@@ -1,12 +1,11 @@
-/* Beatriz Alexandra Azeitona Mourato - 2022224891 */
-/* Thales Barbuto Romanelli Lopes - 2022169928 */
-
 %{
 
 #include "functions.h"
-#include "y.tab.h"
 #include "semantic.h"
 #include "codegen.h"
+
+#include "parser.tab.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -21,20 +20,11 @@ char stringLit[MAX_LENGTH];
 int lastToken = 0;
 int commentColumnStart, commentLineStart;
 int stringColumnStart, stringtLineStart;
-int flagError = 1;
-int showTree = 1;
-int semantic = 1;
-int valid_program = 0;
 
-extern int yydebug; 
-extern int erros;
-int erros_semantica = 0;
+extern int flagError;
 
 int previuscolumn = 0;
 int previusline = 0;
-
-
-extern struct node *program;
 
 %}
 
@@ -132,11 +122,13 @@ os.Args                     { if(flagError == 0) printf("CMDARGS\n"); lastToken 
     }
     BEGIN(INITIAL);
 }
+
 <STRINGS>{escape}                { 
     if (fator < MAX_LENGTH - 2) {
         stringLit[fator++] = yytext[0]; 
         stringLit[fator++] = yytext[1]; 
     }    
+
 }
 <STRINGS>\n|\r|\r\n              { 
     printf("Line %d, column %d: unterminated string literal\n", stringtLineStart, stringColumnStart-1);
@@ -153,10 +145,12 @@ os.Args                     { if(flagError == 0) printf("CMDARGS\n"); lastToken 
     BEGIN(INITIAL);
     yyterminate();
 }
+
 <STRINGS>\\.|\\                  { 
     printf("Line %d, column %d: invalid escape sequence (%s)\n", line, column - yyleng, yytext);
     validString = 0; 
 }
+
 <STRINGS>.                       { if (fator < MAX_LENGTH - 1) stringLit[fator++] = yytext[0]; }
 
 "/*"                            { BEGIN(COMMENT); commentLineStart = line; commentColumnStart = column;}
@@ -188,38 +182,9 @@ os.Args                     { if(flagError == 0) printf("CMDARGS\n"); lastToken 
     }
     yyterminate();
 }
+
 .                               { 
      printf("Line %d, column %d: illegal character (%s)\n", line, column-yyleng, yytext); 
 }
 
 %%
-
-int main(int argc, char **argv) {
-    yydebug = 0;
-    if(argc>1){
-        for(int i = 1; i < argc; i++){
-            if(strcmp(argv[i],"-l")==0) flagError=0; 
-            else if(strcmp(argv[i],"-t")==0) showTree = 0;
-            else if (strcmp(argv[i], "-s")==0) semantic = 0;
-        }
-    }
-    
-    yyparse();
-
-    if(valid_program == 1){
-        if(showTree == 0 && erros == 0) show(program, 0);
-        erros_semantica += check_program(program); 
-
-        if(semantic == 0) {
-            show_all_symbol_tables();
-            show_all(program, 0);
-        }
-    }
-    if(erros_semantica == 0) codegen_program(program);
-    libertaArvore(program);
-    return 0;
-}
-
-extern int yywrap() {
-    return 1;
-}

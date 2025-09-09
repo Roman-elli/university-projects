@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "functions.h"
-#include "semantic.h"
-#include "codegen.h"
+#include "../../include/functions.h"
+#include "../../include/semantic.h"
+#include "../../include/codegen.h"
 
-int temporary;   // sequence of temporary registers in a function
+int temporary;
 int for_counter = 0;
 int if_counter = 0;
 int string_counter = 0;
@@ -15,14 +15,12 @@ extern struct symbol_table_list *symbol_tables;
 extern struct string_list *strings;
 struct param_define *list_param;
 
-
 void codegen_program(struct node *program) {
     if(program == NULL || program->children->next == NULL){ 
         printf("define i32 @main() {\n"
            "  ret i32 0\n"
            "}\n");
     }else{
-        // Predeclaração de funções I/O
         printf("declare i32 @_read(i32)\n");
         printf("declare i32 @_write(i32)\n");
         printf("declare i32 @printf(i8*, ...)\n");
@@ -42,7 +40,6 @@ void codegen_program(struct node *program) {
 
         list_param = NULL;
     
-        // Geração de funções
         struct node_list *function = program->children->next;
         while ((function = function->next) != NULL) {
             if (function->node != NULL) {
@@ -50,7 +47,6 @@ void codegen_program(struct node *program) {
             }
         }
 
-        // Gerar ponto de entrada
         struct symbol_list *entry = search_scope(global_table, "main");
         if(entry != NULL && entry->node->isFunction == 1)
             printf("define i32 @main() {\n"
@@ -63,47 +59,39 @@ void codegen_program(struct node *program) {
 int codegen_function(struct node *function) {
     temporary = 1;
     if (strcmp(category_name[function->category], "FuncDecl") == 0) {
-        // Cabeçalho e corpo da função
         struct node_list *child_header = function->children->next;
         struct node_list *child_func = function->children->next->next;
         int number_children = countchildren(child_header->node);
         
-        // Nome da função
         struct node *id_header = getchild(child_header->node, 0);
         const char *func_name = id_header->token;
 
-        // Inicializando geração do cabeçalho
         printf("define i32 @_%s(", func_name);
 
-        // Gerar parâmetros da função
         if (strcmp(category_name[child_header->node->category], "FuncHeader") == 0) {
             if (number_children > 2) {
             int check_number_params = countchildren(getchild(child_header->node, 2));
-            if (check_number_params > 0) {
-                codegen_parameters(getchild(child_header->node, 2));
-            }
+            if (check_number_params > 0) codegen_parameters(getchild(child_header->node, 2));
+            
         } else {
             int check_number_params = countchildren(getchild(child_header->node, 1));
-            if (check_number_params > 0) {
-                // Verifica e processa os parâmetros da função
-                codegen_parameters(getchild(child_header->node, 1));
-            }
+            if (check_number_params > 0) codegen_parameters(getchild(child_header->node, 1));    
         }
         }
         printf(") {\n");
 
         struct param_define *current = list_param;
         while (current != NULL) {
-            printf("%s\n", current->define_param);  // Imprime a string do parâmetro
-            current = current->next;  // Vai para o próximo nó
+            printf("%s\n", current->define_param);
+            current = current->next;
         }
         
-        struct node_list *func = child_func->node->children;  // Obtenha os filhos do nó
-        while (func != NULL) {  // Percorra a lista de filhos de 'temp->node'
-            if (func->node != NULL) {  // Verifique se o nó de 'id_func' não é nulo
-                codegen_expression(func->node, id_header);  // Chame a função para verificar a expressão
+        struct node_list *func = child_func->node->children;
+        while (func != NULL) {
+            if (func->node != NULL) {
+                codegen_expression(func->node, id_header);
                 }
-            func = func->next;  // Avance para o próximo nó da lista de filhos
+            func = func->next;
         }
 
         if(search_scope(global_table, id_header->token)->type == no_type){
@@ -114,15 +102,15 @@ int codegen_function(struct node *function) {
         
         return temporary;
     }
-    return -1; // Caso não seja uma função válida
+    return -1;
 }
 
-int codegen_natural(struct node *natural, struct node *func_header) {
+int codegen_natural(struct node *natural) {
     printf("  %%%d = add i32 %s, 0\n", temporary, natural->token);
     return temporary++;
 }
 
-int codegen_identifier(struct node *n, struct node *func_header) {
+int codegen_identifier(struct node *n) {
     switch(n->type){
         case integer_type:
             printf("  %%%d = load i32, i32* %%%s\n", temporary, n->token); 
@@ -158,7 +146,7 @@ int codegen_sub(struct node *expression, struct node *func_header) {
     int t2 = codegen_expression(getchild(expression, 1), func_header);
     
     if(expression->type == float_type){
-        printf("  %%%d = sub double %%%d, %%%d\n", temporary, t1, t2); // Negar o valor (0 - valor)
+        printf("  %%%d = sub double %%%d, %%%d\n", temporary, t1, t2);
     }
     else printf("  %%%d = sub i32 %%%d, %%%d\n", temporary, t1, t2);
     return temporary++;
@@ -182,7 +170,6 @@ int codegen_call(struct node *call, struct node *func_header) {
     struct node *func_name_node = getchild(call, 0);
     struct node *args_node = getchild(call, 1);
 
-    // Gere código para os argumentos
     int arg_count = 0;
     struct node *argument;
     while ((argument = getchild(args_node, arg_count)) != NULL) {
@@ -199,34 +186,28 @@ int codegen_if_then_else(struct node *expression, struct node *func_header) {
     struct node *then_branch = getchild(expression, 1);
     struct node *else_branch = getchild(expression, 2);
     
-    // Gerar labels dinâmicas com base no if_counter
     char then_label[50], else_label[50], end_label[50];
-    sprintf(then_label, "L%dthen", if_counter);  // Exemplo: L0then
-    sprintf(else_label, "L%delse", if_counter);  // Exemplo: L0else
-    sprintf(end_label, "L%dend", if_counter);    // Exemplo: L0end
-    // Avaliar a condição
+    sprintf(then_label, "L%dthen", if_counter);
+    sprintf(else_label, "L%delse", if_counter);
+    sprintf(end_label, "L%dend", if_counter);
     int cond_temp = codegen_expression(condition, func_header);
 
     if (condition->category == Identifier) {
         if(condition->type == boolean_type){    
-            // Se for um identifier, gerar a comparação com 0
-            printf("  %%%d = xor i1 %%%d, true\n", temporary, cond_temp); // XOR com true inverte o valor
-            int not_temp = temporary++;  // Registrar o resultado do icmp
-            printf("  br i1 %%%d, label %%%s, label %%%s\n", not_temp, then_label, else_label); // Condicional com o resultado do icmp
+            printf("  %%%d = xor i1 %%%d, true\n", temporary, cond_temp);
+            int not_temp = temporary++;
+            printf("  br i1 %%%d, label %%%s, label %%%s\n", not_temp, then_label, else_label);
         } else if(condition->type == integer_type){
-            // Se for um identifier, gerar a comparação com 0
-            printf("  %%%d = icmp ne i32 %%%d, 0\n", temporary, cond_temp);  // Comparar com 0
-            int icmp_temp = temporary++;  // Registrar o resultado do icmp
-            printf("  br i1 %%%d, label %%%s, label %%%s\n", icmp_temp, then_label, else_label); // Condicional com o resultado do icmp
+            printf("  %%%d = icmp ne i32 %%%d, 0\n", temporary, cond_temp);
+            int icmp_temp = temporary++;
+            printf("  br i1 %%%d, label %%%s, label %%%s\n", icmp_temp, then_label, else_label);
         } else{
-            // Se for um identifier, gerar a comparação com 0
-            printf("  %%%d = icmp ne double %%%d, 0\n", temporary, cond_temp);  // Comparar com 0
-            int icmp_temp = temporary++;  // Registrar o resultado do icmp
-            printf("  br i1 %%%d, label %%%s, label %%%s\n", icmp_temp, then_label, else_label); // Condicional com o resultado do icmp
+            printf("  %%%d = icmp ne double %%%d, 0\n", temporary, cond_temp);
+            int icmp_temp = temporary++;
+            printf("  br i1 %%%d, label %%%s, label %%%s\n", icmp_temp, then_label, else_label);
         }
     } else {
-        // Caso a condição não seja um identifier, você pode tratar de outra maneira, ou simplesmente pular essa parte
-        printf("  br i1 %%%d, label %%%s, label %%%s\n", cond_temp, then_label, else_label); // Usando o valor retornado da expressão
+        printf("  br i1 %%%d, label %%%s, label %%%s\n", cond_temp, then_label, else_label);
     }
 
     printf("%s:\n", then_label);
@@ -237,7 +218,6 @@ int codegen_if_then_else(struct node *expression, struct node *func_header) {
     printf("%s:\n", else_label);
     codegen_expression(else_branch, func_header);
 
-    //printf("  store i32 %%%d, i32* %%1\n", else_temp);
     printf("  br label %%%s\n", end_label);
 
     printf("%s:\n", end_label);
@@ -273,16 +253,14 @@ int codegen_and(struct node *expression, struct node *func_header) {
     return temporary++;
 }
 
-int codegen_decimal(struct node *decimal, struct node *func_header) {
-    // Converte o token para um número de ponto flutuante
-    double value = atof(decimal->token);  // Converte a string para double
+int codegen_decimal(struct node *decimal) {
+    double value = atof(decimal->token);
     printf("  %%%d = fadd double %f, 0.0\n", temporary, value);
     
     return temporary++;
 }
 
 int codegen_le(struct node *expression, struct node *func_header) {
-    // Geração de código para menor ou igual
     int t1 = codegen_expression(getchild(expression, 0), func_header);
     int t2 = codegen_expression(getchild(expression, 1), func_header);
     if(getchild(expression, 0)->type == integer_type){
@@ -295,7 +273,6 @@ int codegen_le(struct node *expression, struct node *func_header) {
 }
 
 int codegen_ge(struct node *expression, struct node *func_header) {
-    // Geração de código para maior ou igual
     int t1 = codegen_expression(getchild(expression, 0), func_header);
     int t2 = codegen_expression(getchild(expression, 1), func_header);
 
@@ -310,7 +287,6 @@ int codegen_ge(struct node *expression, struct node *func_header) {
 }
 
 int codegen_gt(struct node *expression, struct node *func_header) {
-    // Geração de código para maior que
     int t1 = codegen_expression(getchild(expression, 0), func_header);
     int t2 = codegen_expression(getchild(expression, 1), func_header);
 
@@ -325,7 +301,6 @@ int codegen_gt(struct node *expression, struct node *func_header) {
 }
 
 int codegen_or(struct node *expression, struct node *func_header) {
-    // Geração de código para OR lógico
     int t1 = codegen_expression(getchild(expression, 0), func_header);
     int t2 = codegen_expression(getchild(expression, 1), func_header);
 
@@ -334,10 +309,8 @@ int codegen_or(struct node *expression, struct node *func_header) {
 }
 
 int codegen_eq(struct node *expression, struct node *func_header) {
-    // Geração de código para igualdade
     int t1 = codegen_expression(getchild(expression, 0), func_header);
     int t2 = codegen_expression(getchild(expression, 1), func_header);
-
 
     if(getchild(expression, 0)->type == integer_type){
         printf("  %%%d = icmp eq i32 %%%d, %%%d\n", temporary, t1, t2); // slt: signed less than
@@ -350,7 +323,6 @@ int codegen_eq(struct node *expression, struct node *func_header) {
 }
 
 int codegen_ne(struct node *expression, struct node *func_header) {
-    // Geração de código para desigualdade
     int t1 = codegen_expression(getchild(expression, 0), func_header);
     int t2 = codegen_expression(getchild(expression, 1), func_header);
 
@@ -363,14 +335,12 @@ int codegen_ne(struct node *expression, struct node *func_header) {
     return temporary++;
 }
 
-int codegen_parseargs(struct node *expression, struct node *func_header) {
-    // Geração de código para parsing de argumentos
-    printf("  %%%d = call i32 @parseargs(i32* %s)\n", temporary, expression->token); // Supondo função parseargs
+int codegen_parseargs(struct node *expression) {
+    printf("  %%%d = call i32 @parseargs(i32* %s)\n", temporary, expression->token);
     return temporary++;
 }
 
 int codegen_assign(struct node *expression, struct node *func_header) {
-    // Geração de código para atribuição
     int value = codegen_expression(getchild(expression, 1), func_header);
 
     switch(expression->type){
@@ -390,6 +360,7 @@ int codegen_assign(struct node *expression, struct node *func_header) {
     
     return temporary;
 }
+
 int codegen_for(struct node *expression, struct node *func_header) {
     for_counter++;
     char looplabel[50], bodylabel[50], endlabel[50];
@@ -397,32 +368,23 @@ int codegen_for(struct node *expression, struct node *func_header) {
     sprintf(bodylabel, "bodylabel_%d", for_counter);  // Ex: bodylabel_0
     sprintf(endlabel, "endlabel_%d", for_counter);    // Ex: endlabel_0
 
-    struct node *condition = getchild(expression, 0);  // Condição do loop
-    struct node *body = getchild(expression, 1);  // Corpo do loop
+    struct node *condition = getchild(expression, 0);
+    struct node *body = getchild(expression, 1);
 
     printf("  br label %%%s\n", looplabel);
-    // Gera o rótulo do início do loop
     printf("%s:\n", looplabel);
 
-    // Gera o código para avaliar a condição do loop
-    int cond_temp = codegen_expression(condition, func_header);  // Avaliar a condição
+    int cond_temp = codegen_expression(condition, func_header);
    
-    // Gera o salto baseado no valor da condição
     printf("  br i1 %%%d, label %%%s, label %%%s\n", cond_temp, bodylabel, endlabel);
-
-    // Rótulo do corpo do loop
     printf("%s:\n", bodylabel);
 
-    // Gera o código para o corpo do loop
-    codegen_expression(body, func_header);  // Executar o corpo do loop
+    codegen_expression(body, func_header);
 
-    // Gera o salto de volta ao início do loop
     printf("  br label %%%s\n", looplabel);
 
-    // Rótulo de término do loop
     printf("%s:\n", endlabel);
 
-    // Retorna o valor da próxima variável temporária
     return temporary;
 }
 
@@ -435,13 +397,12 @@ int codegen_block(struct node *expression, struct node *func_header) {
             codegen_expression(child->node, func_header);
             }
         }
-    return -1; // Blocos geralmente não retornam valores
+    return -1;
 }
-
 
 int codegen_print(struct node *expression, struct node *func_header) {
     struct node *child = getchild(expression, 0); 
-    int value = codegen_expression(child, func_header);  // Código do valor a ser impresso
+    int value = codegen_expression(child, func_header);
     int x;
     struct string_list *temp;
     switch (child->category) {
@@ -452,7 +413,6 @@ int codegen_print(struct node *expression, struct node *func_header) {
             } else printf("  %%%d = call i32 (i8*, ...) @printf(i8* getelementptr inbounds([4 x i8], [4 x i8]* @print.int, i32 0, i32 0), i32 %%%d)\n",temporary, value);
          break;
         case Identifier:
-            // Imprime booleano como "true" ou "false"
             switch(child->type){
                 case integer_type:
                     printf("  %%%d = call i32 (i8*, ...) @printf(i8* getelementptr inbounds([4 x i8], [4 x i8]* @print.int, i32 0, i32 0), i32 %%%d)\n",temporary, value);
@@ -470,17 +430,14 @@ int codegen_print(struct node *expression, struct node *func_header) {
             break;
         case Bool:
     
-        // Se for verdadeiro (1), imprime "true"
         if (value) {
             printf("  %%%d = call i32 (i8*, ...) @printf(i8* getelementptr inbounds([5 x i8], [5 x i8]* @print.bool, i32 0, i32 0), i1 1)\n", temporary);
         }
-        // Se for falso (0), imprime "false"
         else {
             printf("  %%%d = call i32 (i8*, ...) @printf(i8* getelementptr inbounds([6 x i8], [6 x i8]* @print.bool, i32 0, i32 0), i1 0)\n", temporary);
         }
         break;
         case Natural:
-            // Imprime valor inteiro (i32)
             printf("  %%%d = call i32 (i8*, ...) @printf(i8* getelementptr inbounds([4 x i8], [4 x i8]* @print.int, i32 0, i32 0), i32 %%%d)\n",temporary, value);
             break;
         case Decimal:
@@ -488,7 +445,6 @@ int codegen_print(struct node *expression, struct node *func_header) {
             printf("  %%%d = call i32 (i8*, ...) @printf(i8* getelementptr inbounds([7 x i8], [7 x i8]* @print.float, i32 0, i32 0), double %%%d)\n", temporary, value);
             break;
         case String:
-            // Imprime string (i8*)
             printf("  %%%d = call i32 (i8*, ...) @printf(i8* getelementptr inbounds([4 x i8], [4 x i8]* @print.string, i32 0, i32 0), i32 %%%d)\n",temporary, value);
             break;
         case StrLit:
@@ -509,36 +465,31 @@ int codegen_print(struct node *expression, struct node *func_header) {
     return temporary++;
 }
 
-
 int codegen_not(struct node *expression, struct node *func_header) {
-    // Geração de código para NOT lógico
     int value = codegen_expression(getchild(expression, 0), func_header);
-    printf("  %%%d = xor i1 %%%d, true\n", temporary, value); // XOR com true inverte o valor
+    printf("  %%%d = xor i1 %%%d, true\n", temporary, value);
     return temporary++;
 }
 
 int codegen_plus(struct node *expression, struct node *func_header) {
-    // Geração de código para NOT lógico
-    int value = codegen_expression(getchild(expression, 0), func_header); // Obter o valor do filho
+    int value = codegen_expression(getchild(expression, 0), func_header);
     if(expression->type == float_type){
-        printf("  %%%d = fadd double 0.0, %%%d\n", temporary, value); // Negar o valor (0 - valor)
+        printf("  %%%d = fadd double 0.0, %%%d\n", temporary, value); 
     }
-    else printf("  %%%d = add i32 0, %%%d\n", temporary, value); // Negar o valor (0 - valor)
+    else printf("  %%%d = add i32 0, %%%d\n", temporary, value);
     return temporary++;
 }
 
 int codegen_minus(struct node *expression, struct node *func_header) {
-    // Geração de código para NOT lógico
-    int value = codegen_expression(getchild(expression, 0), func_header); // Obter o valor do filho
+    int value = codegen_expression(getchild(expression, 0), func_header);
     if(expression->type == float_type){
-        printf("  %%%d = fsub double 0.0, %%%d\n", temporary, value); // Negar o valor (0 - valor)
+        printf("  %%%d = fsub double 0.0, %%%d\n", temporary, value);
     }
-    else printf("  %%%d = sub i32 0, %%%d\n", temporary, value); // Negar o valor (0 - valor)
+    else printf("  %%%d = sub i32 0, %%%d\n", temporary, value);
     return temporary++;
 }
 
-int codegen_vardecl(struct node *expression, struct node *func_header) {
-    // Geração de código para bloco de código
+int codegen_vardecl(struct node *expression) {
     switch(getchild(expression, 1)->type){
         case float_type:
         case double_type:
@@ -556,19 +507,18 @@ int codegen_vardecl(struct node *expression, struct node *func_header) {
     return temporary;
 }
 
-
 int codegen_expression(struct node *expression, struct node *func_header) {
     int tmp = -1;
     switch(expression->category) {
         case VarDecl:
-            tmp = codegen_vardecl(expression, func_header);
+            tmp = codegen_vardecl(expression);
             break;
         case Natural:
-            tmp = codegen_natural(expression, func_header);
+            tmp = codegen_natural(expression);
             break;
         case Decimal:
         case Float32:
-            tmp = codegen_decimal(expression, func_header);
+            tmp = codegen_decimal(expression);
             break;
         case Print:
             tmp = codegen_print(expression, func_header);
@@ -610,13 +560,13 @@ int codegen_expression(struct node *expression, struct node *func_header) {
             tmp = codegen_ne(expression, func_header);
             break;
         case ParseArgs:
-            tmp = codegen_parseargs(expression, func_header);
+            tmp = codegen_parseargs(expression);
             break;
         case Assign:
             tmp = codegen_assign(expression, func_header);
             break;
         case Identifier:
-            tmp = codegen_identifier(expression, func_header);
+            tmp = codegen_identifier(expression);
             break;
         case For:
             tmp = codegen_for(expression, func_header);
@@ -661,34 +611,29 @@ void codegen_parameters(struct node *parameters) {
         enum type type = category_type(getchild(parameter, 0)->category);
 
         char test[10000];
-        // Formata a string de acordo com o tipo do parâmetro
         if (type == integer_type) {
-            sprintf(test, "  %%%s = alloca i32", getchild(parameter, 1)->token);  // Tipo inteiro de 32 bits
+            sprintf(test, "  %%%s = alloca i32", getchild(parameter, 1)->token);
           
         } else if (type == double_type) {
-            sprintf(test, "  %%%s = alloca double", getchild(parameter, 1)->token);  // Tipo double
+            sprintf(test, "  %%%s = alloca double", getchild(parameter, 1)->token);
            
         } else if (type == boolean_type) {
-            sprintf(test, "  %%%s = alloca i1", getchild(parameter, 1)->token);  // Tipo boolean, representado como i1
+            sprintf(test, "  %%%s = alloca i1", getchild(parameter, 1)->token);
             
         }
         
-        // Adiciona a string test à lista de parâmetros
         struct param_define *new_param = (struct param_define*)malloc(sizeof(struct param_define));
         if (new_param == NULL) {
             fprintf(stderr, "Erro ao alocar memória para o novo parâmetro.\n");
-            exit(1);  // Termina o programa caso não consiga alocar memória
+            exit(1);
         }
 
-        // Aloca e copia a string formatada para o novo nó
-        new_param->define_param = strdup(test);  // Cria uma cópia da string formatada
+        new_param->define_param = strdup(test);
         new_param->next = NULL;
 
-        // Se a lista de parâmetros estiver vazia, inicializa a lista
         if (list_param == NULL) {
             list_param = new_param;
         } else {
-            // Caso contrário, adiciona o novo parâmetro ao final da lista
             struct param_define *last = list_param;
             while (last->next != NULL) {
                 last = last->next;
@@ -700,11 +645,10 @@ void codegen_parameters(struct node *parameters) {
 }
 
 struct symbol_list *search_table (char *expression_value, char *identifier) {
-    // Primeiramente, procura na tabela global
     struct symbol_table_list *symbol;
     for (symbol = symbol_tables; symbol != NULL; symbol = symbol->next) {
         if (strcmp(symbol->table->identifier, identifier) == 0) {
-            return search_scope(symbol->table, expression_value);  // Encontrei o símbolo na tabela
+            return search_scope(symbol->table, expression_value);
         }
     }
     return NULL;

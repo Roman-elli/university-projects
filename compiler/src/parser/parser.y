@@ -1,7 +1,3 @@
-
-/* Beatriz Alexandra Azeitona Mourato - 2022224891 */
-/* Thales Barbuto Romanelli Lopes - 2022169928 */
-
 /* START definitions section -- C code delimited by %{ ... %} and token declarations */
 
 %{
@@ -20,7 +16,7 @@ extern int line, column, previusline, previuscolumn, stringtLineStart, stringCol
 extern char *yytext;
 void yyerror (char *s);
 
-int erros = 0;
+extern int error_counter;
 extern int valid_program;
 extern char *category_name[];
 
@@ -194,7 +190,6 @@ Type: INT             { $$ = newnode(Int, NULL); }
         | BOOL        { $$ = newnode(Bool, NULL); }
         | STRING      { $$ = newnode(String, NULL); }
 ;
-
 
 Parameters: IDENTIFIER Type  { 
             $$ = newnode(FuncParams, NULL);
@@ -519,7 +514,7 @@ Expr: Expr OR Expr {
 /* START subroutines section */
 
 void yyerror(char *s) {
-    erros = 1;
+    error_counter = 1;
     if (strcmp(yytext, "\n") == 0) {
         printf("Line %d, column %d: %s: %s\n", previusline, previuscolumn, s, yytext);
     }
