@@ -1,0 +1,5 @@
+# Ignore IDE settings, runtime data, and compiled object files
+.vscode
+build
+obj
+go_compiler
