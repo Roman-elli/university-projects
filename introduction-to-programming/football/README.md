@@ -33,10 +33,16 @@ D -> RIGHT
 
 ## ▶️ How to Run
 1. Install dependencies:
+   ```bash
    pip install pygame
+   ```
 
 2. Start the game:
+    ```bash
     python main.py
+    ```
 
 3. After playing, watch the replay and put on the input the game that you want to watch:
+    ```bash
     python replay.py
+    ```
