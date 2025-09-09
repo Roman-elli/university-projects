@@ -1,4 +1,4 @@
-# 🖥️ Go Compiler – Compiler for a Subset of Go Language
+# 🖥️ myGo Compiler – Compiler for a Subset of Go Language
 
 This project was developed during my third year in my university **Compilers** course. It implements a compiler for **myGo**, a subset of the Go programming language, supporting variables, functions, expressions, control structures, and input/output operations. The compiler performs **lexical, syntactic, and semantic analysis**, and generates **LLVM IR code**.
 
