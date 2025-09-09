@@ -55,5 +55,6 @@ I created this project in my second year at university. It’s a quiz game where
 1. Open a terminal in the project folder.
 
 2. Run the application using the provided script:  
-
-./run-application.cmd
+    ```bash
+    ./run-application.cmd
+    ```
