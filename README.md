@@ -12,6 +12,14 @@ Each folder has its own README with more detailed documentation.
 
 ---
 
+## Compilers
+- 🖋️ [**myGo Compiler**](compiler)
+  Language: C  
+  → Technologies: Flex & Bison (Lexical & Syntax analysis), LLVM IR (Intermediate code generation)  
+  → A compiler for **myGo**, a Go subset. Supports lexical, syntactic, semantic analysis, and LLVM IR code generation. Handles variables, functions, expressions, control structures, and console I/O.
+
+---
+
 ## Information Theory
 - 📂 [**Gzip Decompressor**](information-theory)  
   Language: **Python**  
