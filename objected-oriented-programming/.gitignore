@@ -1,4 +1,7 @@
 # Ignore IDE settings, runtime data, and compiled object files
 .vscode
+.idea
+objected-oriented-programming.iml
+out
 data
 bin
