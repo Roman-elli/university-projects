@@ -5,7 +5,7 @@ Each folder has its own README with more detailed documentation.
 
 ---
 
-## Arduino Projects
+## Arduino
 - 🎮 [**Bit Math Game**](arduino-project)  
   Language: **C / Arduino (.ino)**  
   → An interactive game to practice **binary logic operations** (AND, OR, XOR) using Arduino, LEDs, and a button.  
