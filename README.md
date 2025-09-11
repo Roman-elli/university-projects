@@ -36,6 +36,17 @@ Each folder has its own README with more detailed documentation.
   Language: **Python**  
   → A dynamic version of the classic **Snake Game**, built with Python’s `turtle`, featuring scoring and high score saving. 
 
+---
+
+## Multimedia
+- 🖼️ [**Image Compression**](multimedia/image-compression)  
+  Language: **Python**  
+  → A **JPEG-like image compression system**, implementing **YCbCr conversion, subsampling, DCT, quantization, DPCM**, and **reconstruction with metrics (MSE, RMSE, SNR, PSNR)**.
+
+- 🎵 [**Music Analyser**](multimedia/music-data-analysis)  
+  Language: **Python**  
+  → *** IN WORK ****
+
 --- 
 
 ## Object-Oriented Programming
