@@ -1,38 +1,26 @@
-"""
-Created on Tue Apr  6 13:03:06 2021
-
-@author: rpp
-"""
-
-import librosa #https://librosa.org/    #sudo apt-get install -y ffmpeg (open mp3 files)
+import librosa #https://librosa.org/    # sudo apt-get install -y ffmpeg (open mp3 files)
 import librosa.display
 import librosa.beat
-import sounddevice as sd  #https://anaconda.org/conda-forge/python-sounddevice
+import sounddevice as sd
 import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 import scipy.stats as stats
 import math
+import config as cfg
 
-sr = 22050
-mono = True
-num_audios = 900
-salto = 512
 
-# Exercicio 2.1.1
 def features(soundFolder, testMusics):
-    feature_list = np.zeros((num_audios, 190))
+    feature_list = np.zeros((cfg.song_list_size, 190))
     centroid_librosa = []
-    for  i in range(num_audios):
-        y, fs = librosa.load(soundFolder+'/'+testMusics[i], sr=sr, mono = mono)
+    for  i in range(cfg.song_list_size):
+        y, fs = librosa.load(soundFolder+'/'+testMusics[i], cfg.sr, cfg.mono)
         fmax = fs/2
             
-        #--- Extract features    
-        #Features Espectrais:
         mfcc = librosa.feature.mfcc(y=y, n_mfcc=13)
         feature_list[i, 0:91] = statistics(mfcc)
-        sc = librosa.feature.spectral_centroid(y = y)  #default parameters: sr = 22050 Hz, mono, window length = frame length = 92.88 ms e hop length = 23.22 ms 
+        sc = librosa.feature.spectral_centroid(y = y)
         feature_list[i, 91:98] = statistics(sc)
         
         centroid_librosa.append(sc[0][2:])
@@ -47,7 +35,6 @@ def features(soundFolder, testMusics):
         sro = librosa.feature.spectral_rolloff(y=y)
         feature_list[i, 161:168] = statistics(sro)
         
-        # Features Temporais: 
         fo = librosa.yin(y=y, fmin = 20, fmax = fmax)
         fo[fo == fmax] = 0
         feature_list[i, 168:175] = statistics(np.array((fo, )))
@@ -56,13 +43,10 @@ def features(soundFolder, testMusics):
         zcr = librosa.feature.zero_crossing_rate(y=y)
         feature_list[i, 182:189] = statistics(zcr)
         
-        #Tempo
         feature_list[i, 189] = librosa.feature.tempo(y=y)
         
-    # centroid_list = np.array(centroid_list)
     return feature_list, centroid_librosa
  
-# Exercicio 2.1.2
 def statistics(features):
     size_feature = features.shape[0]
     statistic_list = np.zeros((size_feature, 7))
@@ -83,9 +67,8 @@ def statistics(features):
     return_statistics = np.array(statistic_list).flatten()
     return return_statistics
 
-# Exercicio 2.1.3
 def normalize_features(feature_list):
-    normalized_features = np.zeros((num_audios + 2, 190))
+    normalized_features = np.zeros((cfg.song_list_size + 2, 190))
     for i in range (feature_list.shape[1]):
         normalized_features[0][i] = np.min(feature_list[:,i])
         normalized_features[1][i] = np.max(feature_list[:,i])
@@ -98,46 +81,39 @@ def normalize_features(feature_list):
         normalized_features[2:902, i] = normalized
     return normalized_features
 
-#Exercicio 2.2
 def spectral_centroid(soundFolder, testMusics, centroid_librosa):
     feature_centroid = []
-    compare = np.zeros((num_audios, 2))
+    compare = np.zeros((cfg.song_list_size, 2))
 
-    for i in range(num_audios):
-        y, fs = librosa.load(f"{soundFolder}/{testMusics[i]}", sr=sr, mono=mono)
-        amostra = np.array(y)
+    for i in range(cfg.song_list_size):
+        y, fs = librosa.load(f"{soundFolder}/{testMusics[i]}", cfg.sr, cfg.mono)
+        sample = np.array(y)
+        points = len(sample) % cfg.jump_counter
+        if points == 0: n = 0 
+        else: n = cfg.jump_counter - points
+        n_padding = len(sample) + n 
+        sample = np.append(sample, np.zeros(n))
 
-        # Padding para completar as janelas de 2048
-        pontos = len(amostra) % salto
-        if pontos == 0: n = 0 
-        else: n = salto - pontos
-        n_padding = len(amostra) + n 
-        amostra = np.append(amostra, np.zeros(n))
+        n_windows = n_padding // cfg.jump_counter - 3
+        centroid = np.zeros(n_windows)
 
-        # Calcula o número de janelas
-        n_janelas = n_padding // salto - 3
-        centroid = np.zeros(n_janelas)
-
-        for j in range(n_janelas):
-            start = j * salto
+        for j in range(n_windows):
+            start = j * cfg.jump_counter
             end = start + 2048
-            janela = amostra[start:end]
+            window = sample[start:end]
 
-            # Aplicar janela de Hanning
-            janela_hann = janela * np.hanning(len(janela))
+            window_hann = window * np.hanning(len(window))
 
-            # FFT e magnitude
-            magnitude = np.abs(np.fft.rfft(janela_hann))
-            freqs = np.fft.rfftfreq(len(janela_hann), 1 / fs)
+            magnitude = np.abs(np.fft.rfft(window_hann))
+            freqs = np.fft.rfftfreq(len(window_hann), 1 / fs)
 
-            # Centroide
-            denominador = np.sum(magnitude)
-            if denominador == 0:
-                centroide = 0
+            denominator = np.sum(magnitude)
+            if denominator == 0:
+                centroid_sample = 0
             else:
-                centroide = np.sum(freqs * magnitude) / denominador
+                centroid_sample = np.sum(freqs * magnitude) / denominator
 
-            centroid[j] = centroide
+            centroid[j] = centroid_sample
 
         feature_centroid.append(centroid)
         
@@ -158,24 +134,20 @@ def spectral_centroid(soundFolder, testMusics, centroid_librosa):
         
     np.savetxt("spectral_metrics.csv", compare, '%.6f', ',')
 
-#Exercicio 3.1.1
 def euclidian_distance(object1, object2):
     return_result = np.sum(math.pow((object1 - object2), 2))
     return math.sqrt(return_result)
 
-#Exercicio 3.1.2
 def manhattan_distance(object1, object2):
     return_result = np.sum(abs(object1 - object2))
     return return_result
 
-#Exercicio 3.1.3
 def cosine_distance(object1, object2):
     cosine_top = np.sum(object1 * object2)
     cosine_bottom_left = np.sum(math.pow(object1, 2))
     cosine_bottom_right = np.sum(math.pow(object2, 2))
     return (1 - cosine_top/(math.sqrt(cosine_bottom_left)*math.sqrt(cosine_bottom_right)))
 
-#Exercicio 3.2
 def get_distances():
     query_results = np.genfromtxt("./validação de resultados_TP2/notNormFM_Q.csv", delimiter=',')
     all_results = np.genfromtxt("./validação de resultados_TP2/FM_All.csv", delimiter=',')
@@ -184,20 +156,16 @@ def get_distances():
     for i in range(len(normalized_query_results)):
         if (all_results[0,i] != all_results[1,i]):
             normalized_query_results[i] = (query_results[i] - all_results[0,i]) / (all_results[1,i] - all_results[0,i])
-    # normalized_query_results = 
+
     for i in range(len(all_results[2:902, :])):
         distances[i,0] = euclidian_distance(normalized_query_results, all_results[i+2,:])
-        # print(ed)
         distances[i,1] = manhattan_distance(normalized_query_results, all_results[i+2,:])
-        # print(md)
         distances[i,2] = cosine_distance(normalized_query_results, all_results[i+2,:])
-        # print(cd)
     np.savetxt("de_r.csv", distances[:,0], '%.6f', ',')
     np.savetxt("dm_r.csv", distances[:,1], '%.6f', ',')
     np.savetxt("dc_r.csv", distances[:,2], '%.6f', ',')
     return
 
-#Exercicio 3.3
 def ranking_similarity():
     dist_euclidiana = np.loadtxt("de_r.csv", delimiter=",")
     dist_manhattan = np.loadtxt("dm_r.csv", delimiter=",")
@@ -219,16 +187,6 @@ def ranking_similarity():
     cosine_files = testMusics[top10_coseno]
     cosine_dists = dist_coseno[top10_coseno]
     
-    #print("Ranking: Euclidean-------------")
-    #print(euclidean_files)
-    #print(euclidean_dists)
-    #print("\nRanking: Manhattan-------------")
-    #print(manhattan_files)
-    #print(manhattan_dists)
-    #print("\nRanking: Cosine-------------")
-    #print(cosine_files)
-    #print(cosine_dists)
-    
     with open("rankings.txt", "w") as f:
         f.write("Ranking: Euclidean-------------\n")
         np.savetxt(f, [euclidean_files], fmt='%s')
@@ -244,7 +202,6 @@ def ranking_similarity():
         
     return euclidean_files, manhattan_files, cosine_files
 
-#Exercicio 4.1.1
 def metadata_query():
     query_metadata = np.genfromtxt("./query_metadata.csv", delimiter = ',', dtype = str)
     all_metadata = np.genfromtxt("./panda_dataset_taffc_metadata.csv", delimiter = ',', dtype = str)
@@ -253,13 +210,14 @@ def metadata_query():
     important_qm_moods = np.array(query_metadata[1, 9][1:-1].split("; "))
     important_qm_genre = np.array(query_metadata[1, 11][1:-1].split("; "))
     important_am = np.array([all_metadata[1:, 1], all_metadata[1:, 9], all_metadata[1:, 11]])
-    # print(important_am.shape)
+
     for specific_data in range(important_am.shape[1]):
         if (important_am[0, specific_data] == important_qm_artist):
             equals[specific_data] = 1
-        # am_moods = np.array(important_am[1, specific_data][1:-1].split("; "))
+
         for mood in important_qm_moods:
             equals[specific_data] += important_am[1, specific_data].count(mood)
+        
         for genre in important_qm_genre:
             equals[specific_data] += important_am[2, specific_data].count(genre)
             
@@ -276,14 +234,11 @@ def metadata_query():
     
     return top_files_clean
 
-#Exercicio 4.1.2
 def precision(metadata, euclidean, manhattan, cosine):
-    # Contadores da precisao
     count_euclidean = 0
     count_manhattan = 0
     count_cosine = 0
 
-    # Verifar se cada musica esta presente na metadata
     for i in range(10):
         if euclidean[i] in metadata:
             count_euclidean += 1
@@ -292,7 +247,6 @@ def precision(metadata, euclidean, manhattan, cosine):
         if cosine[i] in metadata:
             count_cosine += 1
 
-    # Calcular a precisao
     prec_euclidean = count_euclidean / 10 * 100
     prec_manhattan = count_manhattan / 10 * 100
     prec_cosine = count_cosine / 10 * 100
@@ -306,36 +260,26 @@ def precision(metadata, euclidean, manhattan, cosine):
 def main():
     plt.close('all')
     
-    # --- Load file
     fName = "./Queries/MT0000414517.mp3"
     soundFolder = "./Music"    
     warnings.filterwarnings("ignore")
     testMusics = os.listdir(soundFolder)
     
-    # Exercico 2.1.1
     feature_list, centroid_librosa = features(soundFolder, testMusics)
 
-    # Exercicio 2.1.3
     normalized_features = normalize_features(feature_list)
 
-    # Exercicio 2.1.4
     np.savetxt("features_info.csv", normalized_features, '%.6f', ',')
     
-    #Exercicio 2.2
     spectral_centroid(soundFolder, testMusics, centroid_librosa)
     
-    #Exercicio 3.1/2
     get_distances()
 
-    #Exercicio 3.3
     euclidean, manhattan, cosine = ranking_similarity()
     
-    #Exercicio 4.1.1
     metadata = metadata_query()
 
-    #Exercicio 4.1.2
     precision(metadata, euclidean, manhattan, cosine)
     
-
 if __name__ == "__main__":
    main()
