@@ -13,18 +13,18 @@ Each folder has its own README with more detailed documentation.
 ---
 
 ## Artificial Intelligence
-- 🚀 [**Lunar Lander Simulator**](artificial-intelligence/lunar-lander-simulator)
+- 🚀 [**Lunar Lander Simulator**](artificial-intelligence/lunar-lander-simulator)  
   Language: **Python**  
   → A **rule-based agent** for Lunar Lander that performs safe landings using **heuristics and threshold-based controls**.  
 
-- 🚀🧠🧬 [**Lunar Lander NeuroEvolution**](artificial-intelligence/lunar-lander-neuroevolution)
+- 🚀🧠🧬 [**Lunar Lander NeuroEvolution**](artificial-intelligence/lunar-lander-neuroevolution)  
   Language: **Python**  
   → A **neuroevolutionary approach** training a **neural network with a genetic algorithm** to land the Lunar Lander autonomously, optimizing for stability, position, and orientation.
 
 ---
 
 ## Compilers
-- 🖋️ [**myGo Compiler**](compiler)
+- 🖋️ [**myGo Compiler**](compiler)  
   Language: C  
   → Technologies: Flex & Bison (Lexical & Syntax analysis), LLVM IR (Intermediate code generation)  
   → A compiler for **myGo**, a Go subset. Supports lexical, syntactic, semantic analysis, and LLVM IR code generation. Handles variables, functions, expressions, control structures, and console I/O.
