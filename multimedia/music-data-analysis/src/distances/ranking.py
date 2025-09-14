@@ -1,14 +1,15 @@
 import os
 import numpy as np
-from metrics import *
+import config as cfg
+from distances.metrics import *
 from utils.io import load_csv, save_csv, write_ranking
 
 def get_distances():
-    query_results = load_csv("data/validação de resultados_TP2/notNormFM_Q.csv", delimiter=',')
-    all_results = load_csv("data/validação de resultados_TP2/FM_All.csv", delimiter=',')
+    query_results = load_csv(f"{cfg.VALIDATION_PATH}/notNormFM_Q.csv", delimiter=',')
+    all_results = load_csv(f"{cfg.VALIDATION_PATH}/FM_All.csv", delimiter=',')
     
     normalized_query_results = np.zeros_like(query_results)
-    distances = np.zeros((900, 3))
+    distances = np.zeros((200, 3))
     
     for i in range(len(normalized_query_results)):
         if (all_results[0,i] != all_results[1,i]):
@@ -26,12 +27,11 @@ def get_distances():
     return
 
 def ranking_similarity():
-    dist_euclidiana = load_csv("de_r.csv")
-    dist_manhattan = load_csv("dm_r.csv")
-    dist_coseno = load_csv("dc_r.csv")
+    dist_euclidiana = load_csv("data/de_r.csv")
+    dist_manhattan = load_csv("data/dm_r.csv")
+    dist_coseno = load_csv("data/dc_r.csv")
     
-    soundFolder = "data/samples"
-    testMusics = np.array(os.listdir(soundFolder))
+    testMusics = np.array(os.listdir(cfg.SAMPLES_PATH))
     
     top10_euclidiana = np.argsort(dist_euclidiana)[:10]
     top10_manhattan = np.argsort(dist_manhattan)[:10]
@@ -41,8 +41,8 @@ def ranking_similarity():
     manhattan_files, manhattan_dists = testMusics[top10_manhattan], dist_manhattan[top10_manhattan]
     cosine_files, cosine_dists = testMusics[top10_coseno], dist_coseno[top10_coseno]
     
-    write_ranking("data/rankings.txt", "Ranking: Euclidean-------------", euclidean_files, euclidean_dists)
-    write_ranking("data/rankings.txt", "Ranking: Manhattan-------------", manhattan_files, manhattan_dists)
-    write_ranking("data/rankings.txt", "Ranking: Cosine-------------", cosine_files, cosine_dists)
+    write_ranking("rankings.txt", "Ranking: Euclidean-------------", euclidean_files, euclidean_dists)
+    write_ranking("rankings.txt", "Ranking: Manhattan-------------", manhattan_files, manhattan_dists)
+    write_ranking("rankings.txt", "Ranking: Cosine-------------", cosine_files, cosine_dists)
     
     return euclidean_files, manhattan_files, cosine_files

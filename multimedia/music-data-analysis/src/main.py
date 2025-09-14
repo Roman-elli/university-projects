@@ -1,6 +1,7 @@
 import warnings
 import matplotlib.pyplot as plt
 import os
+import config as cfg
 
 from features.extractor import features
 from features.normalization import normalize_features
@@ -12,26 +13,37 @@ from utils.io import save_csv
 def main():
     plt.close('all')
     
-    fName = "assets/sounds/MT0000414517.mp3"
-    soundFolder = "data/samples"    
     warnings.filterwarnings("ignore")
-    testMusics = os.listdir(soundFolder)
+    testMusics = os.listdir(cfg.SAMPLES_PATH)
     
-    feature_list, centroid_librosa = features(soundFolder, testMusics)
+    print("🚀 Starting Music Retrieval Pipeline...")
+
+    feature_list, centroid_librosa = features(cfg.SAMPLES_PATH, testMusics)
+    print("🎵 Features extracted & statistics computed")
 
     normalized_features = normalize_features(feature_list)
+    print("📊 Features normalized successfully")
 
-    save_csv("data/features_info.csv", normalized_features, '%.6f', ',')
-    
-    spectral_centroid(soundFolder, testMusics, centroid_librosa)
-    
+    save_csv("features_info.csv", normalized_features, '%.6f', ',')
+    print("💾 Normalized features saved to CSV")
+
+    spectral_centroid(cfg.SAMPLES_PATH, testMusics, centroid_librosa)
+    print("🎼 Spectral centroid processed successfully")
+
     get_distances()
+    print("📏 Distance metrics (Euclidean, Manhattan, Cosine) calculated")
 
     euclidean, manhattan, cosine = ranking_similarity()
-    
+    print("🏆 Similarity rankings (Top-10) generated")
+
     metadata = metadata_query()
+    print("📝 Metadata-based recommendations retrieved")
 
     precision(metadata, euclidean, manhattan, cosine)
+    print("✅ Precision metrics evaluated and saved")
+
+    print("🎯 Music Retrieval Pipeline completed successfully!")
+
     
 if __name__ == "__main__":
    main()

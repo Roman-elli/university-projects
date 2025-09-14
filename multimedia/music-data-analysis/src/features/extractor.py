@@ -7,7 +7,7 @@ def features(soundFolder, testMusics):
     feature_list = np.zeros((cfg.song_list_size, 190))
     centroid_librosa = []
     for  i in range(cfg.song_list_size):
-        y, fs = librosa.load(soundFolder +'/'+testMusics[i], cfg.sr, cfg.mono)
+        y, fs = librosa.load(soundFolder +'/'+testMusics[i], sr=cfg.sr, mono=cfg.mono)
         fmax = fs/2
             
         mfcc = librosa.feature.mfcc(y=y, n_mfcc=13)

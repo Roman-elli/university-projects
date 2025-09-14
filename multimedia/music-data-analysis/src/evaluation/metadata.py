@@ -1,11 +1,12 @@
 import numpy as np
 import config as cfg
+
 from utils.io import append_precision, load_csv
 
 
 def metadata_query():
-    query_metadata = load_csv("./query_metadata.csv", delimiter = ',', dtype = str)
-    all_metadata = load_csv("./panda_dataset_taffc_metadata.csv", delimiter = ',', dtype = str)
+    query_metadata = load_csv(f"{cfg.VALIDATION_PATH}/query_metadata.csv", delimiter = ',', dtype = str)
+    all_metadata = load_csv(f"{cfg.VALIDATION_PATH}/panda_dataset_taffc_metadata.csv", delimiter = ',', dtype = str)
     
     equals = np.zeros(cfg.song_list_size)
     
@@ -30,7 +31,7 @@ def metadata_query():
     
     top_files_clean = [str(file).strip().strip('"') + '.mp3' for file in top_files]  
 
-    with open("rankings.txt", "a") as f:
+    with open("data/rankings.txt", "a") as f:
         f.write("\nRanking: Metadata-------------\n")
         np.savetxt(f, [top_files_clean], fmt='%s')
         np.savetxt(f, [top_scores], fmt='%.0f')
@@ -54,6 +55,6 @@ def precision(metadata, euclidean, manhattan, cosine):
     prec_manhattan = count_manhattan / 10 * 100
     prec_cosine = count_cosine / 10 * 100
     
-    append_precision("data/rankings.txt", prec_euclidean, prec_manhattan, prec_cosine)
+    append_precision("rankings.txt", prec_euclidean, prec_manhattan, prec_cosine)
 
     return 

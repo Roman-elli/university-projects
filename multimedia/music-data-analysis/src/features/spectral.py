@@ -3,13 +3,12 @@ import numpy as np
 import config as cfg
 from utils.io import save_csv
 
-
 def spectral_centroid(soundFolder, testMusics, centroid_librosa):
     feature_centroid = []
     compare = np.zeros((cfg.song_list_size, 2))
 
     for i in range(cfg.song_list_size):
-        y, fs = librosa.load(f"{soundFolder}/{testMusics[i]}", cfg.sr, cfg.mono)
+        y, fs = librosa.load(f"{soundFolder}/{testMusics[i]}", sr=cfg.sr, mono=cfg.mono)
         sample = np.array(y)
         points = len(sample) % cfg.jump_counter
         if points == 0: n = 0 
@@ -46,8 +45,6 @@ def spectral_centroid(soundFolder, testMusics, centroid_librosa):
         min_len = min(len(sc_librosa), len(fc))
         sc_librosa = sc_librosa[:min_len]
         fc = fc[:min_len]
-        print("fc:", len(fc))
-        print("sc_librosa:", len(sc_librosa))
 
         pearson = np.corrcoef(sc_librosa, fc)[0,1] 
         compare[i, 0] = pearson
@@ -55,4 +52,4 @@ def spectral_centroid(soundFolder, testMusics, centroid_librosa):
         rmse = np.sqrt(np.mean((sc_librosa - fc) ** 2))
         compare[i, 1] = rmse
         
-    save_csv("data/spectral_metrics.csv", compare, '%.6f', ',')
+    save_csv("spectral_metrics.csv", compare, '%.6f', ',')
