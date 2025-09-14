@@ -45,7 +45,9 @@ Each folder has its own README with more detailed documentation.
 
 - 🎵 [**Music Analyser**](multimedia/music-data-analysis)  
   Language: **Python**  
-  → *** IN WORK ****
+  → A **music retrieval system** based on **audio feature extraction** (MFCCs, spectral features, RMS, zero-crossing rate, tempo),  
+    **feature normalization**, and **distance metrics** (Euclidean, Manhattan, Cosine).  
+    Generates **top-10 rankings**, compares with **metadata-based similarity**, and evaluates with **precision at top-10**.
 
 --- 
 
