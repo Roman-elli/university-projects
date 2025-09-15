@@ -66,7 +66,7 @@ The agent applies a set of **deterministic heuristics** to control the spacecraf
     ```bash
     python src/main.py
     ```
-3. Modify configuration (inside main.py):
+3. Modify configuration (inside config.py):
 
   - ENABLE_WIND = False → Run no-wind scenario
   - ENABLE_WIND = True → Run with wind + turbulence
