@@ -7,7 +7,7 @@ WIND_POWER = 15.0
 TURBULENCE_POWER = 0.0
 GRAVITY = -10.0
 RENDER_MODE = 'human'
-RENDER_MODE = None # seleccione esta opção para não visualizar o ambiente (testes mais rápidos)
+RENDER_MODE = None # testing scenario
 EPISODES = 1000
 
 env = gym.make("LunarLander-v3", render_mode =RENDER_MODE, 
@@ -31,10 +31,10 @@ def check_successful_landing(observation):
     stable = stable_velocity and stable_orientation
  
     if legs_touching and on_landing_pad and stable:
-        print("✅ Aterragem bem sucedida!")
+        print("✅ Successful landing!")
         return True
 
-    print("⚠️ Aterragem falhada!")        
+    print("⚠️ Failed landing!")        
     return False
         
 def simulate(steps=1000,seed=None, policy = None):    
@@ -51,376 +51,373 @@ def simulate(steps=1000,seed=None, policy = None):
     return step, success
 
 # Perceptions
-# Posiçao horizontal em relação ao centro
-def posicao_horizontal(observation):
+# Horizontal position relative to the center
+def horizontal_position(observation):
     return observation[0]
 
-# Posiçao vertical em relação ao centro
-def posicao_vertical(observation):
+# Vertical position relative to the center
+def vertical_position(observation):
     return observation[1]
 
-# Velocidade horizontal
-def velocidade_horizontal(observation):
+# Horizontal velocity
+def horizontal_velocity(observation):
     return observation[2]
 
-# Velocidade vertical
-def velocidade_vertical(observation):
+# Vertical velocity
+def vertical_velocity(observation):
     return observation[3]
 
-# Orientação da nave
-def orientacao(observation):
+# Ship orientation
+def orientation(observation):
     return observation[4]
 
-# Velocidade Angular
-def velocidade_angular(observation):
+# Angle velocity
+def angle_velocity(observation):
     return observation[5]
 
-# Pé esquerdo
-def toque_esquerdo(observation):
+# Left ship foot
+def left_foot_touch(observation):
     if (observation[6] == 1): return True
     return False
 
-# Pé direito
-def toque_direito(observation):
+# Right ship foot
+def right_foot_touch(observation):
     if (observation[7] == 1): return True
     return False
 
 # Actions
-# Gira a nave para a direita com o motor esquerdo
-def gira_direita_total(action):
+# Turn the ship to the right with the left engine
+def turn_right_with_full_power(action):
     action[1] = 0.8
     return action
-def gira_direita_parcial(action):
+def turn_right_with_partial_power(action):
     action[1] = 0.51
     return action
 
-# Gira a nave para a esquerda com o motor direito
-def gira_esquerda_total(action):
+# Turn the ship to the left with the right engine
+def turn_left_with_full_power(action):
     action[1] = -0.8
     return action
-def gira_esquerda_parcial(action):
+def turn_left_with_partial_power(action):
     action[1] = -0.51
     return action
 
-# Ativa motor principal
-def principal_total(action):
+# Activate main engine
+def main_engine_full_power(action):
     action[0] = 0.9
     return action
-def principal_parcial(action):
+def main_engine_parcial_power(action):
     action[0] = 0.51
     return action
 
-# Limiares definidos para o cenario SEM vento
-
-LIMIAR_ANGULO = 0.005
-LIMIAR_ANGULO_EXTERNO = 0.053
-LIMIAR_VELOCIDADE_VERTICAL = -0.07
-LIMIAR_VELOCIDADE_HORIZONTAL = 0.005
-LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO = 0.15
-LIMIAR_HORIZONTAL = 0.023
+# Thresholds defined for the NO wind scenario
+ANGLE_THRESHOLD = 0.005
+EXTERN_ANGLE_THRESHOLD = 0.053
+VERTICAL_VELOCITY_THRESHOLD = -0.07
+HORIZONTAL_VELOCITY_THRESHOLD = 0.005
+EXTERN_HORIZONTAL_VELOCITY_THRESHOLD = 0.15
+HORIZONTAL_THRESHOLD = 0.023
 
 def agent_no_wind(observation):
     action = [0, 0]
 
-    toque_esq = toque_esquerdo(observation)
-    toque_dir = toque_direito(observation)
-    vel_hor = velocidade_horizontal(observation)
-    vel_ver = velocidade_vertical(observation)
-    orient = orientacao(observation)
-    pos_hor = posicao_horizontal(observation)
+    horizontal_vel = horizontal_velocity(observation)
+    vertical_vel = vertical_velocity(observation)
+    orientation_var = orientation(observation)
+    horizontal_pos = horizontal_position(observation)
 
-    # 1. CASO FINAL
+    # 1. Final case
     # PE, PD -> NIL
-    if toque_esq and toque_dir:
+    if left_foot_touch(observation) and right_foot_touch(observation):
         return action
 
-    # 2. ACIMA DA VELOCIDADE HORIZONTAL EXTERNA PARA A DIREITA E GRAU CORRETO
+    # 2. ABOVE THE EXTERNAL HORIZONTAL SPEED TO THE RIGHT AND CORRECT DEGREE
     # VH > LHE, O < 1.8 * LAE, VV < LV -> GET, MP
     # VH > LHE, O < 1.8 * LAE -> GET
-    elif vel_hor > LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO and orient < 1.8 * LIMIAR_ANGULO_EXTERNO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_esquerda_total(action)
-        action = principal_parcial(action)
-    elif vel_hor > LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO and orient < 1.8 * LIMIAR_ANGULO_EXTERNO:
-        action = gira_esquerda_total(action)
+    elif horizontal_vel > EXTERN_HORIZONTAL_VELOCITY_THRESHOLD and orientation_var < 1.8 * EXTERN_ANGLE_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_left_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_vel > EXTERN_HORIZONTAL_VELOCITY_THRESHOLD and orientation_var < 1.8 * EXTERN_ANGLE_THRESHOLD:
+        action = turn_left_with_full_power(action)
 
-    # 3. ACIMA DA VELOCIDADE HORIZONTAL EXTERNA PARA A DIREITA E GRAU INCORRETO
+    # 3. ABOVE THE EXTERNAL HORIZONTAL SPEED TO THE RIGHT AND INCORRECT DEGREE
     # VH > LHE, VV < LV -> GDT, MP
     # VH > LHE -> GDT
-    elif vel_hor > LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_direita_total(action)
-        action = principal_parcial(action)
-    elif vel_hor > LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO:
-        action = gira_direita_total(action)
+    elif horizontal_vel > EXTERN_HORIZONTAL_VELOCITY_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_right_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_vel > EXTERN_HORIZONTAL_VELOCITY_THRESHOLD:
+        action = turn_right_with_full_power(action)
 
-    # 4. ACIMA DA VELOCIDADE HORIZONTAL EXTERNA PARA A ESQUERDA E GRAU CORRETO
+    # 4. ABOVE THE EXTERNAL HORIZONTAL SPEED TO THE LEFT AND CORRECT DEGREE
     # VH < -LHE, O > -1.8 * LAE, VV < LV -> GDT, MP
     # VH < -LHE, O > -1.8 * LAE -> GDT
-    elif vel_hor < -LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO and orient > -1.8 * LIMIAR_ANGULO_EXTERNO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_direita_total(action)
-        action = principal_parcial(action)
-    elif vel_hor < -LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO and orient > -1.8 * LIMIAR_ANGULO_EXTERNO:
-        action = gira_direita_total(action)
+    elif horizontal_vel < -EXTERN_HORIZONTAL_VELOCITY_THRESHOLD and orientation_var > -1.8 * EXTERN_ANGLE_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_right_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_vel < -EXTERN_HORIZONTAL_VELOCITY_THRESHOLD and orientation_var > -1.8 * EXTERN_ANGLE_THRESHOLD:
+        action = turn_right_with_full_power(action)
 
-    # 5. ACIMA DA VELOCIDADE HORIZONTAL EXTERNA PARA A ESQUERDA E GRAU INCORRETO
+    # 5. ABOVE THE EXTERNAL HORIZONTAL SPEED TO THE LEFT AND INCORRECT DEGREE
     # VH < -LHE, VV < LV -> GET, MP
     # VH < -LHE -> GET
-    elif vel_hor < -LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_esquerda_total(action)
-        action = principal_parcial(action)
-    elif vel_hor < -LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO:
-        action = gira_esquerda_total(action)
+    elif horizontal_vel < -EXTERN_HORIZONTAL_VELOCITY_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_left_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_vel < -EXTERN_HORIZONTAL_VELOCITY_THRESHOLD:
+        action = turn_left_with_full_power(action)
 
-    # 6. FORA DOS LIMITES A ESQUERDA E O GRAU CORRETO
+    # 6. OUT OF BOUNDS THE LEFT AND THE RIGHT DEGREE
     # H < -LH, O > -LAE, VV < LV -> GDT, MP
     # H < -LH, O > -LAE -> GDT
-    elif pos_hor < -LIMIAR_HORIZONTAL and orient > -LIMIAR_ANGULO_EXTERNO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_direita_total(action)
-        action = principal_parcial(action)
-    elif pos_hor < -LIMIAR_HORIZONTAL and orient > -LIMIAR_ANGULO_EXTERNO:
-        action = gira_direita_total(action)
+    elif horizontal_pos < -HORIZONTAL_THRESHOLD and orientation_var > -EXTERN_ANGLE_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_right_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_pos < -HORIZONTAL_THRESHOLD and orientation_var > -EXTERN_ANGLE_THRESHOLD:
+        action = turn_right_with_full_power(action)
 
-    # 7. FORA DOS LIMITES A ESQUERDA E O GRAU INCORRETO
+    # 7. OUT OF BOUNDS THE LEFT AND THE INCORRECT DEGREE
     # H < -LH, VV < LV -> GET, MP
     # H < -LH -> GET
-    elif pos_hor < -LIMIAR_HORIZONTAL and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_esquerda_total(action)
-        action = principal_parcial(action)
-    elif pos_hor < -LIMIAR_HORIZONTAL:
-        action = gira_esquerda_total(action)
+    elif horizontal_pos < -HORIZONTAL_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_left_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_pos < -HORIZONTAL_THRESHOLD:
+        action = turn_left_with_full_power(action)
 
-    # 8. FORA DOS LIMITES A DIREITA E O GRAU CORRETO
+    # 8. OUT OF BOUNDS THE RIGHT AND THE CORRECT DEGREE
     # H > LH, O < LAE, VV < LV -> GET, MP
     # H > LH, O < LAE -> GET
-    elif pos_hor > LIMIAR_HORIZONTAL and orient < LIMIAR_ANGULO_EXTERNO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_esquerda_total(action)
-        action = principal_parcial(action)
-    elif pos_hor > LIMIAR_HORIZONTAL and orient < LIMIAR_ANGULO_EXTERNO:
-        action = gira_esquerda_total(action)
+    elif horizontal_pos > HORIZONTAL_THRESHOLD and orientation_var < EXTERN_ANGLE_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_left_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_pos > HORIZONTAL_THRESHOLD and orientation_var < EXTERN_ANGLE_THRESHOLD:
+        action = turn_left_with_full_power(action)
 
-    # 9. FORA DOS LIMITES A DIREITA E O GRAU INCORRETO
+    # 9. OUT OF BOUNDS THE RIGHT AND THE INCORRECT DEGREE
     # H > LH, VV < LV -> GDT, MP
     # H > LH -> GDT 
-    elif pos_hor > LIMIAR_HORIZONTAL and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_direita_total(action)
-        action = principal_parcial(action)
-    elif pos_hor > LIMIAR_HORIZONTAL:
-        action = gira_direita_total(action)
+    elif horizontal_pos > HORIZONTAL_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_right_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_pos > HORIZONTAL_THRESHOLD:
+        action = turn_right_with_full_power(action)
 
-    # 10. ACIMA DO LIMITE DE VELOCIDADE HORIZONTAL A DIREITA PERMITIDO INTERNAMENTE COM GRAU CORRETO
+    # 10. ABOVE THE HORIZONTAL SPEED LIMIT TO THE RIGHT PERMITTED INTERNALLY WITH CORRECT GRADE
     # VH > LVH, O < Θ, VV < LV -> GET, MP
     # H > LVH, O < Θ -> GET
-    elif vel_hor > LIMIAR_VELOCIDADE_HORIZONTAL and orient < LIMIAR_ANGULO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_esquerda_total(action)
-        action = principal_parcial(action)
-    elif vel_hor > LIMIAR_VELOCIDADE_HORIZONTAL and orient < LIMIAR_ANGULO:
-        action = gira_esquerda_total(action)
+    elif horizontal_vel > HORIZONTAL_VELOCITY_THRESHOLD and orientation_var < ANGLE_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_left_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_vel > HORIZONTAL_VELOCITY_THRESHOLD and orientation_var < ANGLE_THRESHOLD:
+        action = turn_left_with_full_power(action)
 
-    # 11. ACIMA DO LIMITE DE VELOCIDADE HORIZONTAL A DIREITA PERMITIDO INTERNAMENTE COM GRAU INCORRETO
+    # 11. ABOVE THE HORIZONTAL SPEED LIMIT ON THE RIGHT PERMITTED INTERNALLY WITH INCORRECT GRADE
     # VH > LVH, VV < LV -> GDT, MP
     # VH > LVH -> GDT
-    elif vel_hor > LIMIAR_VELOCIDADE_HORIZONTAL and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_direita_total(action)
-        action = principal_parcial(action)
-    elif vel_hor > LIMIAR_VELOCIDADE_HORIZONTAL:
-        action = gira_direita_total(action)
+    elif horizontal_vel > HORIZONTAL_VELOCITY_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_right_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_vel > HORIZONTAL_VELOCITY_THRESHOLD:
+        action = turn_right_with_full_power(action)
 
-    # 12. ACIMA DO LIMITE DE VELOCIDADE HORIZONTAL A ESQUERDA PERMITIDO INTERNAMENTE COM GRAU CORRETO
+    # 12. ABOVE THE HORIZONTAL SPEED LIMIT ON THE LEFT PERMITTED INTERNALLY WITH CORRECT GRADE
     # VH < -LVH, O > -Θ, VV < LV -> GDT, MP
     # VH < -LVH, O > -Θ -> GDT
-    elif vel_hor < -LIMIAR_VELOCIDADE_HORIZONTAL and orient > -LIMIAR_ANGULO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_direita_total(action)
-        action = principal_parcial(action)
-    elif vel_hor < -LIMIAR_VELOCIDADE_HORIZONTAL and orient > -LIMIAR_ANGULO:
-        action = gira_direita_total(action)
+    elif horizontal_vel < -HORIZONTAL_VELOCITY_THRESHOLD and orientation_var > -ANGLE_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_right_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_vel < -HORIZONTAL_VELOCITY_THRESHOLD and orientation_var > -ANGLE_THRESHOLD:
+        action = turn_right_with_full_power(action)
 
-    # 13. ACIMA DO LIMITE DE VELOCIDADE HORIZONTAL A ESQUERDA PERMITIDO INTERNAMENTE COM GRAU INCORRETO
+    # 13.ABOVE THE HORIZONTAL SPEED LIMIT ON THE LEFT PERMITTED INTERNALLY WITH INCORRECT DEGREE
     # VH < -LVH, VV < LV -> GET, MP
     # VH < -LVH -> GET
-    elif vel_hor < -LIMIAR_VELOCIDADE_HORIZONTAL and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_esquerda_total(action)
-        action = principal_parcial(action)
-    elif vel_hor < -LIMIAR_VELOCIDADE_HORIZONTAL:
-        action = gira_esquerda_total(action)
+    elif horizontal_vel < -HORIZONTAL_VELOCITY_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_left_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif horizontal_vel < -HORIZONTAL_VELOCITY_THRESHOLD:
+        action = turn_left_with_full_power(action)
 
-    # 14. CORREÇAO FORTE DE GRAU A DIREITA NA EM DESCIDA NO PONTO CORRETO
+    # 14. STRONG CORRECTION TO THE RIGHT ON THE DESCENT AT THE CORRECT POINT
     # O > 4 * Θ, VV < LV -> GDT, MP 
     # O > 4 * Θ -> GDT
-    elif orient > 4 * LIMIAR_ANGULO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_direita_total(action)
-        action = principal_parcial(action)
-    elif orient > 4 * LIMIAR_ANGULO:
-        action = gira_direita_total(action)
+    elif orientation_var > 4 * ANGLE_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_right_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif orientation_var > 4 * ANGLE_THRESHOLD:
+        action = turn_right_with_full_power(action)
 
-    # 15. CORREÇAO FORTE DE GRAU A ESQUERDA NA EM DESCIDA NO PONTO CORRETO
+    # 15. STRONG CORRECTION TO THE LEFT ON THE DESCENT AT THE CORRECT POINT
     # O < -4 * Θ, VV < LV -> GET, MP
     # O < -4 * Θ -> GET
-    elif orient < -4 * LIMIAR_ANGULO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_esquerda_total(action)
-        action = principal_parcial(action)
-    elif orient < -4 * LIMIAR_ANGULO:
-        action = gira_esquerda_total(action)
+    elif orientation_var < -4 * ANGLE_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_left_with_full_power(action)
+        action = main_engine_parcial_power(action)
+    elif orientation_var < -4 * ANGLE_THRESHOLD:
+        action = turn_left_with_full_power(action)
 
-    # 16. CORREÇAO FRACA DE GRAU A DIREITA NA EM DESCIDA NO PONTO CORRETO
+    # 16. WEAK CORRECTION TO THE RIGHT ON THE DESCENT AT THE CORRECT POINT
     # O < -Θ, VV < LV -> GDP, MP
     # O < -Θ -> GDP
-    elif orient < -LIMIAR_ANGULO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_direita_parcial(action)
-        action = principal_parcial(action)
-    elif orient < -LIMIAR_ANGULO:
-        action = gira_direita_parcial(action)
+    elif orientation_var < -ANGLE_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_right_with_partial_power(action)
+        action = main_engine_parcial_power(action)
+    elif orientation_var < -ANGLE_THRESHOLD:
+        action = turn_right_with_partial_power(action)
     
-    # 17. CORREÇAO FRACA DE GRAU A ESQUERDA NA EM DESCIDA NO PONTO CORRETO
+    # 17. WEAK CORRECTION TO THE LEFT ON THE DOWNTREND AT THE CORRECT POINT
     # O > Θ, VV < LV -> GEP, MP
     # O > Θ -> GEP
-    elif orient > LIMIAR_ANGULO and vel_ver < LIMIAR_VELOCIDADE_VERTICAL:
-        action = gira_esquerda_parcial(action)
-        action = principal_parcial(action)
-    elif orient > LIMIAR_ANGULO:
-        action = gira_esquerda_parcial(action)
+    elif orientation_var > ANGLE_THRESHOLD and vertical_vel < VERTICAL_VELOCITY_THRESHOLD:
+        action = turn_left_with_partial_power(action)
+        action = main_engine_parcial_power(action)
+    elif orientation_var > ANGLE_THRESHOLD:
+        action = turn_left_with_partial_power(action)
     
     if action == [0, 0]:
         action = env.action_space.sample()
     
     return action
 
-# Limiares definidos para o cenario COM vento
+# Thresholds defined for the scenario WITH wind
 
-LIMIAR_ANGULO_VENTO = 0.015
-LIMIAR_ANGULO_EXTERNO_VENTO = 0.062
-LIMIAR_VELOCIDADE_VERTICAL_VENTO = -0.015
-LIMIAR_VELOCIDADE_VERTICAL_EXTERNA = -0.06
-LIMIAR_VELOCIDADE_HORIZONTAL_VENTO = 0.005
-LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO_VENTO = 0.15
-LIMIAR_HORIZONTAL_VENTO = 0.072
+WIND_ANGLE_THRESHOLD = 0.015
+WIND_EXTERN_ANGLE_THRESHOLD = 0.062
+WIND_VERTICAL_VELOCITY_THRESHOLD = -0.015
+WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD = -0.06
+WIND_HORIZONTAL_VELOCITY_THRESHOLD = 0.005
+WIND_EXTERN_HORIZONTAL_VELOCITY_THRESHOLD = 0.15
+WIND_HORIZONTAL_THRESHOLD = 0.072
 
 def agent_wind(observation):
     action = [0, 0]
 
-    # Ambos os toques
-    if toque_esquerdo(observation) == True and toque_direito(observation) == True: return action
+    # Both feet of the spacecraft touch
+    if left_foot_touch(observation) == True and right_foot_touch(observation) == True: return action
 
-    # ULTRAPASSA A VELOCIDADE MAXIMA PERMITIDA A DIREITA
-    elif(velocidade_horizontal(observation) > 2*LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO_VENTO):
-        # ORIENTA PARA ESQUERDA
-        if orientacao(observation) < 3.1 * LIMIAR_ANGULO_EXTERNO_VENTO:
-            action = gira_esquerda_total(action)
-        elif orientacao(observation) > 3.3 * LIMIAR_ANGULO_EXTERNO_VENTO: action = gira_direita_total(action)
-        # VELOCIDADE VERTICAL TOTAL
-        if velocidade_vertical(observation) < 6 * LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action = principal_total(action)
-        # VELOCIDADE VERTICAL PARCIAL
-        elif velocidade_vertical(observation) < 5 * LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action = principal_parcial(action)
+    # EXCEEDS THE MAXIMUM SPEED LIMIT ON THE RIGHT
+    elif(horizontal_velocity(observation) > 2*WIND_EXTERN_HORIZONTAL_VELOCITY_THRESHOLD):
+        # STEERS TO THE LEFT
+        if orientation(observation) < 3.1 * WIND_EXTERN_ANGLE_THRESHOLD:
+            action = turn_left_with_full_power(action)
+        elif orientation(observation) > 3.3 * WIND_EXTERN_ANGLE_THRESHOLD: action = turn_right_with_full_power(action)
+        # TOTAL VERTICAL SPEED
+        if vertical_velocity(observation) < 6 * WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_full_power(action)
+        # PARTIAL VERTICAL SPEED
+        elif vertical_velocity(observation) < 5 * WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_parcial_power(action)
 
-    # ULTRAPASSA A VELOCIDADE MAXIMA PERMITIDA A ESQUERDA  
-    elif(velocidade_horizontal(observation) < -2*LIMIAR_VELOCIDADE_HORIZONTAL_EXTERNO_VENTO): 
-        # ORIENTA PARA DIREITA
-        if orientacao(observation) > -3.1 * LIMIAR_ANGULO_EXTERNO_VENTO:
-            action = gira_direita_total(action)
-        elif orientacao(observation) < -3.3 * LIMIAR_ANGULO_EXTERNO_VENTO: action = gira_esquerda_total(action)
-        # VELOCIDADE VERTICAL TOTAL
-        if velocidade_vertical(observation) < 6 * LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action = principal_total(action)
-        # VELOCIDADE VERTICAL PARCIAL
-        elif velocidade_vertical(observation) < 5 * LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action = principal_parcial(action)        
+    # EXCEEDS THE MAXIMUM SPEED LIMIT ON THE LEFT 
+    elif(horizontal_velocity(observation) < -2*WIND_EXTERN_HORIZONTAL_VELOCITY_THRESHOLD): 
+        # STEER RIGHT
+        if orientation(observation) > -3.1 * WIND_EXTERN_ANGLE_THRESHOLD:
+            action = turn_right_with_full_power(action)
+        elif orientation(observation) < -3.3 * WIND_EXTERN_ANGLE_THRESHOLD: action = turn_left_with_full_power(action)
+        # TOTAL VERTICAL SPEED
+        if vertical_velocity(observation) < 6 * WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_full_power(action)
+        # PARTIAL VERTICAL SPEED
+        elif vertical_velocity(observation) < 5 * WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_parcial_power(action)        
 
-    # FORA DOS LIMITES A ESQUERDA
-    elif(posicao_horizontal(observation) < -LIMIAR_HORIZONTAL_VENTO):
-        # ORIENTA A DIREITA
-        if orientacao(observation) > -2.7 * LIMIAR_ANGULO_EXTERNO_VENTO: action = gira_direita_total(action)
-        elif orientacao(observation) < -2.8 * LIMIAR_ANGULO_EXTERNO_VENTO: action = gira_esquerda_total(action)
+    # OUT OF BOUNDS THE LEFT
+    elif(horizontal_position(observation) < -WIND_HORIZONTAL_THRESHOLD):
+        # GUIDES THE RIGHT
+        if orientation(observation) > -2.7 * WIND_EXTERN_ANGLE_THRESHOLD: action = turn_right_with_full_power(action)
+        elif orientation(observation) < -2.8 * WIND_EXTERN_ANGLE_THRESHOLD: action = turn_left_with_full_power(action)
 
-        # VELOCIDADE VERTICAL TOTAL
-        if velocidade_vertical(observation) < 4 * LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action = principal_total(action)
-        # VELOCIDADE VERTICAL PARCIAL
-        elif velocidade_vertical(observation) < 3*LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action = principal_parcial(action)
+        # TOTAL VERTICAL SPEED
+        if vertical_velocity(observation) < 4 * WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_full_power(action)
+        # PARTIAL VERTICAL SPEED
+        elif vertical_velocity(observation) < 3*WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_parcial_power(action)
     
-    # FORA DOS LIMITES A DIREITA
-    elif(posicao_horizontal(observation) > LIMIAR_HORIZONTAL_VENTO):
-        # ORIENTA ESQUERDA
-        if orientacao(observation) < 2.7 * LIMIAR_ANGULO_EXTERNO_VENTO: action = gira_esquerda_total(action)
-        elif orientacao(observation) > 2.8 * LIMIAR_ANGULO_EXTERNO_VENTO: action = gira_direita_total(action)
+    # OUT OF BOUNDS THE RIGHT
+    elif(horizontal_position(observation) > WIND_HORIZONTAL_THRESHOLD):
+        # LEFT-WING GUIDANCE
+        if orientation(observation) < 2.7 * WIND_EXTERN_ANGLE_THRESHOLD: action = turn_left_with_full_power(action)
+        elif orientation(observation) > 2.8 * WIND_EXTERN_ANGLE_THRESHOLD: action = turn_right_with_full_power(action)
 
-        # VELOCIDADE VERTICAL TOTAL
-        if velocidade_vertical(observation) < 4 * LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action[0] = principal_total(action)[0]
-        # VELOCIDADE VERTICAL PARCIAL
-        elif velocidade_vertical(observation) < 3 * LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action[0] = principal_parcial(action)[0]
+        # TOTAL VERTICAL SPEED
+        if vertical_velocity(observation) < 4 * WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action[0] = main_engine_full_power(action)[0]
+        # PARTIAL VERTICAL SPEED
+        elif vertical_velocity(observation) < 3 * WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action[0] = main_engine_parcial_power(action)[0]
 
-    # ACIMA DO LIMITE DE VELOCIDADE HORIZONTAL A DIREITA PERMITIDO INTERNAMENTE
-    elif(velocidade_horizontal(observation) > LIMIAR_VELOCIDADE_HORIZONTAL_VENTO):
-        # ORIENTA A ESQUERDA
-        if orientacao(observation) < LIMIAR_ANGULO_VENTO: action = gira_esquerda_total(action)
-        elif orientacao(observation) > 1.2 * LIMIAR_ANGULO_VENTO: action = gira_direita_total(action)
+    # ABOVE THE HORIZONTAL SPEED LIMIT ON THE RIGHT PERMITTED INTERNALLY
+    elif(horizontal_velocity(observation) > WIND_HORIZONTAL_VELOCITY_THRESHOLD):
+        # LEFT-WING GUIDANCE
+        if orientation(observation) < WIND_ANGLE_THRESHOLD: action = turn_left_with_full_power(action)
+        elif orientation(observation) > 1.2 * WIND_ANGLE_THRESHOLD: action = turn_right_with_full_power(action)
 
-        # VELOCIDADE VERTICAL TOTAL
-        if velocidade_vertical(observation) < 4 * LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action = principal_total(action)
-        # VELOCIDADE VERTICAL PARCIAL
-        elif velocidade_vertical(observation) < 3 * LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action = principal_parcial(action)
+        # TOTAL VERTICAL SPEED
+        if vertical_velocity(observation) < 4 * WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_full_power(action)
+        # PARTIAL VERTICAL SPEED
+        elif vertical_velocity(observation) < 3 * WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_parcial_power(action)
         
-    # ACIMA DO LIMITE DE VELOCIDADE HORIZONTAL A ESQUERDA PERMITIDO INTERNAMENTE
-    elif(velocidade_horizontal(observation) < -LIMIAR_VELOCIDADE_HORIZONTAL_VENTO): 
-        # ORIENTA A DIREITA
-        if orientacao(observation) > -LIMIAR_ANGULO_VENTO: action = gira_direita_total(action)
-        elif orientacao(observation) < -1.2 * LIMIAR_ANGULO_VENTO: action = gira_esquerda_total(action)
+    # ABOVE THE HORIZONTAL SPEED LIMIT ON THE LEFT PERMITTED INTERNALLY
+    elif(horizontal_velocity(observation) < -WIND_HORIZONTAL_VELOCITY_THRESHOLD): 
+        # GUIDES THE RIGHT
+        if orientation(observation) > -WIND_ANGLE_THRESHOLD: action = turn_right_with_full_power(action)
+        elif orientation(observation) < -1.2 * WIND_ANGLE_THRESHOLD: action = turn_left_with_full_power(action)
 
-        # VELOCIDADE VERTICAL TOTAL
-        if velocidade_vertical(observation) < 4 * LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action = principal_total(action)
-        # VELOCIDADE VERTICAL PARCIAL
-        elif velocidade_vertical(observation) < 3 * LIMIAR_VELOCIDADE_VERTICAL_EXTERNA:
-            action = principal_parcial(action)
+        # TOTAL VERTICAL SPEED
+        if vertical_velocity(observation) < 4 * WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_full_power(action)
+        # PARTIAL VERTICAL SPEED
+        elif vertical_velocity(observation) < 3 * WIND_EXTERN_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_parcial_power(action)
 
-    # ORIENTA COM FORÇA A DIREITA INTERNAMENTE
-    elif orientacao(observation) > 2.5 * LIMIAR_ANGULO_VENTO:
-        action = gira_direita_total(action)
-        # VELOCIDADE VERTICAL TOTAL
-        if velocidade_vertical(observation) < 5 * LIMIAR_VELOCIDADE_VERTICAL_VENTO:
-            action = principal_total(action)
-        # VELOCIDADE VERTICAL PARCIAL
-        elif velocidade_vertical(observation) < 4*LIMIAR_VELOCIDADE_VERTICAL_VENTO:
-            action = principal_parcial(action)
+    # STRONGLY GUIDES THE RIGHT INTERNALLY
+    elif orientation(observation) > 2.5 * WIND_ANGLE_THRESHOLD:
+        action = turn_right_with_full_power(action)
+        # TOTAL VERTICAL SPEED
+        if vertical_velocity(observation) < 5 * WIND_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_full_power(action)
+        # PARTIAL VERTICAL SPEED
+        elif vertical_velocity(observation) < 4*WIND_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_parcial_power(action)
 
-    # ORIENTA COM FORÇA A ESQUERDA INTERNAMENTE
-    elif orientacao(observation) < -2.5 * LIMIAR_ANGULO_VENTO:
-        action = gira_esquerda_total(action)
-        # VELOCIDADE VERTICAL TOTAL
-        if velocidade_vertical(observation) < 5 * LIMIAR_VELOCIDADE_VERTICAL_VENTO:
-            action = principal_total(action)
+    # STRONGLY GUIDES THE LEFT INTERNALLY
+    elif orientation(observation) < -2.5 * WIND_ANGLE_THRESHOLD:
+        action = turn_left_with_full_power(action)
+        # TOTAL VERTICAL SPEED
+        if vertical_velocity(observation) < 5 * WIND_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_full_power(action)
             
-        # VELOCIDADE VERTICAL PARCIAL
-        elif velocidade_vertical(observation) < 4 * LIMIAR_VELOCIDADE_VERTICAL_VENTO:
-            action = principal_parcial(action)
+        # PARTIAL VERTICAL SPEED
+        elif vertical_velocity(observation) < 4 * WIND_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_parcial_power(action)
     
-    # ORIENTA PARCIAL ESQUERDA INTERNAMENTE
-    elif orientacao(observation) > LIMIAR_ANGULO_VENTO:
-        action = gira_esquerda_parcial(action)
+    # PARTIAL LEFT INTERNAL GUIDANCE
+    elif orientation(observation) > WIND_ANGLE_THRESHOLD:
+        action = turn_left_with_partial_power(action)
 
-        # VELOCIDADE VERTICAL TOTAL
-        if velocidade_vertical(observation) < 4 * LIMIAR_VELOCIDADE_VERTICAL_VENTO:
-            action = principal_total(action)
-        # VELOCIDADE VERTICAL PARCIAL
-        elif velocidade_vertical(observation) < 3*LIMIAR_VELOCIDADE_VERTICAL_VENTO:
-            action = principal_parcial(action)
+        # TOTAL VERTICAL SPEED
+        if vertical_velocity(observation) < 4 * WIND_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_full_power(action)
+        # PARTIAL VERTICAL SPEED
+        elif vertical_velocity(observation) < 3*WIND_VERTICAL_VELOCITY_THRESHOLD:
+            action = main_engine_parcial_power(action)
     
-    # ORIENTA PARCIAL DIREITA INTERNAMENTE
-    elif orientacao(observation) < -LIMIAR_ANGULO_VENTO:
-        action = gira_direita_parcial(action)
+    # PARTIAL RIGHT INTERNAL GUIDE
+    elif orientation(observation) < -WIND_ANGLE_THRESHOLD:
+        action = turn_right_with_partial_power(action)
 
-        # VELOCIDADE VERTICAL TOTAL
-        if velocidade_vertical(observation) < 4 * LIMIAR_VELOCIDADE_VERTICAL_VENTO:
-            action[0] = principal_total(action)[0]
-        # VELOCIDADE VERTICAL PARCIAL
-        elif velocidade_vertical(observation) < 3*LIMIAR_VELOCIDADE_VERTICAL_VENTO:
-            action[0] = principal_parcial(action)[0]
+        # TOTAL VERTICAL SPEED
+        if vertical_velocity(observation) < 4 * WIND_VERTICAL_VELOCITY_THRESHOLD:
+            action[0] = main_engine_full_power(action)[0]
+        # PARTIAL VERTICAL SPEED
+        elif vertical_velocity(observation) < 3*WIND_VERTICAL_VELOCITY_THRESHOLD:
+            action[0] = main_engine_parcial_power(action)[0]
 
-    # Garante que há uma ação definida
+    # Ensures that there is a defined action
     if action == [0, 0]:
         action = env.action_space.sample()
 
@@ -438,5 +435,5 @@ for i in range(EPISODES):
     success += su
     
     if su>0:
-        print('Média de passos das aterragens bem sucedidas:', steps/success*100)
-    print(': Taxa de sucesso:', success/(i+1)*100)
+        print('Average number of successful landings:', steps/success*100)
+    print(': Success rate:', success/(i+1)*100)
