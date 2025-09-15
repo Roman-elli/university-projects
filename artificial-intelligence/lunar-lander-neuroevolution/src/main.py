@@ -3,6 +3,7 @@ import copy
 import numpy as np
 import gymnasium as gym 
 import os
+
 from multiprocessing import Process, Queue
 
 # CONFIG
@@ -18,7 +19,6 @@ STEPS = 500
 NUM_PROCESSES = os.cpu_count()
 evaluationQueue = Queue()
 evaluatedQueue = Queue()
-
 
 nInputs = 8
 nOutputs = 2
