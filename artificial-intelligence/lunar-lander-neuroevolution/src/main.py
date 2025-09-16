@@ -64,7 +64,6 @@ def network(shape, observation,ind):
         x = np.tanh(y)
     return x
 
-
 def check_successful_landing(observation):
     #Checks the success of the landing based on the observation
     x = observation[0]
@@ -84,7 +83,6 @@ def check_successful_landing(observation):
     if legs_touching and on_landing_pad and stable:
         return True
     return False
-import numpy as np
 
 #Funções de recompensa
 def landed(contact_left, contact_right):
@@ -273,8 +271,7 @@ def mutation(p):
     
     # Retorna o novo indivíduo com o genótipo mutado
     return genotype_mutation
- 
-    
+   
 def survival_selection(population, offspring):
     #reevaluation of the elite
     offspring.sort(key = lambda x: x['fitness'], reverse=True)
@@ -344,8 +341,7 @@ def load_bests(fname):
             bests.append(( eval(fitness),eval(shape), eval(genotype)))
     return bests
 
-if __name__ == '__main__':
-    
+def main():
     #evolve = False
     evolve = True
     render_mode = None
@@ -379,3 +375,7 @@ if __name__ == '__main__':
                 fit += f
                 success += s
             print(f"Fitness: {fit/ntests:.1f}, Success: {success/ntests * 100:.1f}%")
+
+if __name__ == '__main__':
+    
+    main()
