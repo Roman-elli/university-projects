@@ -3,6 +3,7 @@ import copy
 import numpy as np
 import gymnasium as gym 
 import os
+import config as cfg
 
 from multiprocessing import Process, Queue
 
@@ -11,8 +12,7 @@ ENABLE_WIND = False
 WIND_POWER = 15.0
 TURBULENCE_POWER = 0.0
 GRAVITY = -10.0
-RENDER_MODE = None 
-#RENDER_MODE = 'human'
+RENDER_MODE = None #RENDER_MODE = 'human'
 EPISODES = 1000
 STEPS = 500
 
@@ -37,15 +37,15 @@ STD_DEV = 0.1
 
 ELITE_SIZE = 1
 
-#Limiares
-LIMIAR_THETA = 20
-LIMIAR_THETA_EXTREMO = 90
-LIMIAR_VY = -0.07
-LIMIAR_Y = 0.5
-LIMIAR_X = 0.5
-LIMIAR_X_EXTREMO = 0.005
+# Constants
+THRESHOLD_THETA = 20
+THRESHOLD_THETA_EXTREME = 90
+THRESHOLD_VY = -0.07
+THRESHOLD_Y = 0.5
+THRESHOLD_X = 0.5
+THRESHOLD_X_EXTREME = 0.005
 
-# Pesos 
+# Weights
 distance_weight = 0.4
 velocity_weight = 0.6
 theta_weight = 0.4
@@ -84,54 +84,54 @@ def check_successful_landing(observation):
         return True
     return False
 
-#Funções de recompensa
+# Reward functions
 def landed(contact_left, contact_right):
     return contact_left == 1 and contact_right == 1
 
-#Recompensa pela aterragem bem sucedida
+# Reward for successful landing
 def reward_landing(contact_left, contact_right):
     return 50 if landed(contact_left, contact_right) else 0
 
-#Recompensa pela nave se aproximar da zona de aterragem
+# Reward for the ship approaching the landing zone
 def reward_approaching_zone(x, y, vy, theta):
-    if y <= LIMIAR_Y and abs(x) <= LIMIAR_X and vy > LIMIAR_VY and abs(theta) < np.deg2rad(LIMIAR_THETA):
+    if y <= THRESHOLD_Y and abs(x) <= THRESHOLD_X and vy > THRESHOLD_VY and abs(theta) < np.deg2rad(THRESHOLD_THETA):
         return 100
     return 0
 
-#Recompensa pela nave estar quase a aterrar
+# Reward for the ship being about to land
 def reward_close_to_zone(x, y, vy, theta):
-    if y <= LIMIAR_Y * 0.2 and abs(x) <= LIMIAR_X * 0.2 and vy > LIMIAR_VY * (-1.3) and abs(theta) < np.deg2rad(LIMIAR_THETA - 5):
+    if y <= THRESHOLD_Y * 0.2 and abs(x) <= THRESHOLD_X * 0.2 and vy > THRESHOLD_VY * (-1.3) and abs(theta) < np.deg2rad(THRESHOLD_THETA - 5):
         return 500
     return 0
 
-#Recompensa pela aterragem bem sucedida dentro dos limites esperados
+# Reward for successful landing within expected limits
 def reward_perfect_landing(x, vy, theta, contact_left, contact_right):
-    if landed(contact_left, contact_right) and abs(x) <= LIMIAR_X_EXTREMO and vy > LIMIAR_VY * 0.005 and abs(theta) < np.deg2rad(LIMIAR_THETA - 10):
+    if landed(contact_left, contact_right) and abs(x) <= THRESHOLD_X_EXTREME and vy > THRESHOLD_VY * 0.005 and abs(theta) < np.deg2rad(THRESHOLD_THETA - 10):
         return 2300
     return 0
 
-#Recompensa pela nave estar centrada
+# Reward for the ship being centered
 def reward_centering(x, vx):
-    if (x > LIMIAR_X and vx < 0) or (x < LIMIAR_X_EXTREMO and vx > 0):
+    if (x > THRESHOLD_X and vx < 0) or (x < THRESHOLD_X_EXTREME and vx > 0):
         return 800
     return 0
 
-#Recompensa pela nave estar bem posicionada verticalmente
+# Reward for the ship being well positioned vertically
 def reward_vertical_alignment(x, theta):
-    if abs(x) < LIMIAR_X * 0.2 and abs(theta) < np.deg2rad(LIMIAR_THETA - 15):
+    if abs(x) < THRESHOLD_X * 0.2 and abs(theta) < np.deg2rad(THRESHOLD_THETA - 15):
         return 800
     return 0
 
-#Funções para penalidades
-#Penalidade pela nave estar longe da zona de aterragem
+# Functions for penalties
+# Penalty for the ship being far from the landing zone
 def penalty_far_from_zone(x, y, vx):
-    if y < 1 and ((x > LIMIAR_X * 0.2 and vx > 0) or (x < -LIMIAR_X * 0.2 and vx < 0)):
+    if y < 1 and ((x > THRESHOLD_X * 0.2 and vx > 0) or (x < -THRESHOLD_X * 0.2 and vx < 0)):
         return 1000
     return 0
 
-#Penalidade pela nave estar a um angulo muito acentuado do solo
+# Penalty for the ship being at too steep an angle to the ground
 def penalty_extreme_angle(theta):
-    if abs(theta) > np.deg2rad(LIMIAR_THETA_EXTREMO):
+    if abs(theta) > np.deg2rad(THRESHOLD_THETA_EXTREME):
         return 1000
     return 0
 
@@ -145,12 +145,12 @@ def objective_function(observation):
     contact_left = observation[6]
     contact_right = observation[7]
 
-    # Penalidades:
+    # Penalties:
     penalty_xy = abs(x) + abs(y) + penalty_far_from_zone(x, y, vx)
     penalty_vy = abs(vy)
     penalty_theta = abs(theta) + penalty_extreme_angle(theta)
 
-    # Recompensas:
+    # Rewards:
     reward_success = (
         reward_landing(contact_left, contact_right)
         + reward_approaching_zone(x, y, vy, theta)
@@ -171,7 +171,7 @@ def objective_function(observation):
     return fitness, check_successful_landing(observation)
 
 def simulate(genotype, render_mode = None, seed=None, env = None):
-    #Simulates an episode of Lunar Lander, evaluating an individual
+    # Simulates an episode of Lunar Lander, evaluating an individual
     env_was_none = env is None
     if env is None:
         env = gym.make("LunarLander-v3", render_mode =render_mode, 
@@ -183,7 +183,7 @@ def simulate(genotype, render_mode = None, seed=None, env = None):
 
     for _ in range(STEPS):
         prev_observation = observation
-        #Chooses an action based on the individual's genotype
+        # Chooses an action based on the individual's genotype
         action = network(SHAPE, observation, genotype)
         observation, reward, terminated, truncated, info = env.step(action)        
 
@@ -196,8 +196,8 @@ def simulate(genotype, render_mode = None, seed=None, env = None):
     return objective_function(prev_observation)
 
 def evaluate(evaluationQueue, evaluatedQueue):
-    #Evaluates individuals until it receives None
-    #This function runs on multiple processes
+    # Evaluates individuals until it receives None
+    # This function runs on multiple processes
     
     env = gym.make("LunarLander-v3", render_mode =None, 
         continuous=True, gravity=GRAVITY, 
@@ -215,7 +215,7 @@ def evaluate(evaluationQueue, evaluatedQueue):
     env.close()
     
 def evaluate_population(population):
-    #Evaluates a list of individuals using multiple processes
+    # Evaluates a list of individuals using multiple processes
     for i in range(len(population)):
         evaluationQueue.put(population[i])
     new_pop = []
@@ -225,12 +225,12 @@ def evaluate_population(population):
     return new_pop
 
 def generate_initial_population():
-    #Generates the initial population
+    # Generates the initial population
     population = []
     for i in range(POPULATION_SIZE):
-        #Each individual is a dictionary with a genotype and a fitness value
-        #At this time, the fitness value is None
-        #The genotype is a list of floats sampled from a uniform distribution between -1 and 1
+        # Each individual is a dictionary with a genotype and a fitness value
+        # At this time, the fitness value is None
+        # The genotype is a list of floats sampled from a uniform distribution between -1 and 1
         
         genotype = []
         for j in range(GENOTYPE_SIZE):
@@ -239,15 +239,15 @@ def generate_initial_population():
     return population
 
 def parent_selection(population):
-    choice = 5  # Tamanho do torneio
-    individuals = random.sample(population, choice)  # Seleciona aleatoriamente 'choice' indivíduos da população
-    individuals.sort(key=lambda x: x['fitness'], reverse=True)  # Ordena os indivíduos pelo 'fitness'
-    return copy.deepcopy(individuals[0])  # Retorna o melhor indivíduo do torneio
+    choice = 5  # Tournament size
+    individuals = random.sample(population, choice)  # Randomly selects ‘choice’ individuals from the population
+    individuals.sort(key=lambda x: x['fitness'], reverse=True)  # Sort individuals by 'fitness'
+    return copy.deepcopy(individuals[0])  # Returns the best individual in the tournament
 
 def crossover(p1, p2):
-    offspring = {'genotype': [], 'fitness': None}  # Genótipo do filho vai ser uma lista
-    for i in range(GENOTYPE_SIZE):  # Percorre todos os genes
-        if random.random() < 0.5:  # 50% de chance de pegar de cada pai
+    offspring = {'genotype': [], 'fitness': None}  # The child's genotype will be a list.
+    for i in range(GENOTYPE_SIZE):  # Go through all the genes
+        if random.random() < 0.5:  # 50% chance of inheriting from each parent
             offspring['genotype'].append(p1['genotype'][i])
         else:
             offspring['genotype'].append(p2['genotype'][i])
@@ -255,25 +255,25 @@ def crossover(p1, p2):
     return offspring
 
 def mutation(p):
-    # Cria uma cópia do genótipo do indivíduo para evitar modificar o original diretamente
+    # Creates a copy of the individual's genotype to avoid modifying the original directly
     new_genotype = p['genotype'].copy()
     
-    # Para cada gene, com uma probabilidade de mutação (PROB_MUTATION)
+    # For each gene, with a probability of mutation (PROB_MUTATION)
     for i in range(GENOTYPE_SIZE):
-        if random.random() < PROB_MUTATION:  # Decide se o gene será mutado
-            # Alteração do gene, aqui utilizamos uma distribuição normal com média 0 e desvio padrão STD_DEV
+        if random.random() < PROB_MUTATION:  # Decide whether the gene will be mutated
+            # Gene alteration, here we use a normal distribution with mean 0 and standard deviation STD_DEV
             new_genotype[i] += random.gauss(0, STD_DEV)
             
-            # Limita o valor do gene para estar dentro do intervalo [-1, 1]
+            # Limits the value of the gene to be within the range [-1, 1]
             new_genotype[i] = max(-1, min(1, new_genotype[i]))
     
     genotype_mutation = {'genotype': new_genotype, 'fitness': None}
     
-    # Retorna o novo indivíduo com o genótipo mutado
+    # Returns the new individual with the mutated genotype
     return genotype_mutation
    
 def survival_selection(population, offspring):
-    #reevaluation of the elite
+    # Reevaluation of the elite
     offspring.sort(key = lambda x: x['fitness'], reverse=True)
     p = evaluate_population(population[:ELITE_SIZE])
     new_population = p + offspring[ELITE_SIZE:]
@@ -281,13 +281,13 @@ def survival_selection(population, offspring):
     return new_population    
         
 def evolution():
-    #Create evaluation processes
+    # Create evaluation processes
     evaluation_processes = []
     for i in range(NUM_PROCESSES):
         evaluation_processes.append(Process(target=evaluate, args=(evaluationQueue, evaluatedQueue)))
         evaluation_processes[-1].start()
     
-    #Create initial population
+    # Create initial population
     bests = []
     population = list(generate_initial_population())
     population = evaluate_population(population)
@@ -295,11 +295,11 @@ def evolution():
     best = (population[0]['genotype']), population[0]['fitness']
     bests.append(best)
     
-    #Iterate over generations
+    # Iterate over generations
     for gen in range(NUMBER_OF_GENERATIONS):
         offspring = []
         
-        #create offspring
+        # create offspring
         while len(offspring) < POPULATION_SIZE:
             if random.random() < PROB_CROSSOVER:
                 p1 = parent_selection(population)
@@ -312,28 +312,28 @@ def evolution():
             ni = mutation(ni)
             offspring.append(ni)
             
-        #Evaluate offspring
+        # Evaluate offspring
         offspring = evaluate_population(offspring)
 
-        #Apply survival selection
+        # Apply survival selection
         population = survival_selection(population, offspring)
         
-        #Print and save the best of the current generation
+        # Print and save the best of the current generation
         best = (population[0]['genotype']), population[0]['fitness']
         bests.append(best)
         print(f'Best of generation {gen}: {best[1]}')
 
-    #Stop evaluation processes
+    # Stop evaluation processes
     for i in range(NUM_PROCESSES):
         evaluationQueue.put(None)
     for p in evaluation_processes:
         p.join()
         
-    #Return the list of bests
+    # Return the list of bests
     return bests
 
 def load_bests(fname):
-    #Load bests from file
+    # Load bests from file
     bests = []
     with open(fname, 'r') as f:
         for line in f:
@@ -342,8 +342,7 @@ def load_bests(fname):
     return bests
 
 def main():
-    #evolve = False
-    evolve = True
+    evolve = True # evolve = False
     render_mode = None
     Testes = 5
     if evolve:
@@ -357,7 +356,7 @@ def main():
 
                 
     else:
-        #validate individual
+        # validate individual
         for i in range(Testes):
             bests = load_bests(f'log{i}.txt')
             b = bests[-1]
