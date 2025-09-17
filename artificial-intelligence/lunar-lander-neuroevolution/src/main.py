@@ -7,51 +7,13 @@ import config as cfg
 
 from multiprocessing import Process, Queue
 
-# CONFIG
-ENABLE_WIND = False
-WIND_POWER = 15.0
-TURBULENCE_POWER = 0.0
-GRAVITY = -10.0
-RENDER_MODE = None #RENDER_MODE = 'human'
-EPISODES = 1000
-STEPS = 500
-
+# Proccess initiation
 NUM_PROCESSES = os.cpu_count()
 evaluationQueue = Queue()
 evaluatedQueue = Queue()
 
-nInputs = 8
-nOutputs = 2
-SHAPE = (nInputs,12,nOutputs)
-GENOTYPE_SIZE = 0
-for i in range(1, len(SHAPE)):
-    GENOTYPE_SIZE += SHAPE[i-1]*SHAPE[i]
-
-POPULATION_SIZE = 100
-NUMBER_OF_GENERATIONS = 100
-
-PROB_CROSSOVER = 0.9
-
-PROB_MUTATION = 0.05
-STD_DEV = 0.1
-
-ELITE_SIZE = 1
-
-# Constants
-THRESHOLD_THETA = 20
-THRESHOLD_THETA_EXTREME = 90
-THRESHOLD_VY = -0.07
-THRESHOLD_Y = 0.5
-THRESHOLD_X = 0.5
-THRESHOLD_X_EXTREME = 0.005
-
-# Weights
-distance_weight = 0.4
-velocity_weight = 0.6
-theta_weight = 0.4
-contact_left_rigth = 0.7
-
-reward_sucess = 0
+for i in range(1, len(cfg.SHAPE)):
+    cfg.GENOTYPE_SIZE += cfg.SHAPE[i-1]*cfg.SHAPE[i]
 
 def network(shape, observation,ind):
     #Computes the output of the neural network given the observation and the genotype
@@ -94,44 +56,44 @@ def reward_landing(contact_left, contact_right):
 
 # Reward for the ship approaching the landing zone
 def reward_approaching_zone(x, y, vy, theta):
-    if y <= THRESHOLD_Y and abs(x) <= THRESHOLD_X and vy > THRESHOLD_VY and abs(theta) < np.deg2rad(THRESHOLD_THETA):
+    if y <= cfg.THRESHOLD_Y and abs(x) <= cfg.THRESHOLD_X and vy > cfg.THRESHOLD_VY and abs(theta) < np.deg2rad(cfg.THRESHOLD_THETA):
         return 100
     return 0
 
 # Reward for the ship being about to land
 def reward_close_to_zone(x, y, vy, theta):
-    if y <= THRESHOLD_Y * 0.2 and abs(x) <= THRESHOLD_X * 0.2 and vy > THRESHOLD_VY * (-1.3) and abs(theta) < np.deg2rad(THRESHOLD_THETA - 5):
+    if y <= cfg.THRESHOLD_Y * 0.2 and abs(x) <= cfg.THRESHOLD_X * 0.2 and vy > cfg.THRESHOLD_VY * (-1.3) and abs(theta) < np.deg2rad(cfg.THRESHOLD_THETA - 5):
         return 500
     return 0
 
 # Reward for successful landing within expected limits
 def reward_perfect_landing(x, vy, theta, contact_left, contact_right):
-    if landed(contact_left, contact_right) and abs(x) <= THRESHOLD_X_EXTREME and vy > THRESHOLD_VY * 0.005 and abs(theta) < np.deg2rad(THRESHOLD_THETA - 10):
+    if landed(contact_left, contact_right) and abs(x) <= cfg.THRESHOLD_X_EXTREME and vy > cfg.THRESHOLD_VY * 0.005 and abs(theta) < np.deg2rad(cfg.THRESHOLD_THETA - 10):
         return 2300
     return 0
 
 # Reward for the ship being centered
 def reward_centering(x, vx):
-    if (x > THRESHOLD_X and vx < 0) or (x < THRESHOLD_X_EXTREME and vx > 0):
+    if (x > cfg.THRESHOLD_X and vx < 0) or (x < cfg.THRESHOLD_X_EXTREME and vx > 0):
         return 800
     return 0
 
 # Reward for the ship being well positioned vertically
 def reward_vertical_alignment(x, theta):
-    if abs(x) < THRESHOLD_X * 0.2 and abs(theta) < np.deg2rad(THRESHOLD_THETA - 15):
+    if abs(x) < cfg.THRESHOLD_X * 0.2 and abs(theta) < np.deg2rad(cfg.THRESHOLD_THETA - 15):
         return 800
     return 0
 
 # Functions for penalties
 # Penalty for the ship being far from the landing zone
 def penalty_far_from_zone(x, y, vx):
-    if y < 1 and ((x > THRESHOLD_X * 0.2 and vx > 0) or (x < -THRESHOLD_X * 0.2 and vx < 0)):
+    if y < 1 and ((x > cfg.THRESHOLD_X * 0.2 and vx > 0) or (x < -cfg.THRESHOLD_X * 0.2 and vx < 0)):
         return 1000
     return 0
 
 # Penalty for the ship being at too steep an angle to the ground
 def penalty_extreme_angle(theta):
-    if abs(theta) > np.deg2rad(THRESHOLD_THETA_EXTREME):
+    if abs(theta) > np.deg2rad(cfg.THRESHOLD_THETA_EXTREME):
         return 1000
     return 0
 
@@ -162,10 +124,10 @@ def objective_function(observation):
 
     # Fitness
     fitness = (
-        - distance_weight * penalty_xy
-        - velocity_weight * penalty_vy
-        - theta_weight * penalty_theta
-        + contact_left_rigth * reward_success
+        - cfg.distance_weight * penalty_xy
+        - cfg.velocity_weight * penalty_vy
+        - cfg.theta_weight * penalty_theta
+        + cfg.contact_left_rigth * reward_success
     )
 
     return fitness, check_successful_landing(observation)
@@ -175,16 +137,16 @@ def simulate(genotype, render_mode = None, seed=None, env = None):
     env_was_none = env is None
     if env is None:
         env = gym.make("LunarLander-v3", render_mode =render_mode, 
-        continuous=True, gravity=GRAVITY, 
-        enable_wind=ENABLE_WIND, wind_power=WIND_POWER, 
-        turbulence_power=TURBULENCE_POWER)    
+        continuous=True, gravity=cfg.GRAVITY, 
+        enable_wind=cfg.ENABLE_WIND, wind_power=cfg.WIND_POWER, 
+        turbulence_power=cfg.TURBULENCE_POWER)    
         
     observation, info = env.reset(seed=seed)
 
-    for _ in range(STEPS):
+    for _ in range(cfg.STEPS):
         prev_observation = observation
         # Chooses an action based on the individual's genotype
-        action = network(SHAPE, observation, genotype)
+        action = network(cfg.SHAPE, observation, genotype)
         observation, reward, terminated, truncated, info = env.step(action)        
 
         if terminated == True or truncated == True:
@@ -200,9 +162,9 @@ def evaluate(evaluationQueue, evaluatedQueue):
     # This function runs on multiple processes
     
     env = gym.make("LunarLander-v3", render_mode =None, 
-        continuous=True, gravity=GRAVITY, 
-        enable_wind=ENABLE_WIND, wind_power=WIND_POWER, 
-        turbulence_power=TURBULENCE_POWER)    
+        continuous=True, gravity=cfg.GRAVITY, 
+        enable_wind=cfg.ENABLE_WIND, wind_power=cfg.WIND_POWER, 
+        turbulence_power=cfg.TURBULENCE_POWER)    
     while True:
         ind = evaluationQueue.get()
 
@@ -227,13 +189,13 @@ def evaluate_population(population):
 def generate_initial_population():
     # Generates the initial population
     population = []
-    for i in range(POPULATION_SIZE):
+    for i in range(cfg.POPULATION_SIZE):
         # Each individual is a dictionary with a genotype and a fitness value
         # At this time, the fitness value is None
         # The genotype is a list of floats sampled from a uniform distribution between -1 and 1
         
         genotype = []
-        for j in range(GENOTYPE_SIZE):
+        for j in range(cfg.GENOTYPE_SIZE):
             genotype += [random.uniform(-1,1)]
         population.append({'genotype': genotype, 'fitness': None})
     return population
@@ -246,7 +208,7 @@ def parent_selection(population):
 
 def crossover(p1, p2):
     offspring = {'genotype': [], 'fitness': None}  # The child's genotype will be a list.
-    for i in range(GENOTYPE_SIZE):  # Go through all the genes
+    for i in range(cfg.GENOTYPE_SIZE):  # Go through all the genes
         if random.random() < 0.5:  # 50% chance of inheriting from each parent
             offspring['genotype'].append(p1['genotype'][i])
         else:
@@ -258,11 +220,11 @@ def mutation(p):
     # Creates a copy of the individual's genotype to avoid modifying the original directly
     new_genotype = p['genotype'].copy()
     
-    # For each gene, with a probability of mutation (PROB_MUTATION)
-    for i in range(GENOTYPE_SIZE):
-        if random.random() < PROB_MUTATION:  # Decide whether the gene will be mutated
-            # Gene alteration, here we use a normal distribution with mean 0 and standard deviation STD_DEV
-            new_genotype[i] += random.gauss(0, STD_DEV)
+    # For each gene, with a probability of mutation (cfg.PROB_MUTATION)
+    for i in range(cfg.GENOTYPE_SIZE):
+        if random.random() < cfg.PROB_MUTATION:  # Decide whether the gene will be mutated
+            # Gene alteration, here we use a normal distribution with mean 0 and standard deviation cfg.STD_DEV
+            new_genotype[i] += random.gauss(0, cfg.STD_DEV)
             
             # Limits the value of the gene to be within the range [-1, 1]
             new_genotype[i] = max(-1, min(1, new_genotype[i]))
@@ -275,8 +237,8 @@ def mutation(p):
 def survival_selection(population, offspring):
     # Reevaluation of the elite
     offspring.sort(key = lambda x: x['fitness'], reverse=True)
-    p = evaluate_population(population[:ELITE_SIZE])
-    new_population = p + offspring[ELITE_SIZE:]
+    p = evaluate_population(population[:cfg.ELITE_SIZE])
+    new_population = p + offspring[cfg.ELITE_SIZE:]
     new_population.sort(key = lambda x: x['fitness'], reverse=True)
     return new_population    
         
@@ -296,12 +258,12 @@ def evolution():
     bests.append(best)
     
     # Iterate over generations
-    for gen in range(NUMBER_OF_GENERATIONS):
+    for gen in range(cfg.NUMBER_OF_GENERATIONS):
         offspring = []
         
         # create offspring
-        while len(offspring) < POPULATION_SIZE:
-            if random.random() < PROB_CROSSOVER:
+        while len(offspring) < cfg.POPULATION_SIZE:
+            if random.random() < cfg.PROB_CROSSOVER:
                 p1 = parent_selection(population)
                 p2 = parent_selection(population)
                 ni = crossover(p1, p2)
@@ -352,7 +314,7 @@ def main():
             bests = evolution()
             with open(f'log{i}.txt', 'w') as f:
                 for b in bests:
-                    f.write(f'{b[1]}\t{SHAPE}\t{b[0]}\n')
+                    f.write(f'{b[1]}\t{cfg.SHAPE}\t{b[0]}\n')
 
                 
     else:
@@ -360,7 +322,7 @@ def main():
         for i in range(Testes):
             bests = load_bests(f'log{i}.txt')
             b = bests[-1]
-            SHAPE = b[1]
+            cfg.SHAPE = b[1]
             ind = b[2]
                 
             ind = {'genotype': ind, 'fitness': None}
@@ -376,5 +338,5 @@ def main():
             print(f"Fitness: {fit/ntests:.1f}, Success: {success/ntests * 100:.1f}%")
 
 if __name__ == '__main__':
-    
     main()
+    
