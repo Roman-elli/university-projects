@@ -1,7 +1,7 @@
 # University Projects  
 
 This repository gathers some projects I developed during my university studies.  
-Each folder has its own README with more detailed documentation.  
+Each folder contains its own README with more detailed documentation. Projects marked with ⭐ are the ones that i particularly enjoyed working on!
 
 ---
 
@@ -12,7 +12,7 @@ Each folder has its own README with more detailed documentation.
 
 ---
 
-## Artificial Intelligence
+## Artificial Intelligence ⭐
 - 🚀 [**Lunar Lander Simulator**](artificial-intelligence/lunar-lander-simulator)  
   Language: **Python**  
   → A **rule-based agent** for Lunar Lander that performs safe landings using **heuristics and threshold-based controls**.  
@@ -23,11 +23,18 @@ Each folder has its own README with more detailed documentation.
 
 ---
 
-## Compilers
+## Compilers ⭐
 - 🖋️ [**myGo Compiler**](compiler)  
   Language: C  
   → Technologies: Flex & Bison (Lexical & Syntax analysis), LLVM IR (Intermediate code generation)  
   → A compiler for **myGo**, a Go subset. Supports lexical, syntactic, semantic analysis, and LLVM IR code generation. Handles variables, functions, expressions, control structures, and console I/O.
+
+---
+
+## Googol Search Engine ⭐
+- 🌐 [**Googol Search Engine**](googol-search-engine)  
+  Language: **Java / Spring Boot**  
+  → A **distributed search engine** with **URL crawling and indexing**, real-time statistics via **WebSockets**, integration with **AI (Gemini API)** for summaries, and consumption of the **HackerNews public API**. Provides **web pages and APIs** for search, indexing, and related page queries.
 
 ---
 
@@ -38,7 +45,7 @@ Each folder has its own README with more detailed documentation.
 
 ---
 
-## Introduction to Programming
+## Introduction to Programming ⭐
 - 🏟️ [**Football Game**](introduction-to-programming/football)  
   Language: **Python**  
   → A simple **two-player football game** built with **Turtle + Pygame**, including match replay functionality.  
@@ -62,7 +69,7 @@ Each folder has its own README with more detailed documentation.
 
 --- 
 
-## Object-Oriented Programming
+## Object-Oriented Programming ⭐
 - 🎮 [**POOTrivia – Quiz Game**](objected-oriented-programming)  
   Language: **Java**  
   → A **quiz game** with questions from **Arts, Science, Football, Swimming, and Skiing**.  
@@ -70,7 +77,7 @@ Each folder has its own README with more detailed documentation.
 
 ---
 
-## Operating System
+## Operating System ⭐
 - 📡 [**5G Auth Platform**](operating-system)  
   Language: **C**  
   → A **multi-process 5G data management system** simulating mobile user requests, authorization, monitoring, and logging with semaphores, message queues, pipes, and shared memory.
@@ -84,7 +91,7 @@ Each folder has its own README with more detailed documentation.
 
 ---
 
-## PSQL - Hospital Management API
+## PSQL - Hospital Management API ⭐
 - 🏥 [**Hospital Management API**](psql-hospital-api)  
   Language: **Python + PostgreSQL**  
   → A **REST API** for managing patients, doctors, appointments, prescriptions, surgeries, and billing, with **JWT authentication**, role-based access, and automated reporting.
