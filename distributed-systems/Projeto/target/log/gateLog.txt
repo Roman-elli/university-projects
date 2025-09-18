@@ -1,0 +1,9 @@
+[2025-05-16 15:26:44] Starting Gateway...
+[2025-05-16 15:26:44] Conectado ao Index 1 localmente
+[2025-05-16 15:26:44] Conectado ao Index 2
+[2025-05-16 15:26:44] Gateway pronto. Aguardando conexões...
+[2025-05-16 15:27:10] URL INDEX: https://www.uc.pt
+[2025-05-16 15:27:11] Enviado ao Index 1: https://www.uc.pt
+[2025-05-16 15:27:11] Enviado ao Index 2: https://www.uc.pt
+[2025-05-16 15:27:35] SEARCH KEYS: uc
+[2025-05-16 15:29:06] Fechando Gateway...

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Index HackerNews</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+  <div class="container">
+    <img th:src="@{/image/logo.jpeg}" alt="Logo" class="logo" />
+
+    <!-- Campo de input compartilhado -->
+    <input type="text" id="shared-query" class="search-bar" placeholder="Write here..." maxlength="200"/>
+    <div class="actions">
+
+      <!-- Formulário de pesquisa -->
+      <form action="/search" method="get" class="form_class" onsubmit="copyQuery(this)">
+        <input type="hidden" name="query" />
+        <div class="action">
+          <button type="submit" class="buttons">
+            <img th:src="@{/image/lupa.png}" alt="Search" />
+          </button>
+          <p>Search</p>
+        </div>
+      </form>
+
+      <!-- Formulário de inserção -->
+      <form action="/indexing" method="get" class="form_class" onsubmit="copyQuery(this)">
+        <input type="hidden" name="query" />
+        <div class="action">
+          <button type="submit" class="buttons">
+            <img th:src="@{/image/adicionar.png}" alt="Insert" />
+          </button>
+          <p>Insert new URL</p>
+        </div>
+      </form>
+
+      <!-- Estatísticas -->
+      <div class="action">
+        <a th:href="@{/statistics}" class="action">
+          <button type="button" class="buttons">
+            <img th:src="@{/image/base-de-dados.png}" alt="Statistics" />
+          </button>
+        </a>
+        <p>Statistics</p>
+      </div>
+
+      <!-- URL específica -->
+      <form action="/specificurl" method="get" class="form_class" onsubmit="copyQuery(this)">
+        <input type="hidden" name="query" />
+        <div class="action">
+          <button type="submit" class="buttons">
+            <img th:src="@{/image/arquivo.png}" alt="Search specific URL" />
+          </button>
+          <p>Search specific URL</p>
+        </div>
+      </form>
+
+      <!-- HackerNews -->
+      <form action="/hacker" method="get" class="form_class" onsubmit="copyQuery(this)">
+        <input type="hidden" name="query" />
+        <div class="action">
+          <button type="submit" class="buttons">
+            <img th:src="@{/image/hacker.png}" alt="Hacker" />
+          </button>
+          <p>Index HackerNews</p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Resultados -->
+  <div class="results-box">
+    <h2>HackerNews</h2>
+
+    <!-- Mensagem se não houver resultados -->
+    <p th:if="${#lists.isEmpty(resultados)}">
+      Nenhum site encontrado com a palavra-chave informada.
+    </p>
+
+    <!-- Lista de resultados, se houver -->
+    <ul th:if="${!#lists.isEmpty(resultados)}">
+      <li th:each="item : ${resultados}" class="result-item">
+        <h3 th:text="${item.title}"></h3>
+        <a th:href="${item.url}" th:text="${item.url}" target="_blank"></a>
+        <p><strong>Gateway Status:</strong> <span th:text="${item.gatewayResponse}"></span></p>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Script para copiar a query ao submeter -->
+  <script>
+    function copyQuery(form) {
+      const sharedInput = document.getElementById('shared-query');
+      const hiddenInput = form.querySelector('input[name="query"]');
+      hiddenInput.value = sharedInput.value;
+    }
+  </script>
+</body>
+</html>
