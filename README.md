@@ -101,5 +101,4 @@ Each folder contains its own README with more detailed documentation. Projects m
 
 Special thanks to Beatriz Mourato for her contributions, support, and patience in making those projects with me.
 
-![Beatriz Mourato](https://github.com/BeatrizMourato.png?size=40)  
-[Beatriz Mourato](https://github.com/BeatrizMourato)  
+![Beatriz Mourato](https://github.com/BeatrizMourato.png?size=10)  
