@@ -95,3 +95,11 @@ Each folder contains its own README with more detailed documentation. Projects m
 - 🏥 [**Hospital Management API**](psql-hospital-api)  
   Language: **Python + PostgreSQL**  
   → A **REST API** for managing patients, doctors, appointments, prescriptions, surgeries, and billing, with **JWT authentication**, role-based access, and automated reporting.
+
+
+## Acknowledgements ⭐
+
+Special thanks to Beatriz Mourato for her contributions, support, and patience in making those projects with me.
+
+![Beatriz Mourato](https://github.com/BeatrizMourato.png?size=40)  
+[Beatriz Mourato](https://github.com/BeatrizMourato)  
