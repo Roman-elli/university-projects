@@ -32,7 +32,7 @@ Each folder contains its own README with more detailed documentation. Projects m
 ---
 
 ## Googol Search Engine ⭐
-- 🌐 [**Googol Search Engine**](googol-search-engine)  
+- 🌐 [**Googol Search Engine**](distributed-systems)  
   Language: **Java / Spring Boot**  
   → A **distributed search engine** with **URL crawling and indexing**, real-time statistics via **WebSockets**, integration with **AI (Gemini API)** for summaries, and consumption of the **HackerNews public API**. Provides **web pages and APIs** for search, indexing, and related page queries.
 
