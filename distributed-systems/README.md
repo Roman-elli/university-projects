@@ -79,27 +79,32 @@ It features multiple processes working in tandem: URL downloading, indexing, que
     ./build/build.cmd
     ```
 
-2. Start Index Servers
+2. Insert your gemini api key in the file `src\main\resources\application.properties`
+    ```bash
+    gemini.api.key=YOUR_API_KEY_HERE
+    ```
+
+3. Start Index Servers
    ```bash
    ./build/run-server-1.cmd
    ./build/run-server-2.cmd
    ```
 
-3. Start Gateway
+4. Start Gateway
     ```bash
     ./build/run-gateway.cmd
     ```
 
-4. Start Downloader
+5. Start Downloader
      ```bash
    ./build/run-downloader.cmd
    ```
 
-5. Start Client or Web application
+6. Start Client or Web application
     ```bash
     ./mvn spring-boot:run
     ```
-6. Open in browser
+7. Open in browser
     ```bash
     localhost:8080/
     ```
