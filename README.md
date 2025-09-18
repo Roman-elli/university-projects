@@ -96,9 +96,11 @@ Each folder contains its own README with more detailed documentation. Projects m
   Language: **Python + PostgreSQL**  
   → A **REST API** for managing patients, doctors, appointments, prescriptions, surgeries, and billing, with **JWT authentication**, role-based access, and automated reporting.
 
+---
 
 ## Acknowledgements ⭐
 
-Special thanks to Beatriz Mourato for her contributions, support, and patience in making those projects with me.
+Special thanks to Beatriz Mourato for her contributions, support, patience, and for being a wonderful partner in making those projects with me.
 
-![Beatriz Mourato](https://github.com/BeatrizMourato.png?size=10)  
+[Beatriz GitHub](https://github.com/BeatrizMourato)  
+<img src="https://github.com/BeatrizMourato.png" alt="Beatriz Mourato" width="90" height="90">
