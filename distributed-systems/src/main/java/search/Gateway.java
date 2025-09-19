@@ -13,17 +13,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.Random;
 import java.util.Set;
 
-// Classe Gateway que implementa a interface GatewayInterface
 public class Gateway extends UnicastRemoteObject implements GatewayInterface {
-    private ConcurrentLinkedQueue<String> urlsToIndex; //Fila de URLs a serem indexadas
-    private BufferedWriter gateLog; // Arquivo de log
-    private Set<String> urlsVisitadas; // Set utilizado para garantir que o mesmo site nao sera indexado mais de uma vez
-    private Index  index_1; // Referência para o primeiro servidor de indexação
-    private Index index_2; // Referência para o segundo servidor de indexação
-    //private final String ip_address_2;
+    private ConcurrentLinkedQueue<String> urlsToIndex;
+    private BufferedWriter gateLog;
+    private Set<String> urlsVisitadas;
+    private Index  index_1;
+    private Index index_2;
+    // private final String ip_address_2;
     private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private double response_time_index_1, response_time_index_2; // Tempo médio de resposta dos servidores
-    private int request_count_index_1, request_count_index_2;// Contagem de requisições para cada servidor
+    private double response_time_index_1, response_time_index_2;
+    private int request_count_index_1, request_count_index_2;
 
     
     public Gateway() throws RemoteException {
@@ -34,53 +33,47 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         request_count_index_2 = 0;
         urlsToIndex = new ConcurrentLinkedQueue<>();
         urlsVisitadas = new HashSet<>();
-        //ip_address_2 = "192.168.46.2"; // Definição do IP do segundo servidor
+        //ip_address_2 = "192.168.46.2";
 
         try {
-            // Cria um diretório se não existir
             File logDir = new File("log");
             if (!logDir.exists()) {
                 logDir.mkdirs();
             }
 
-             // Cria um arquivo de log para registrar as atividades do Gateway
             gateLog = new BufferedWriter(new FileWriter("log/gateLog.txt", false));
             logMessage("Starting Gateway...");
 
-            // Hook para fechar o arquivo ao desligar
             Runtime.getRuntime().addShutdownHook(new Thread(this::closeLog));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Iniciar conexão com os servidores Index
         connectToIndex();
     }
 
-    //Método para conectar-se aos servidores de indexação
+    // Method for connecting to indexing servers
     private void connectToIndex() {
         int attempts = 0;
         while ((index_1 == null || index_2 == null) && attempts < 1) {
             try {
                 if (index_1 == null) {
-                    // Conectando ao primeiro servidor de indexação (local)
                     index_1 = (Index) LocateRegistry.getRegistry(8181).lookup("index");
-                    logMessage("Conectado ao Index 1 localmente");
+                    logMessage("Connected to Index 1 locally");
                 }
                 if (index_2 == null) {
-                    // Conectando ao segundo servidor de indexação (remoto)
                     index_2 = (Index) LocateRegistry.getRegistry(8180).lookup("index");
-                    logMessage("Conectado ao Index 2");
+                    logMessage("Connected to Index 2");
                 }
             } catch (NotBoundException | RemoteException e) {
-                logMessage("Erro ao conectar aos IndexServers: " + e.getMessage());
+                logMessage("Error connecting to IndexServers: " + e.getMessage());
                 
             }
             attempts++;
         }
     }
 
-    // Método para enviar URLs para os servidores de indexação
+    // Method for submitting URLs to indexing servers
     private void sendToIndex(String key, String url) {
         boolean sent = false;
 
@@ -88,11 +81,11 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
             try {
                 if (index_1 != null) {
                     index_1.putNew(key, url);
-                    logMessage("Enviado ao Index 1: " + url);
+                    logMessage("Sending to Index 1: " + url);
                     sent = true;
                 }
             } catch (RemoteException e) {
-                logMessage("Erro ao enviar para Index 1. Tentando reconectar...");
+                logMessage("Error sending to Index 1. Attempting to reconnect...");
                 index_1 = null;
                 connectToIndex();
             }
@@ -100,17 +93,17 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
             try {
                 if (index_2 != null) {
                     index_2.putNew(key, url);
-                    logMessage("Enviado ao Index 2: " + url);
+                    logMessage("Sent to Index 2: " + url);
                     sent = true;
                 }
             } catch (RemoteException e) {
-                logMessage("Erro ao enviar para Index 2. Tentando reconectar...");
+                logMessage("Error sending to Index 2. Attempting to reconnect...");
                 index_2 = null;
                 connectToIndex();
             }
 
             if (!sent) {
-                logMessage("Nenhum Index disponível. Aguardando...");
+                logMessage("No index available. Waiting....");
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ie) {
@@ -120,22 +113,22 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         }
     }
     
-    // Método para obter a próxima URL na fila
+    // Method for obtaining the next URL in the queue
     public String takeNext() throws RemoteException {
         return urlsToIndex.poll();
     }
 
-     // Verifica se a fila de URLs está vazia
+     // Checks if the URL queue is empty
     public boolean getEmpty() throws RemoteException {
         return urlsToIndex.isEmpty();
     }
 
-    // Adiciona uma URL à fila se ainda não estiver nela
+    // Adds a URL to the queue if it is not already there
     public void putIn(String linker, String url) throws RemoteException {
         if (!urlsToIndex.contains(url)) urlsToIndex.offer(url);
     }
 
-    // Método para registrar mensagens no log
+    // Method for logging messages
     public synchronized void logMessage(String message) {
         try {
             if (gateLog != null) {
@@ -150,11 +143,11 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         }
     }
 
-    // Fecha o arquivo de log corretamente
+    // Close the log file correctly
     public void closeLog() {
         try {
             if (gateLog != null) {
-                logMessage("Fechando Gateway...");
+                logMessage("Closing Gateway...");
                 gateLog.close();
             }
         } catch (IOException e) {
@@ -162,7 +155,7 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         }
     }
 
-    // Processa uma URL e a adiciona ao índice
+    // Processes a URL and adds it to the index
     public String proccessUrl(String message) throws RemoteException {
         if (message.startsWith("https://") || message.startsWith("http://") ) {
             if(!urlsVisitadas.contains(message)){
@@ -176,11 +169,11 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         return "Invalid URL";
     }
 
-    // Método para realizar buscas nos servidores de indexação
+    // Method for performing searches on indexing servers
     public List<Search> makeSearch(String message, int page) throws RemoteException {
         logMessage("SEARCH KEYS: " + message);
         Random random = new Random();
-        boolean useFirstIndex = random.nextBoolean(); // Escolhe aleatoriamente entre index_1 e index_2
+        boolean useFirstIndex = random.nextBoolean();
 
         long startTime = System.nanoTime();
         try {
@@ -188,7 +181,7 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
             updateResponseTime(useFirstIndex ? 1 : 2, System.nanoTime() - startTime);
             return results;
         } catch (RemoteException e1) {
-            logMessage("Erro ao buscar no " + (useFirstIndex ? "Index 1" : "Index 2"));
+            logMessage("Error when searching in " + (useFirstIndex ? "Index 1" : "Index 2"));
 
             startTime = System.nanoTime();
             try {
@@ -196,7 +189,7 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
                 updateResponseTime(useFirstIndex ? 2 : 1, System.nanoTime() - startTime);
                 return results;
             } catch (RemoteException e2) {
-                logMessage("Nenhum Index disponível. Tentando reconectar...");
+                logMessage("No Index available. Attempting to reconnect...");
                 index_2 = null;
                 index_1 = null;
                 connectToIndex();
@@ -209,9 +202,9 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         }
     }
 
-     // Atualiza o tempo médio de resposta dos servidores
+     // Updates the average response time of servers
     private void updateResponseTime(int index, long durationNano) {
-        double durationMs = durationNano / 1_000_000.0;  // Converte para milissegundos
+        double durationMs = durationNano / 1_000_000.0;
 
         if (index == 1) {
             response_time_index_1 = ((response_time_index_1 * request_count_index_1) + durationMs) / (request_count_index_1 + 1);
@@ -222,23 +215,21 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         }
     }
 
-    //Função que retorna as estatisticas do sistema
+    // Function that returns system statistics
     public List<String> getStatistics() throws RemoteException {
         List<String> statisticsList = new ArrayList<>();
         connectToIndex();
         try {
             statisticsList = index_1.statistics();
-            statisticsList.add("Barrel 1 Ativo!!!\nTamanho do index: " + index_1.getSize());
-            statisticsList.add("Tempo médio de resposta (Barrel 1): " + String.format("%.1f", response_time_index_1 / 100) + " décimas de segundo");
+            statisticsList.add("Barrel 1 Active!!!\nIndex size: " + index_1.getSize());
+            statisticsList.add("Average response time (Barrel 1): " + String.format("%.1f", response_time_index_1 / 100) + " décimas de segundo");
         } catch (Exception e1) {
-            logMessage("Erro ao obter estatísticas no Index 1.");
+            logMessage("Error obtaining statistics in Index 1.");
             index_1 = null;
             connectToIndex();
         }
 
         try {
-            //List<String> stats2 = index_2.statistics();
-            //statisticsList.addAll(stats2);
             statisticsList.add("Barrel 2 Ativo!!!\nTamanho do index: " + index_2.getSize());
             statisticsList.add("Tempo médio de resposta (Barrel 2): " + String.format("%.1f", response_time_index_2 / 100) + " décimas de segundo");
         } catch (Exception e2) {
