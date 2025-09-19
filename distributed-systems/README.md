@@ -102,7 +102,7 @@ It features multiple processes working in tandem: URL downloading, indexing, que
 
 6. Start Client or Web application
     ```bash
-    ./mvn spring-boot:run
+    ./build/mvnw spring-boot:run
     ```
 7. Open in browser
     ```bash
