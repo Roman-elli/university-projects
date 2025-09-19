@@ -10,10 +10,9 @@
   <div class="container">
     <img th:src="@{/image/logo.jpeg}" alt="Logo" class="logo" />
 
-    <!-- Campo de input compartilhado -->
     <input type="text" id="shared-query" class="search-bar" placeholder="Write here..." maxlength="200"/>
   <div class="actions">
-     <!-- Formulário de pesquisa -->
+    
       <form action="/search" method="get" class="form_class" onsubmit="copyQuery(this)">
         <input type="hidden" name="query" />
         <div class="action">
@@ -24,7 +23,7 @@
         </div>
       </form>
 
-      <!-- Formulário de inserção -->
+     
       <form action="/indexing" method="get" class="form_class" onsubmit="copyQuery(this)">
         <input type="hidden" name="query" />
         <div class="action">
@@ -36,7 +35,7 @@
       </form>
 
       <div class="action">
-      <!-- Apenas link para estatísticas -->
+      
       <a th:href="@{/statistics}" class="action">
         <button type="button" class="buttons">
           <img th:src="@{/image/base-de-dados.png}" alt="Statistics" />
@@ -45,7 +44,7 @@
       <p>Statistics</p>
       </div>
     
-      <!-- Formulário de URL específica -->
+     
       <form action="/specificurl" method="get" class="form_class" onsubmit="copyQuery(this)">
         <input type="hidden" name="query" />
         <div class="action">
@@ -68,8 +67,7 @@
     </div>
   </div>
   </div>
-
-  <!-- Script para copiar a query ao submeter -->
+ 
   <script>
     function copyQuery(form) {
       const sharedInput = document.getElementById('shared-query');

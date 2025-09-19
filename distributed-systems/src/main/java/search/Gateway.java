@@ -280,8 +280,8 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         try {
             Gateway gateway = new Gateway();
             Registry registry = LocateRegistry.createRegistry(8183);
-            registry.rebind("gateway", gateway); // Registrando corretamente o serviço
-            gateway.logMessage("Gateway pronto. Aguardando conexões...");
+            registry.rebind("gateway", gateway);
+            gateway.logMessage("Gateway ready. Waiting for connections...");
         } catch (RemoteException e) {
             e.printStackTrace();
         }

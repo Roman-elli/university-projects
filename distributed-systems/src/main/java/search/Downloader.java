@@ -7,9 +7,6 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import javax.lang.model.util.Elements;
-
 import org.jsoup.*;
 import org.jsoup.nodes.*;
 import org.jsoup.select.*;
@@ -31,7 +28,6 @@ public class Downloader {
             downloaderLog = new BufferedWriter(new FileWriter("log/downloaderLog_1.txt", false));
             logMessage("Starting Downloader...");
 
-            // Adicionando um hook para fechar o log ao desligar
             Runtime.getRuntime().addShutdownHook(new Thread(this::closeLog));
         } catch (IOException e) {
             e.printStackTrace();
@@ -44,7 +40,7 @@ public class Downloader {
         downloader.processUrls();
     }
 
-    // Attempts to connect to the Gateway and Index servers
+    // No index server available. Attempting to reconnect
     private void connectToServers() {
         while ((local_index == null && extern_index == null) || gateway == null) { 
             try {
@@ -148,7 +144,7 @@ public class Downloader {
                             if (gateway != null) {
                                 gateway.putIn(normalizeUrl(url), normalizedUrl);
                             } else {
-                                logMessage("Gateway offline. Trying to reconnect...");
+                                logMessage("Gateway offline. Attempting to reconnect...");
                                 gateway = null;
                                 connectToServers();
                                 continue;
@@ -160,7 +156,7 @@ public class Downloader {
                             if (success1 || success2) {
                                 inserted = true;
                             } else {
-                                logMessage("Both IndexServers offline. Trying to reconnect...");
+                                logMessage("Both IndexServers offline. Attempting to reconnect....");
                                 extern_index = null;
                                 local_index = null;
                                 connectToServers();
@@ -182,7 +178,7 @@ public class Downloader {
             try {
                 return gateway.getEmpty();
             } catch (RemoteException e) {
-                logMessage("Failed to connect to the gateway. Attempting to reconnect....");
+                logMessage("Failed to connect to the gateway. Attempting to reconnect...");
                 gateway = null;
                 connectToServers();
                 try {
@@ -223,7 +219,7 @@ public class Downloader {
         }
     }
 
-    // Adds a URL to the processedUrl structure in barrels
+    // Adds a URL to the processedURL structure in barrels
     private boolean tryPutNew(Index index, String linker, String url, String serverName) {
         if (index == null) return false;
         try {
@@ -262,7 +258,7 @@ public class Downloader {
         }
     }
 
-    // Method that normalize the URL
+    // Normalize URL
     private static String normalizeUrl(String url) {
         try {
             @SuppressWarnings("deprecation")
@@ -273,7 +269,7 @@ public class Downloader {
         }
     }
 
-    // Verify if the URL is valid
+    // Check if the URL is valid
     private static boolean isValidHtmlUrl(String url) {
         String[] invalidExtensions = {".pdf", ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mp3", ".zip", ".rar"};
         for (String ext : invalidExtensions) {

@@ -10,11 +10,10 @@
   <div class="container">
     <img th:src="@{/image/logo.jpeg}" alt="Logo" class="logo" />
 
-    <!-- Campo de input compartilhado -->
     <input type="text" id="shared-query" class="search-bar" placeholder="Write here..." maxlength="200"/>
     <div class="actions">
 
-      <!-- Formulário de pesquisa -->
+     
       <form action="/search" method="get" class="form_class" onsubmit="copyQuery(this)">
         <input type="hidden" name="query" />
         <div class="action">
@@ -25,7 +24,7 @@
         </div>
       </form>
 
-      <!-- Formulário de inserção -->
+     
       <form action="/indexing" method="get" class="form_class" onsubmit="copyQuery(this)">
         <input type="hidden" name="query" />
         <div class="action">
@@ -36,7 +35,6 @@
         </div>
       </form>
 
-      <!-- Estatísticas -->
       <div class="action">
         <a th:href="@{/statistics}" class="action">
           <button type="button" class="buttons">
@@ -46,7 +44,6 @@
         <p>Statistics</p>
       </div>
 
-      <!-- URL específica -->
       <form action="/specificurl" method="get" class="form_class" onsubmit="copyQuery(this)">
         <input type="hidden" name="query" />
         <div class="action">
@@ -57,7 +54,6 @@
         </div>
       </form>
 
-      <!-- HackerNews -->
       <form action="/hacker" method="get" class="form_class" onsubmit="copyQuery(this)">
         <input type="hidden" name="query" />
         <div class="action">
@@ -70,18 +66,15 @@
     </div>
   </div>
 
-  <!-- Resultados -->
   <div class="results-box">
     <h2>HackerNews</h2>
 
-    <!-- Mensagem se não houver resultados -->
-    <p th:if="${#lists.isEmpty(resultados)}">
-      Nenhum site encontrado com a palavra-chave informada.
+    <p th:if="${#lists.isEmpty(result)}">
+      No websites found with the keyword entered.
     </p>
 
-    <!-- Lista de resultados, se houver -->
-    <ul th:if="${!#lists.isEmpty(resultados)}">
-      <li th:each="item : ${resultados}" class="result-item">
+    <ul th:if="${!#lists.isEmpty(result)}">
+      <li th:each="item : ${result}" class="result-item">
         <h3 th:text="${item.title}"></h3>
         <a th:href="${item.url}" th:text="${item.url}" target="_blank"></a>
         <p><strong>Gateway Status:</strong> <span th:text="${item.gatewayResponse}"></span></p>
@@ -89,7 +82,7 @@
     </ul>
   </div>
 
-  <!-- Script para copiar a query ao submeter -->
+ 
   <script>
     function copyQuery(form) {
       const sharedInput = document.getElementById('shared-query');

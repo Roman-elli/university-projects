@@ -138,11 +138,9 @@ public class Client {
         GatewayInterface gateway = null;
         while (gateway == null) {
             try {
-                // Conectando ao Gateway via RMI
                 gateway = (GatewayInterface) LocateRegistry.getRegistry(8183).lookup("gateway");
                 System.out.println("Connected to Gateway!");
             } catch (RemoteException | NotBoundException e) {
-                // If the gateway is offline, wait and try again.
                 System.out.println("Gateway offline... Trying again in 2 seconds...");
                 try {
                     Thread.sleep(1000); // Pause for 1 second before trying again

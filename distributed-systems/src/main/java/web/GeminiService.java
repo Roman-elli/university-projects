@@ -21,11 +21,11 @@ public class GeminiService {
 
             // Construir o prompt baseado na consulta do usuário
             String prompt = String.format(
-                "Gere um parágrafo formal curto e informativo explicando: \"%s\". " +
-                " o tema pesquisado, mesmo que contenha erros ou seja uma sigla. " +
-                "Tente adivinhar o contexto com base no termo e explique de forma clara para um leitor comum. " +
-                "Além disso, apenas envie o texto que o cliente deve ler de forma que ache que esteja falando com ele, e se o cliente nao escrever nada, apenas diga para que escreva algo." +
-                "caso não tenha contexto, crie um automaticamente. Seja criativo. NUNCA peça para que escreva algo que ajude a responder melhor, apenas responda algo sobre a pesquisa, pode ser uma curiosidade",
+                "Generate a short, informative formal paragraph explaining: \"%s\", remember to dont put anything more, only the answer. " +
+                " the researched topic, even if it contains errors or is an acronym. " +
+                "Try to guess the context based on the term and explain it clearly to a general reader.. " +
+                "In addition, just send the text that the customer should read in a way that makes them feel like you are talking to them, and if the customer does not write anything, just tell them to write something.." +
+                "If there is no context, create one automatically. Be creative. NEVER ask them to write something that will help answer the question better, just respond with something about the search, it could be a curiosity.",
                 userQuery
             );
 
@@ -38,10 +38,8 @@ public class GeminiService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            // Construção do corpo da requisição
             HttpEntity<String> request = new HttpEntity<>(payload.toString(), headers);
 
-            // Chamada para a API do Gemini
             ResponseEntity<String> response = restTemplate.exchange(
                 GEMINI_URL + geminiApiKey,
                 HttpMethod.POST,
@@ -49,7 +47,6 @@ public class GeminiService {
                 String.class
             );
 
-            // Verificar a resposta
             if (response.getStatusCode() == HttpStatus.OK) {
                 JSONObject json = new JSONObject(response.getBody());
                 return json.getJSONArray("candidates")
@@ -59,12 +56,12 @@ public class GeminiService {
                            .getJSONObject(0)
                            .getString("text");
             } else {
-                return "Erro ao gerar texto com IA.";
+                return "Error generating text with AI.";
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "Erro ao acessar o serviço da IA.";
+            return "Error accessing the AI service.";
         }
     }
 }

@@ -10,11 +10,10 @@
   <div class="container">
     <img th:src="@{/image/logo.jpeg}" alt="Logo" class="logo" />
 
-    <!-- Campo de input compartilhado -->
     <input type="text" id="shared-query" class="search-bar" placeholder="Write here..." maxlength="200"/>
 
     <div class="actions">
-      <!-- Formulário de pesquisa -->
+     
       <form action="/search" method="get" class="form_class" onsubmit="disconnect(); copyQuery(this)">
         <input type="hidden" name="query" />
         <div class="action">
@@ -25,7 +24,7 @@
         </div>
       </form>
 
-      <!-- Formulário de inserção -->
+     
       <form action="/indexing" method="get" class="form_class" onsubmit="disconnect(); copyQuery(this)">
         <input type="hidden" name="query" />
         <div class="action">
@@ -36,7 +35,6 @@
         </div>
       </form>
 
-      <!-- Link para estatísticas (mantém o WebSocket) -->
       <div class="action">
         <a th:href="@{/statistics}" class="action">
           <button type="button" class="buttons">
@@ -46,7 +44,7 @@
         <p>Statistics</p>
       </div>
 
-      <!-- Formulário de URL específica -->
+     
       <form action="/specificurl" method="get" class="form_class" onsubmit="disconnect(); copyQuery(this)">
         <input type="hidden" name="query" />
         <div class="action">
@@ -57,7 +55,6 @@
         </div>
       </form>
 
-      <!-- Ação HackerNews -->
      <form action="/hacker" method="get" class="form_class" onsubmit="copyQuery(this)">
         <input type="hidden" name="query" />
         <div class="action">
@@ -70,16 +67,13 @@
     </div>
     </div>
 
-    <!-- Bloco para exibir as estatísticas ao vivo -->
     <div class="results-box" style="margin-top: 30px;">
       <h3>Estatísticas em tempo real:</h3>
       <ul id="stats-list">
-        <!-- Dados via WebSocket aparecerão aqui -->
       </ul>
     </div>
   </div>
 
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
@@ -91,7 +85,7 @@
       stompClient = Stomp.over(socket);
 
       stompClient.connect({}, function (frame) {
-        console.log('Conectado ao WebSocket: ' + frame);
+        console.log('Connected to the WebSocket: ' + frame);
 
         stompClient.subscribe('/topic/statistics', function (message) {
           const statsList = JSON.parse(message.body);
@@ -100,21 +94,19 @@
           statsList.forEach(function (item) {
             const li = document.createElement('li');
             li.textContent = item;
-            // Se o item for título (termina com ":" ou contém "Ativo"), coloca negrito e remove marcador
             if (item.endsWith(':') || item.includes('Ativo')) {
               li.style.fontWeight = 'bold';
               li.style.listStyleType = 'none';
-              li.style.marginTop = '10px';  // espaçamento opcional
+              li.style.marginTop = '10px';
             } else {
-              // para os itens normais, remove só o marcador para ficar tudo alinhado
               li.style.listStyleType = 'none';
-              li.style.marginLeft = '20px'; // indentação pra diferenciar
+              li.style.marginLeft = '20px';
             }
             ul.appendChild(li);
           });
         });
       }, function (error) {
-        console.log("Erro de WebSocket. Tentando reconectar em 3s...", error);
+        console.log("WebSocket error. Attempting to reconnect in 3 seconds....", error);
         setTimeout(connectToWebSocket, 3000);
       });
     }
@@ -122,7 +114,7 @@
     function disconnect() {
       if (stompClient !== null) {
         stompClient.disconnect(() => {
-          console.log("WebSocket desconectado.");
+          console.log("WebSocket desconnected.");
         });
       }
     }
