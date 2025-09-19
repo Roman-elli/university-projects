@@ -222,7 +222,7 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         try {
             statisticsList = index_1.statistics();
             statisticsList.add("Barrel 1 Active!!!\nIndex size: " + index_1.getSize());
-            statisticsList.add("Average response time (Barrel 1): " + String.format("%.1f", response_time_index_1 / 100) + " décimas de segundo");
+            statisticsList.add("Average response time (Barrel 1): " + String.format("%.1f", response_time_index_1 / 100) + " tenths of a second");
         } catch (Exception e1) {
             logMessage("Error obtaining statistics in Index 1.");
             index_1 = null;
@@ -230,10 +230,10 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         }
 
         try {
-            statisticsList.add("Barrel 2 Ativo!!!\nTamanho do index: " + index_2.getSize());
-            statisticsList.add("Tempo médio de resposta (Barrel 2): " + String.format("%.1f", response_time_index_2 / 100) + " décimas de segundo");
+            statisticsList.add("Barrel 2 Active!!!\nIndex size: " + index_2.getSize());
+            statisticsList.add("Average response time (Barrel 2): " + String.format("%.1f", response_time_index_2 / 100) + " tenths of a second");
         } catch (Exception e2) {
-            logMessage("Erro ao obter estatísticas no Index 2.");
+            logMessage("Error obtaining statistics in Index 2.");
             index_2 = null;
             connectToIndex();
         }
@@ -241,12 +241,12 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
     }
 
     public List<String> getFormattedStatistics() throws RemoteException {
-        List<String> statsRaw = getStatistics(); // Método já existente que retorna List<String>
+        List<String> statsRaw = getStatistics();
         List<String> topWords = statsRaw.size() > 10 ? statsRaw.subList(0, 10) : statsRaw;
 
         List<String> formattedList = new ArrayList<>();
         if(topWords.size() > 0){
-            formattedList.add("10 palavras mais pesquisadas:");
+            formattedList.add("10 most searched words:");
             formattedList.addAll(topWords);
         }
         else{
@@ -257,17 +257,17 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
     }
 
     
-    //Lista de URL'S que levam a uma pagina específica
+    // List of URLs that lead to a specific page
     public List<String> getUrlList(String message) throws RemoteException {
         logMessage("ANALYSE SPECIFIC URL: " + message);
         try {
             return index_1.listUrls(message);
         } catch (RemoteException e1) {
-            logMessage("Erro ao consultar URLs no Index 1. Tentando Index 2...");
+            logMessage("Error when querying URLs in Index 1. Trying Index 2...");
             try {
                 return index_2.listUrls(message);
             } catch (RemoteException e2) {
-                logMessage("Nenhum Index disponível. Tentando reconectar...");
+                logMessage("No Index available. Attempting to reconnect...");
                 index_1 = null;
                 index_2 = null;
                 connectToIndex();
