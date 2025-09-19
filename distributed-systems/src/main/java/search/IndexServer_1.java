@@ -8,12 +8,11 @@ import java.io.*;
 import java.util.*;
 
 public class IndexServer_1 extends UnicastRemoteObject implements Index {
-    private static BufferedWriter indexLog;  // Log para registrar atividades do servidor
-    private ConcurrentHashMap<String, ArrayList<URLmodel>> indexedItems; // Índice de palavras
-    private ConcurrentHashMap<String, Set<String>> processedUrls;  // URLs processadas
-    private ConcurrentHashMap<String, Integer> searchList; // Contador de buscas por palavra-chave
-    //private final String extern_index = "192.168.46.2"; // Endereço IP do servidor externo
-
+    private static BufferedWriter indexLog;
+    private ConcurrentHashMap<String, ArrayList<URLmodel>> indexedItems;
+    private ConcurrentHashMap<String, Set<String>> processedUrls;
+    private ConcurrentHashMap<String, Integer> searchList;
+    // private final String extern_index = "192.168.46.2";
 
     public IndexServer_1() throws RemoteException {
         super();
@@ -29,16 +28,16 @@ public class IndexServer_1 extends UnicastRemoteObject implements Index {
             logMessage("Starting index...");
             System.out.println("Index_1 Working...");
 
-            Runtime.getRuntime().addShutdownHook(new Thread(this::closeLog)); // Fecha log ao encerrar
+            Runtime.getRuntime().addShutdownHook(new Thread(this::closeLog));
         } catch (IOException e) {
-            e.printStackTrace(); // Inicia a sincronização periódica com o servidor externo
+            e.printStackTrace();
         }
 
         connectToExternIndex();
         startSynchronization();
     }
 
-    // Método que realiza a sincronização periódica entre os servidores
+    // Method that performs periodic synchronization between servers
     private void startSynchronization() {
         new Thread(() -> {
             while (true) {
@@ -62,7 +61,7 @@ public class IndexServer_1 extends UnicastRemoteObject implements Index {
         }).start();
     }
 
-    //Conecta inicialmente ao index externo e sincroniza os dados
+    // Initially connects to the external index and synchronizes the data
     private void connectToExternIndex() {
         new Thread(() -> {
             while (true) {
@@ -77,7 +76,7 @@ public class IndexServer_1 extends UnicastRemoteObject implements Index {
                 } catch (Exception e) {
                     logMessage("Failed to connect to extern index: " + e.getMessage() + ", retrying in 5 seconds...");
                     try {
-                        Thread.sleep(5000); // Aguarda 5 segundos antes da próxima sincronização
+                        Thread.sleep(5000);
                     } catch (InterruptedException ignored) {}
                 }
             }
@@ -97,7 +96,7 @@ public class IndexServer_1 extends UnicastRemoteObject implements Index {
         }
     }
 
-    // Método para adicionar palavras ao índice
+    // Method for adding words to the index
     public void addToIndex(String word, URLmodel url) throws RemoteException {
         indexedItems.compute(word, (k, list) -> {
             if (list == null) { 
@@ -108,22 +107,22 @@ public class IndexServer_1 extends UnicastRemoteObject implements Index {
         });
     }
  
-    // Métodos para obter os índices e listas armazenadas
+    // Method for obtaining stored indexes and lists
     public ConcurrentHashMap<String, ArrayList<URLmodel>> getIndexedItems() throws RemoteException {
         return indexedItems;
     }
 
-    // Métodos para obter os URLS processados
+    // Method for obtaining processed URLs
     public ConcurrentHashMap<String, Set<String>> getProcessedUrls() throws RemoteException {
         return processedUrls;
     }
 
-    // Métodos para obter a lista de pesquisa
+    // Method for obtaining the search list
     public ConcurrentHashMap<String, Integer> getSearchList() throws RemoteException {
         return searchList;
     }
 
-    // Método para armazenar novas URLs processadas
+    // Method for storing newly processed URLs
     public void putNew(String linker, String url) throws RemoteException {
         processedUrls.compute(url, (k, links) -> {
             if (links == null) links = ConcurrentHashMap.newKeySet();
@@ -134,7 +133,7 @@ public class IndexServer_1 extends UnicastRemoteObject implements Index {
         });
     }
 
-    // Método para registrar mensagens no log
+    // Method for logging messages
     public static void logMessage(String message) {
         if (indexLog == null) return;
 
@@ -149,7 +148,7 @@ public class IndexServer_1 extends UnicastRemoteObject implements Index {
         }
     }
 
-    // Fecha o arquivo de log corretamente
+    // Close the log file correctly
     public void closeLog() {
         if (indexLog == null) return;
         try {
@@ -161,7 +160,7 @@ public class IndexServer_1 extends UnicastRemoteObject implements Index {
         }
     }
 
-    // Método para buscar palavras no índice
+    // Method for searching words in the index
     public List<Search> searchWord(String word, int page) throws RemoteException {
         searchList.merge(word, 1, Integer::sum);
 
@@ -224,7 +223,7 @@ public class IndexServer_1 extends UnicastRemoteObject implements Index {
         return (startIndex >= resultList.size()) ? new ArrayList<>() : new ArrayList<>(resultList.subList(startIndex, endIndex));
     }
 
-     // Método para obter as estatísticas das palavras mais pesquisadas
+     // Method for obtaining statistics on the most searched words
     public List<String> statistics() throws RemoteException {
         List<String> tenBest = new ArrayList<>();
 
@@ -237,7 +236,7 @@ public class IndexServer_1 extends UnicastRemoteObject implements Index {
         return tenBest;
     }
 
-    // Método para encontrar um modelo de URL específico
+    // Method for finding a specific URL pattern
     public URLmodel findURLModelForTerm(String url, List<String> terms) throws RemoteException {
         for (String term : terms) {
             List<URLmodel> urlModels = indexedItems.get(term);
@@ -252,12 +251,12 @@ public class IndexServer_1 extends UnicastRemoteObject implements Index {
         return null;
     }
 
-    // Método para listar todas as URLs relacionadas a um determinado site
+    // Method for listing all URLs related to a given website
     public List<String> listUrls(String url) throws RemoteException {
         return new ArrayList<>(processedUrls.getOrDefault(url, new HashSet<>()));
     }
 
-    //Obtêm o tamanho dos indices
+    // Obtain the size of the indexes
     public int getSize() throws RemoteException{
         return indexedItems.size();
     }

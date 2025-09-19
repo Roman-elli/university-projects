@@ -9,36 +9,36 @@ import java.util.Scanner;
 public class Client {
     public static void main(String[] args) {
         GatewayInterface gateway = null;
-        String ip_address_gateway = "192.168.46.51"; // IP fixo do Gateway
+        String ip_address_gateway = "192.168.46.51"; // Gateway IP
 
-        // Tenta conectar ao Gateway repetidamente até conseguir
+        // Keep trying to connect to the Gateway until you succeed.
         gateway = connectToGateway(ip_address_gateway);
         
-        // Scanner para entrada de dados do usuário
+        // Scanner for user data input
         Scanner scanner = new Scanner(System.in);
         boolean working = true;
 
-        // Exibe mensagem de boas-vindas
+        // Welcome messages
         System.out.println("============================================");
         System.out.println("Welcome to Googol service!!!");
         System.out.println("Your best search platform!!!");
         System.out.println("============================================");
 
-        // Loop principal do cliente
+        // Client menu
         while (working) {
-            System.out.println("\nServiços disponíveis:");
-            System.out.println("  (1) Indexar novo URL");
-            System.out.println("  (2) Pesquisar página por termos");
-            System.out.println("  (3) Consultar lista de páginas relacionadas");
-            System.out.println("  (4) Consultar estatísticas");
-            System.out.println("  (0) Finalizar serviço.");
-            System.out.print("\nDigite o número da opção desejada: ");
+            System.out.println("\nAvailable services:");
+            System.out.println("  (1) Index new URL");
+            System.out.println("  (2) Search page by terms");
+            System.out.println("  (3) See list of related pages");
+            System.out.println("  (4) View statistics");
+            System.out.println("  (0) Complete service");
+            System.out.print("\nEnter the number of the desired option: ");
 
             String option = scanner.nextLine();
 
-            // Verifica se a entrada contém apenas números antes de converter
+            // Check that the input contains only numbers before converting
             if (!option.matches("\\d+")) {  
-                System.out.println("Opção inválida! Por favor, digite um número válido.");
+                System.out.println("Invalid option! Please enter a valid number.");
                 continue;
             }
 
@@ -47,16 +47,16 @@ public class Client {
             try {
                 switch (escolha) {
                     case 1:
-                        // Indexação de um novo URL
-                        System.out.print("\nDigite o URL que deseja indexar: ");
+                        // Indexing a new URL
+                        System.out.print("\nEnter the URL you want to index: ");
                         String message = scanner.nextLine();
                         String result = gateway.proccessUrl(message);
-                        System.out.println("Resultado: " + result);
+                        System.out.println("Result: " + result);
                         break;
 
                     case 2:
-                        // Pesquisa por termos
-                        System.out.print("\nDigite os termos que deseja pesquisar: ");
+                        // Search by terms
+                        System.out.print("\nEnter the terms you want to search for: ");
                         message = scanner.nextLine();
                         int page = 1;
 
@@ -64,50 +64,50 @@ public class Client {
                             List<Search> result_search = gateway.makeSearch(message, page);
 
                             if (!result_search.isEmpty()) {
-                                System.out.println("\n===== Resultados da Pesquisa =====\n");
+                                System.out.println("\n===== Search results =====\n");
                                 for (int i = 0; i < result_search.size(); i++) {
-                                    System.out.println("Resultado #" + ((page - 1) * 10 + (i + 1)) + ":");
+                                    System.out.println("Result #" + ((page - 1) * 10 + (i + 1)) + ":");
                                     System.out.println("====================================");
                                     System.out.println(result_search.get(i));
                                     System.out.println("====================================\n");
                                 }
 
-                                System.out.println("\nPressione ENTER para ver mais ou digite '0' para sair.");
+                                System.out.println("\nPress ENTER to see more or type ‘0’ to exit.");
                                 if (scanner.nextLine().equals("0")) break;
                                 page++;
                             } else {
-                                System.out.println("\nNenhum resultado encontrado.");
+                                System.out.println("\nNo results found.");
                                 break;
                             }
                         }
                         break;
 
                     case 3:
-                        // Consulta de páginas relacionadas
-                        System.out.print("\nDigite a página específica que deseja consultar: ");
+                        // View related pages
+                        System.out.print("\nEnter the specific page you wish to view: ");
                         message = scanner.nextLine();
                         List<String> result_search = gateway.getUrlList(message);
                         if (!result_search.isEmpty()) {
-                            System.out.println("\n===== Páginas Relacionadas =====\n");
+                            System.out.println("\n===== Related Pages =====\n");
                             for (String resultItem : result_search) {
                                 System.out.println("====================================");
                                 System.out.println(resultItem);
                                 System.out.println("====================================\n");
                             }
                         } else {
-                            System.out.println("\nNenhum resultado encontrado.");
+                            System.out.println("\nNo results found.");
                         }
                         break;
 
                     case 4:
-                        // Consulta de estatísticas
-                        System.out.println("\nRequisição de estatísticas enviada...");
+                        // Statistics query
+                        System.out.println("\nStatistics request sent...");
                         List<String> resultStatistics = gateway.getStatistics();
                         if(resultStatistics.isEmpty()){
-                            System.out.println("Servidor indisponível...");
+                            System.out.println("Server unavailable...");
                         }
                         else{
-                            System.out.println("\n===== Estatísticas =====\n");
+                            System.out.println("\n===== Statistics =====\n");
                             for (String stat : resultStatistics) {
                                 System.out.println("-> " + stat);
                             }
@@ -116,16 +116,16 @@ public class Client {
                         break;
 
                     case 0:
-                        // Finaliza o serviço
+                        // Finish the job
                         working = false;
-                        System.out.println("\nObrigado por usar o Googol! Até a próxima.");
+                        System.out.println("\nThank you for using Googol! See you next time..");
                         break;
 
                     default:
-                        System.out.println("Opção inválida! Tente novamente.");
+                        System.out.println("Invalid option! Please try again..");
                 }
             } catch (RemoteException e) {
-                System.out.println("Erro ao comunicar com o Gateway. Tentando reconectar...");
+                System.out.println("Error communicating with the Gateway. Attempting to reconnect...");
                 gateway = connectToGateway(ip_address_gateway);
             }
         }
@@ -133,21 +133,21 @@ public class Client {
         scanner.close();
     }
 
-    // Método para tentar reconectar ao Gateway
+    // Method for attempting to reconnect to the Gateway
     private static GatewayInterface connectToGateway(String ip_address_gateway) {
         GatewayInterface gateway = null;
         while (gateway == null) {
             try {
                 // Conectando ao Gateway via RMI
                 gateway = (GatewayInterface) LocateRegistry.getRegistry(8183).lookup("gateway");
-                System.out.println("Conectado ao Gateway!");
+                System.out.println("Connected to Gateway!");
             } catch (RemoteException | NotBoundException e) {
-                // Se o gateway estiver offline, aguarda e tenta novamente
-                System.out.println("Gateway offline... Tentando novamente em 2 segundos...");
+                // If the gateway is offline, wait and try again.
+                System.out.println("Gateway offline... Trying again in 2 seconds...");
                 try {
-                    Thread.sleep(1000); // Pausa de 1 segundo antes de tentar novamente
+                    Thread.sleep(1000); // Pause for 1 second before trying again
                 } catch (InterruptedException ie) {
-                    System.out.println("Erro ao tentar reconectar: " + ie.getMessage());
+                    System.out.println("Error while attempting to reconnect: " + ie.getMessage());
                     ie.printStackTrace();
                 }
             }
